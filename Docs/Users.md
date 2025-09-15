@@ -9,7 +9,7 @@ For our Library Management System, I need to figure out how to connect users wit
 
 
 ### Basic Idea
-- Each user can have multiple roles.  
+- Each user can have one role.  
 - Each role can have multiple permissions.  
 - Each permission defines a specific action a user can perform (e.g., add book, delete book, borrow book).  
 - User documents store references to their assigned roles.  
@@ -37,3 +37,14 @@ For our Library Management System, I need to figure out how to connect users wit
   "status": "ACTIVE",
   "createdAt": ISODate("2024-02-15")
 }
+
+{
+  "_id": ObjectId("..."),
+  "name": "Admin",
+  "permissions": [
+    ObjectId("perm_add_book"),
+    ObjectId("perm_delete_book"),
+    ObjectId("perm_borrow_book")
+  ]
+}
+
