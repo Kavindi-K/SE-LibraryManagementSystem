@@ -1,0 +1,108 @@
+{
+  "description": "Sample Member Data for Library Management System - SCRUM-23B",
+  "created_by": "IT23596634",
+  "date": "2025-09-15",
+  "purpose": "Testing and development of member management features",
+  
+  "memberSamples": [
+    {
+      "memberNumber": "LIB2024001",
+      "firstName": "Kasun",
+      "lastName": "Silva",
+      "email": "kasun.silva@gmail.com",
+      "phone": "0771234567",
+      "address": {
+        "street": "123 Kandy Road",
+        "city": "Kandy",
+        "district": "Central",
+        "postalCode": "20000"
+      },
+      "membershipType": "STUDENT",
+      "registrationDate": "2024-01-15",
+      "status": "ACTIVE",
+      "maxBooksAllowed": 3,
+      "currentBooksCount": 1
+    },
+    {
+      "memberNumber": "LIB2024002",
+      "firstName": "Nimal",
+      "lastName": "Perera",
+      "email": "nimal.perera@yahoo.com",
+      "phone": "0712345678",
+      "address": {
+        "street": "456 Galle Road",
+        "city": "Colombo",
+        "district": "Western",
+        "postalCode": "00300"
+      },
+      "membershipType": "FACULTY",
+      "registrationDate": "2024-02-01",
+      "status": "ACTIVE",
+      "maxBooksAllowed": 10,
+      "currentBooksCount": 3
+    },
+    {
+      "memberNumber": "LIB2024003",
+      "firstName": "Saman",
+      "lastName": "Fernando",
+      "email": "saman.fernando@hotmail.com",
+      "phone": "0763456789",
+      "address": {
+        "street": "789 Negombo Road",
+        "city": "Negombo",
+        "district": "Western",
+        "postalCode": "11500"
+      },
+      "membershipType": "STUDENT",
+      "registrationDate": "2024-01-20",
+      "status": "SUSPENDED",
+      "maxBooksAllowed": 3,
+      "currentBooksCount": 0,
+      "suspensionReason": "Overdue books not returned"
+    },
+    {
+      "memberNumber": "LIB2024004",
+      "firstName": "Amara",
+      "lastName": "Jayawardena",
+      "email": "amara.jayawardena@gmail.com",
+      "phone": "0754567890",
+      "address": {
+        "street": "321 Matara Road",
+        "city": "Matara",
+        "district": "Southern",
+        "postalCode": "81000"
+      },
+      "membershipType": "PUBLIC",
+      "registrationDate": "2024-03-01",
+      "status": "ACTIVE",
+      "maxBooksAllowed": 2,
+      "currentBooksCount": 0
+    },
+    {
+      "memberNumber": "LIB2024005",
+      "firstName": "Ruwan",
+      "lastName": "Wijesinghe",
+      "email": "ruwan.wijesinghe@outlook.com",
+      "phone": "0765678901",
+      "address": {
+        "street": "654 Kurunegala Road",
+        "city": "Kurunegala",
+        "district": "North Western",
+        "postalCode": "60000"
+      },
+      "membershipType": "STUDENT",
+      "registrationDate": "2024-02-15",
+      "status": "ACTIVE",
+      "maxBooksAllowed": 3,
+      "currentBooksCount": 2
+    }
+  ],
+  
+  "testScenarios": [
+    "Active student member with current borrowings",
+    "Faculty member with multiple borrowings allowed",
+    "Suspended member for testing validation",
+    "Public member with limited borrowing capacity",
+    "Recently registered member with no borrowings"
+  ]
+}
