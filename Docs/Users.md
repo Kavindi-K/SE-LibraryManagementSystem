@@ -60,4 +60,53 @@ Permission Document Structure
 ```
 ## Common Queries
 Get all roles assigned to a user
+```json
+db.users.findOne({ "username": "admin_user" })
+```
+
+Get permissions of a user
+```json
+db.users.aggregate([
+  { $match: { "username": "admin_user" } },
+  { $lookup: {
+      from: "roles",
+      localField: "roles",
+      foreignField: "_id",
+      as: "userRoles"
+    }
+  },
+  { $unwind: "$userRoles" },
+  { $lookup: {
+      from: "permissions",
+      localField: "userRoles.permissions",
+      foreignField: "_id",
+      as: "userPermissions"
+    }
+  }
+])
+```
+Check if a user has a specific role
+```json
+db.users.findOne({
+  "username": "admin_user",
+  "roles": ObjectId("role_id_here")
+})
+```
+# Business Rules to Implement
+
+User must have ACTIVE status.
+
+User must have the required role for the action.
+
+Role must include the permission needed for the action.
+
+Passwords should always be stored hashed.
+
+Integration with Other Collections
+
+Borrowings Collection: User actions (like borrowing books) are controlled by their role and permissions.
+
+Fines Collection: Admins can create/update fines; members can only view their own fines.
+
+Books Collection: Only authorized roles can add, delete, or update books.
 
