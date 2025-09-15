@@ -7,6 +7,7 @@ For our Library Management System, I need to figure out how to connect users wit
 
 ## How the Relationship Works
 
+
 ### Basic Idea
 - Each user can have multiple roles.  
 - Each role can have multiple permissions.  
