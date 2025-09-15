@@ -37,7 +37,9 @@ For our Library Management System, I need to figure out how to connect users wit
   "status": "ACTIVE",
   "createdAt": ISODate("2024-02-15")
 }
-
+```
+Role Document Structure
+```json
 {
   "_id": ObjectId("..."),
   "name": "Admin",
@@ -47,4 +49,15 @@ For our Library Management System, I need to figure out how to connect users wit
     ObjectId("perm_borrow_book")
   ]
 }
+```
+Permission Document Structure
+```json
+{
+  "_id": ObjectId("..."),
+  "name": "ADD_BOOK",
+  "description": "Allows adding books to the library"
+}
+```
+## Common Queries
+Get all roles assigned to a user
 
