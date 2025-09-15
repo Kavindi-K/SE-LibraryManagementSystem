@@ -93,7 +93,7 @@ db.users.aggregate([
   { $match: { "username": "admin_user" } },
   { $lookup: {
       from: "roles",
-      localField: "roles",
+      localField: "roleId",
       foreignField: "_id",
       as: "userRoles"
     }
@@ -101,19 +101,21 @@ db.users.aggregate([
   { $unwind: "$userRoles" },
   { $lookup: {
       from: "permissions",
-      localField: "userRoles.permissions",
+      localField: "userRoles.permissionIds",
       foreignField: "_id",
       as: "userPermissions"
     }
   }
 ])
+
 ```
 Check if a user has a specific role
 ```json
 db.users.findOne({
   "username": "admin_user",
-  "roles": ObjectId("role_id_here")
+  "roleId": "R1"  // or ObjectId("role_id_here") if you use ObjectId
 })
+
 ```
 ## Business Rules to Implement
 - User must have **ACTIVE** status.  
@@ -133,13 +135,14 @@ Database Indexes Needed
 // Users collection
 db.users.createIndex({ "username": 1 }, { unique: true })
 db.users.createIndex({ "email": 1 }, { unique: true })
-db.users.createIndex({ "roles": 1 })
+db.users.createIndex({ "roleId": 1 })  // corrected from "roles"
 
 // Roles collection
-db.roles.createIndex({ "name": 1 }, { unique: true })
+db.roles.createIndex({ "roleName": 1 }, { unique: true })  // corrected from "name"
 
 // Permissions collection
-db.permissions.createIndex({ "name": 1 }, { unique: true })
+db.permissions.createIndex({ "permissionName": 1 }, { unique: true })  // corrected from "name"
+
 ```
 
 ---
