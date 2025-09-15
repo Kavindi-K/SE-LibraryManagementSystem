@@ -142,3 +142,9 @@ db.permissions.createIndex({ "name": 1 }, { unique: true })
 4. Coordinate with teammates on connecting other collections (e.g., borrowings, fines).
 
 
+Project: Library Management System
+Sprint: 1
+Student: IT23619258
+Date: March 15, 2024
+
+
