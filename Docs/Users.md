@@ -15,8 +15,7 @@ For our Library Management System, I need to figure out how to connect users wit
 - User documents store references to their assigned roles.  
 - Role documents store references to their assigned permissions.  
 
-### Why This Approach?
-- Users can have many roles over time.  
+### Why This Approach? 
 - Roles may change or have permissions updated frequently.  
 - Using references keeps documents smaller and easier to manage.  
 - Queries for authentication and authorization can be done efficiently.  
@@ -58,6 +57,12 @@ Role Document Structure
   updatedAt: '2025-09-15T00:00:00Z'
 }
 ```
+Example roles:
+•	R1 → Librarian
+•	R2 → Member
+•	R3 → Admin
+
+
 Permission Document Structure
 ```json
 {
@@ -68,6 +73,14 @@ Permission Document Structure
   updatedAt: '2025-09-15T00:00:00Z'
 }
 ```
+•  P1 → CREATE_BOOK
+•  P2 → UPDATE_BOOK
+•  P3 → DELETE_BOOK
+•  P4 → ISSUE_BOOK
+•  P5 → RETURN_BOOK
+•  P6 → MANAGE_USERS
+
+
 ## Common Queries
 Get all roles assigned to a user
 ```json
