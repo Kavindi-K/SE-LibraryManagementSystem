@@ -29,33 +29,43 @@ For our Library Management System, I need to figure out how to connect users wit
 ### User Document Structure
 ```json
 {
-  "_id": ObjectId("..."),
-  "username": "admin_user",
-  "email": "admin@library.com",
-  "passwordHash": "hashed_password_123",
-  "roles": [ ObjectId("role_id_here") ],
-  "status": "ACTIVE",
-  "createdAt": ISODate("2024-02-15")
+  _id: 'U12345',
+  firstName: 'Nimal',
+  lastName: 'Perera',
+  username: 'nimal',
+  dateOfBirth: '2000-05-15',
+  email: 'nimal@example.com',
+  password: '<hashed_password>',
+  address: '123 Library Street, Colombo',
+  status: 'ACTIVE',
+  roleId: 'R1',
+  createdAt: '2025-09-15T00:00:00Z',
+  updatedAt: '2025-09-15T00:00:00Z'
 }
 ```
 Role Document Structure
 ```json
 {
-  "_id": ObjectId("..."),
-  "name": "Admin",
-  "permissions": [
-    ObjectId("perm_add_book"),
-    ObjectId("perm_delete_book"),
-    ObjectId("perm_borrow_book")
-  ]
+  _id: 'R1',
+  roleName: 'Librarian',
+  description: 'Manages library books and user accounts',
+  permissionIds: [
+    'P1',
+    'P2',
+    'P3'
+  ],
+  createdAt: '2025-09-15T00:00:00Z',
+  updatedAt: '2025-09-15T00:00:00Z'
 }
 ```
 Permission Document Structure
 ```json
 {
-  "_id": ObjectId("..."),
-  "name": "ADD_BOOK",
-  "description": "Allows adding books to the library"
+  _id: 'P1',
+  permissionName: 'CREATE_BOOK',
+  description: 'Ability to add new books to the library',
+  createdAt: '2025-09-15T00:00:00Z',
+  updatedAt: '2025-09-15T00:00:00Z'
 }
 ```
 ## Common Queries
