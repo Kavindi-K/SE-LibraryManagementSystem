@@ -92,21 +92,53 @@ db.users.findOne({
   "roles": ObjectId("role_id_here")
 })
 ```
-# Business Rules to Implement
+## Business Rules to Implement
+- User must have **ACTIVE** status.  
+- User must have the **required role** for the action.  
+- Role must include the **permission needed** for the action.  
+- Passwords should always be stored **hashed**.  
 
-User must have ACTIVE status.
+---
 
-User must have the required role for the action.
+## Integration with Other Collections
+- **Borrowings Collection:** User actions (like borrowing books) are controlled by their role and permissions.  
+- **Fines Collection:** Admins can create/update fines; members can only view their own fines.  
+- **Books Collection:** Only authorized roles can add, delete, or update books.
 
-Role must include the permission needed for the action.
+Database Indexes Needed
+```json
+// Users collection
+db.users.createIndex({ "username": 1 }, { unique: true })
+db.users.createIndex({ "email": 1 }, { unique: true })
+db.users.createIndex({ "roles": 1 })
 
-Passwords should always be stored hashed.
+// Roles collection
+db.roles.createIndex({ "name": 1 }, { unique: true })
 
-Integration with Other Collections
+// Permissions collection
+db.permissions.createIndex({ "name": 1 }, { unique: true })
+```
 
-Borrowings Collection: User actions (like borrowing books) are controlled by their role and permissions.
+---
 
-Fines Collection: Admins can create/update fines; members can only view their own fines.
+## Benefits
+- Fast login lookups  
+- Efficient role-based queries  
+- Ensures unique usernames, emails, roles, and permissions  
 
-Books Collection: Only authorized roles can add, delete, or update books.
+---
+
+## Challenges I Anticipate
+- **Data Consistency:** Ensuring user-role-permission references are always valid.  
+- **Performance:** Queries joining multiple collections may be slow for many users/roles.  
+- **Validation:** Prevent assigning invalid roles or permissions to users.  
+
+---
+
+## Next Steps
+1. Wait for schema validation approval from lecturer.  
+2. Create sample **users, roles, and permissions** data.  
+3. Test relationship queries (authentication & role-permission checks).  
+4. Coordinate with teammates on connecting other collections (e.g., borrowings, fines).
+
 
