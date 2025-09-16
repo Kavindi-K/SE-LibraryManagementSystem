@@ -1,94 +1,122 @@
-# User-Role-Permission Document Relationships
+# User-Role-Permission Design Documentation
 
 ## Overview
-For our Library Management System, I need to figure out how to connect users with their roles and permissions. After analyzing different approaches, I decided to use **references instead of embedding** because users can have multiple roles and each role can have multiple permissions.
+
+This document outlines the MongoDB database design for the **User**, **Role**, and **Permission** collections in the Library Management System, focusing on authentication, authorization, and access control.
+
+The design uses **references** instead of embedding to ensure flexibility and scalability, since users are linked to roles, and roles are linked to permissions.
 
 ---
 
-## How the Relationship Works
+## Collections Design
 
+### 1. Users Collection
 
-### Basic Idea
-- Each user can have one role.  
-- Each role can have multiple permissions.  
-- Each permission defines a specific action a user can perform (e.g., add book, delete book, borrow book).  
-- User documents store references to their assigned roles.  
-- Role documents store references to their assigned permissions.  
+**Purpose:** Stores user account information and their assigned role.
 
-### Why This Approach? 
-- Roles may change or have permissions updated frequently.  
-- Using references keeps documents smaller and easier to manage.  
-- Queries for authentication and authorization can be done efficiently.  
-- Other team members can easily connect their collections to user roles (e.g., borrowings, fines, reservations).  
+**Schema Structure:**
+```json
+{
+  "_id": ObjectId,
+  "userId": String,         // Unique identifier for user
+  "firstName": String,      // Required
+  "lastName": String,       // Required
+  "username": String,       // Required, unique
+  "dateOfBirth": Date,
+  "email": String,          // Required, unique, validated format
+  "password": String,       // Hashed password
+  "address": String,
+  "status": String,         // Enum: ["ACTIVE", "INACTIVE", "SUSPENDED"]
+  "roleId": String,         // References roles._id
+  "createdAt": Date,
+  "updatedAt": Date
+}
+```
+
+**Business Rules:**
+- `username` and `email` must be unique.  
+- `status` must be `ACTIVE` for login and access.  
+- Passwords must always be stored **hashed**.  
 
 ---
 
-## Document Examples
+### 2. Roles Collection
 
-### User Document Structure
+**Purpose:** Defines different user roles and their associated permissions.
+
+**Schema Structure:**
 ```json
 {
-  _id: 'U12345',
-  firstName: 'Nimal',
-  lastName: 'Perera',
-  username: 'nimal',
-  dateOfBirth: '2000-05-15',
-  email: 'nimal@example.com',
-  password: '<hashed_password>',
-  address: '123 Library Street, Colombo',
-  status: 'ACTIVE',
-  roleId: 'R1',
-  createdAt: '2025-09-15T00:00:00Z',
-  updatedAt: '2025-09-15T00:00:00Z'
+  "_id": String,           // Unique role identifier (e.g., "R1")
+  "roleName": String,      // Role name (e.g., "Librarian", "Admin")
+  "description": String,   // Description of responsibilities
+  "permissionIds": [String], // References permissions._id
+  "createdAt": Date,
+  "updatedAt": Date
 }
 ```
-Role Document Structure
+
+**Business Rules:**
+- `roleName` must be unique.  
+- Each role can have one or more permissions.  
+
+---
+
+### 3. Permissions Collection
+
+**Purpose:** Defines specific actions allowed in the system.
+
+**Schema Structure:**
 ```json
 {
-  _id: 'R1',
-  roleName: 'Librarian',
-  description: 'Manages library books and user accounts',
-  permissionIds: [
-    'P1',
-    'P2',
-    'P3'
-  ],
-  createdAt: '2025-09-15T00:00:00Z',
-  updatedAt: '2025-09-15T00:00:00Z'
+  "_id": String,             // Unique permission identifier (e.g., "P1")
+  "permissionName": String,  // Action (e.g., "CREATE_BOOK")
+  "description": String,     // Explanation of permission
+  "createdAt": Date,
+  "updatedAt": Date
 }
 ```
-Example roles:
-•	R1 → Librarian
-•	R2 → Member
-•	R3 → Admin
 
+**Example Permissions:**
+- **P1** → CREATE_BOOK  
+- **P2** → UPDATE_BOOK  
+- **P3** → DELETE_BOOK  
+- **P4** → ISSUE_BOOK  
+- **P5** → RETURN_BOOK  
+- **P6** → MANAGE_USERS  
 
-Permission Document Structure
-```json
-{
-  _id: 'P1',
-  permissionName: 'CREATE_BOOK',
-  description: 'Ability to add new books to the library',
-  createdAt: '2025-09-15T00:00:00Z',
-  updatedAt: '2025-09-15T00:00:00Z'
-}
+---
+
+## Relationships
+
+### 1. Users ↔ Roles (Many-to-One)
+- Each user has exactly **one role**.  
+- A role can be assigned to **many users**.  
+- Implementation: `users.roleId` references `roles._id`.  
+
+**Query Example:** Get a user with role details
+```js
+db.users.aggregate([
+  { $match: { "username": "admin_user" } },
+  { $lookup: {
+      from: "roles",
+      localField: "roleId",
+      foreignField: "_id",
+      as: "roleDetails"
+    }
+  }
+])
 ```
-•  P1 → CREATE_BOOK
-•  P2 → UPDATE_BOOK
-•  P3 → DELETE_BOOK
-•  P4 → ISSUE_BOOK
-•  P5 → RETURN_BOOK
-•  P6 → MANAGE_USERS
 
+---
 
-## Common Queries
-Get all roles assigned to a user
-```json
-db.users.findOne({ "username": "admin_user" })
-```
+### 2. Roles ↔ Permissions (Many-to-Many)
+- Each role can have **multiple permissions**.  
+- Each permission can belong to **multiple roles**.  
+- Implementation: `roles.permissionIds` references `permissions._id`.  
 
-Get permissions of a user
-```json
+**Query Example:** Get permissions of a user
+```js
 db.users.aggregate([
   { $match: { "username": "admin_user" } },
   { $lookup: {
@@ -107,70 +135,113 @@ db.users.aggregate([
     }
   }
 ])
-
 ```
-Check if a user has a specific role
+
+---
+
+## Sample Documents
+
+**User Sample:**
 ```json
-db.users.findOne({
-  "username": "admin_user",
-  "roleId": "R1"  // or ObjectId("role_id_here") if you use ObjectId
-})
-
+{
+  "userId": "U12345",
+  "firstName": "Nimal",
+  "lastName": "Perera",
+  "username": "nimal",
+  "dateOfBirth": "2000-05-15",
+  "email": "nimal@example.com",
+  "password": "<hashed_password>",
+  "address": "123 Library Street, Colombo",
+  "status": "ACTIVE",
+  "roleId": "R1",
+  "createdAt": "2025-09-15T00:00:00Z",
+  "updatedAt": "2025-09-15T00:00:00Z"
+}
 ```
-## Business Rules to Implement
-- User must have **ACTIVE** status.  
-- User must have the **required role** for the action.  
-- Role must include the **permission needed** for the action.  
-- Passwords should always be stored **hashed**.  
 
----
-
-## Integration with Other Collections
-- **Borrowings Collection:** User actions (like borrowing books) are controlled by their role and permissions.  
-- **Fines Collection:** Admins can create/update fines; members can only view their own fines.  
-- **Books Collection:** Only authorized roles can add, delete, or update books.
-
-Database Indexes Needed
+**Role Sample:**
 ```json
-// Users collection
-db.users.createIndex({ "username": 1 }, { unique: true })
-db.users.createIndex({ "email": 1 }, { unique: true })
-db.users.createIndex({ "roleId": 1 })  // corrected from "roles"
+{
+  "_id": "R1",
+  "roleName": "Librarian",
+  "description": "Manages library books and user accounts",
+  "permissionIds": ["P1", "P2", "P3"],
+  "createdAt": "2025-09-15T00:00:00Z",
+  "updatedAt": "2025-09-15T00:00:00Z"
+}
+```
 
-// Roles collection
-db.roles.createIndex({ "roleName": 1 }, { unique: true })  // corrected from "name"
-
-// Permissions collection
-db.permissions.createIndex({ "permissionName": 1 }, { unique: true })  // corrected from "name"
-
+**Permission Sample:**
+```json
+{
+  "_id": "P1",
+  "permissionName": "CREATE_BOOK",
+  "description": "Ability to add new books to the library",
+  "createdAt": "2025-09-15T00:00:00Z",
+  "updatedAt": "2025-09-15T00:00:00Z"
+}
 ```
 
 ---
 
-## Benefits
-- Fast login lookups  
-- Efficient role-based queries  
-- Ensures unique usernames, emails, roles, and permissions  
+## Common Queries
+
+**Find active users**
+```js
+db.users.find({ "status": "ACTIVE" })
+```
+
+**Get roles assigned to a user**
+```js
+db.users.findOne({ "username": "admin_user" })
+```
+
+**Check if user has a specific role**
+```js
+db.users.findOne({ "username": "admin_user", "roleId": "R1" })
+```
 
 ---
 
-## Challenges I Anticipate
-- **Data Consistency:** Ensuring user-role-permission references are always valid.  
-- **Performance:** Queries joining multiple collections may be slow for many users/roles.  
-- **Validation:** Prevent assigning invalid roles or permissions to users.  
+## Database Indexes
+
+**Users Collection:**
+- `{ "username": 1 }` (Unique)  
+- `{ "email": 1 }` (Unique)  
+- `{ "roleId": 1 }`  
+
+**Roles Collection:**
+- `{ "roleName": 1 }` (Unique)  
+
+**Permissions Collection:**
+- `{ "permissionName": 1 }` (Unique)  
+
+---
+
+## Business Rules & Constraints
+- User must be **ACTIVE** to perform actions.  
+- Role must exist before assigning it to a user.  
+- Permissions must exist before linking them to a role.  
+- Invalid role or permission references must be prevented.  
+
+---
+
+## Integration Considerations
+- **Borrowings Collection**: Only users with `ISSUE_BOOK` or `RETURN_BOOK` can manage borrowings.  
+- **Fines Collection**: Only admins can create/update fines.  
+- **Books Collection**: Only librarians/admins can add, update, or delete books.  
+
+---
+
+## Technical Challenges & Solutions
+- **Data Consistency**: Use validation to prevent invalid role/permission assignments.  
+- **Performance**: Add indexes for frequent queries (user lookups, role checks).  
+- **Scalability**: Use references to avoid document bloat and allow independent updates.  
 
 ---
 
 ## Next Steps
-1. Wait for schema validation approval from lecturer.  
-2. Create sample **users, roles, and permissions** data.  
-3. Test relationship queries (authentication & role-permission checks).  
-4. Coordinate with teammates on connecting other collections (e.g., borrowings, fines).
-
-
-Project: Library Management System
-Sprint: 1
-Student: IT23619258
-Date: March 15, 2024
-
-
+1. Validate schema design with lecturer.  
+2. Insert sample datasets for users, roles, and permissions.  
+3. Test authentication and authorization queries.  
+4. Integrate with borrowings, fines, and books collections.  
