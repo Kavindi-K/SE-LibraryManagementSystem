@@ -328,4 +328,9 @@ Error rates and data validation failures
 Daily automated backups
 Point-in-time recovery capability
 Cross-region backup replication
-Regular restore testing procedures 
+Regular restore testing procedures
+
+Project: Library Management System 
+Sprint: 1 
+Student: IT23619258 
+Date: March 15, 2024
