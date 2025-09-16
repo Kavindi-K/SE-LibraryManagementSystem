@@ -2,9 +2,12 @@
 
 ## Overview
 
-This document outlines the MongoDB database design for the **User**, **Role**, and **Permission** collections in the Library Management System, focusing on authentication, authorization, and access control.
+This document outlines the MongoDB database design for the **User**, **Role**, and **Permission** collections in the Library Management System.  
+The focus is on authentication, authorization, and access control.  
 
-The design uses **references** instead of embedding to ensure flexibility and scalability, since users are linked to roles, and roles are linked to permissions.
+The design uses **references** between collections for scalability and flexibility:  
+- Users are linked to roles  
+- Roles are linked to permissions  
 
 ---
 
@@ -14,24 +17,26 @@ The design uses **references** instead of embedding to ensure flexibility and sc
 
 **Purpose:** Stores user account information and their assigned role.
 
-**Schema Structure:**
+**Spring Boot Entity Reference:** `User.java` with `@Document(collection = "users")`.
+
+**Schema Structure (JSON Equivalent):**
 ```json
 {
   "_id": ObjectId,
-  "userId": String,         // Unique identifier for user
-  "firstName": String,      // Required
-  "lastName": String,       // Required
-  "username": String,       // Required, unique
-  "dateOfBirth": Date,
-  "email": String,          // Required, unique, validated format
-  "password": String,       // Hashed password
-  "address": String,
-  "status": String,         // Enum: ["ACTIVE", "INACTIVE", "SUSPENDED"]
-  "roleId": String,         // References roles._id
-  "createdAt": Date,
-  "updatedAt": Date
+  "firstName": "String",
+  "lastName": "String",
+  "username": "String",          // Unique
+  "dateOfBirth": "Date",
+  "email": "String",             // Unique
+  "password": "String",          // Hashed
+  "address": "String",
+  "status": "String",            // Enum: ["ACTIVATED", "DEACTIVATED"]
+  "role": "String",              // Enum: ["LIBRARIAN", "STAFF", "MEMBER"]
+  "createdAt": "DateTime",
+  "updatedAt": "DateTime"
 }
 ```
+
 
 **Business Rules:**
 - `username` and `email` must be unique.  
@@ -40,52 +45,6 @@ The design uses **references** instead of embedding to ensure flexibility and sc
 
 ---
 
-### 2. Roles Collection
-
-**Purpose:** Defines different user roles and their associated permissions.
-
-**Schema Structure:**
-```json
-{
-  "_id": String,           // Unique role identifier (e.g., "R1")
-  "roleName": String,      // Role name (e.g., "Librarian", "Admin")
-  "description": String,   // Description of responsibilities
-  "permissionIds": [String], // References permissions._id
-  "createdAt": Date,
-  "updatedAt": Date
-}
-```
-
-**Business Rules:**
-- `roleName` must be unique.  
-- Each role can have one or more permissions.  
-
----
-
-### 3. Permissions Collection
-
-**Purpose:** Defines specific actions allowed in the system.
-
-**Schema Structure:**
-```json
-{
-  "_id": String,             // Unique permission identifier (e.g., "P1")
-  "permissionName": String,  // Action (e.g., "CREATE_BOOK")
-  "description": String,     // Explanation of permission
-  "createdAt": Date,
-  "updatedAt": Date
-}
-```
-
-**Example Permissions:**
-- **P1** → CREATE_BOOK  
-- **P2** → UPDATE_BOOK  
-- **P3** → DELETE_BOOK  
-- **P4** → ISSUE_BOOK  
-- **P5** → RETURN_BOOK  
-- **P6** → MANAGE_USERS  
-
----
 
 ## Relationships
 
@@ -144,7 +103,7 @@ db.users.aggregate([
 **User Sample:**
 ```json
 {
-  "userId": "U12345",
+  "_id": "U12345",
   "firstName": "Nimal",
   "lastName": "Perera",
   "username": "nimal",
@@ -152,53 +111,31 @@ db.users.aggregate([
   "email": "nimal@example.com",
   "password": "<hashed_password>",
   "address": "123 Library Street, Colombo",
-  "status": "ACTIVE",
-  "roleId": "R1",
+  "status": "ACTIVATED",
+  "role": "LIBRARIAN",
   "createdAt": "2025-09-15T00:00:00Z",
   "updatedAt": "2025-09-15T00:00:00Z"
 }
 ```
-
-**Role Sample:**
-```json
-{
-  "_id": "R1",
-  "roleName": "Librarian",
-  "description": "Manages library books and user accounts",
-  "permissionIds": ["P1", "P2", "P3"],
-  "createdAt": "2025-09-15T00:00:00Z",
-  "updatedAt": "2025-09-15T00:00:00Z"
-}
-```
-
-**Permission Sample:**
-```json
-{
-  "_id": "P1",
-  "permissionName": "CREATE_BOOK",
-  "description": "Ability to add new books to the library",
-  "createdAt": "2025-09-15T00:00:00Z",
-  "updatedAt": "2025-09-15T00:00:00Z"
-}
-```
-
 ---
 
 ## Common Queries
 
 **Find active users**
 ```js
-db.users.find({ "status": "ACTIVE" })
+db.users.find({ "status": "ACTIVATED" })
+
 ```
 
 **Get roles assigned to a user**
 ```js
-db.users.findOne({ "username": "admin_user" })
+db.users.find({ "role": "LIBRARIAN" })
 ```
 
 **Check if user has a specific role**
 ```js
-db.users.findOne({ "username": "admin_user", "roleId": "R1" })
+db.users.findOne({ "username": "nimal", "role": "MEMBER" })
+
 ```
 
 ---
@@ -208,13 +145,8 @@ db.users.findOne({ "username": "admin_user", "roleId": "R1" })
 **Users Collection:**
 - `{ "username": 1 }` (Unique)  
 - `{ "email": 1 }` (Unique)  
-- `{ "roleId": 1 }`  
+- `{ "role": 1 }`  
 
-**Roles Collection:**
-- `{ "roleName": 1 }` (Unique)  
-
-**Permissions Collection:**
-- `{ "permissionName": 1 }` (Unique)  
 
 ---
 
@@ -227,18 +159,9 @@ db.users.findOne({ "username": "admin_user", "roleId": "R1" })
 - Passwords must always be stored in a **hashed** format.  
 - Users must have valid role assignments before access is granted.  
 
----
+--- 
 
-## 2. Role & Permission Rules
-- Role names must be unique.  
-- A role must exist before assigning it to any user.  
-- A role can have one or more permissions.  
-- A permission must exist before linking it to a role.  
-- Invalid role or permission references must be prevented.  
-
----
-
-## 3. Data Integrity Rules
+## 2. Data Integrity Rules
 - User IDs follow the format: **USR + YEAR + sequential number**.  
 - Role IDs follow the format: **R + sequential number** (e.g., R1, R2).  
 - Permission IDs follow the format: **P + sequential number** (e.g., P1, P2).  
