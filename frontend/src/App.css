@@ -1,42 +1,56 @@
 #root {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: saturate(140%) blur(8px);
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.topbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.topbar h1 { margin: 0 0 8px 0; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  overflow: auto;
+}
+.tabs button {
+  padding: 10px 14px;
+  border-radius: 999px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
 
 .card {
-  padding: 2em;
+  background: linear-gradient(180deg, var(--surface), var(--muted-surface));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 18px;
+  text-align: left;
+  box-shadow: 0 10px 30px -20px rgba(0,0,0,0.5);
 }
 
-.read-the-docs {
-  color: #888;
+.row-actions { display: flex; gap: 6px; }
+.small { padding: 4px 8px; font-size: 12px; }
+.secondary { background: linear-gradient(180deg, rgba(31,41,55,0.5), rgba(31,41,55,0.6)); }
+.success { background: linear-gradient(180deg, rgba(16,185,129,0.12), rgba(16,185,129,0.18)); }
+.empty { text-align: center; opacity: 0.7; }
+
+@media (max-width: 640px) {
+  .tabs { gap: 6px; }
 }
+
+/* Compact mode: scoped adjustments are in per-section CSS */
+.compact .tabs button { padding: 8px 10px; }
