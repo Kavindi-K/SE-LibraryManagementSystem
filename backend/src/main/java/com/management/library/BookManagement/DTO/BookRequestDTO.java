@@ -1,69 +1,44 @@
 package com.management.library.BookManagement.DTO;
 
-import com.management.library.BookManagement.model.Book;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Min;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@NoArgsConstructor   // Required for Jackson/Spring deserialization
-@AllArgsConstructor  // Constructor with all fields
-public class BookRequestDTO {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class BookRequestDto {
 
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotEmpty(message = "At least one author is required")
-    private List<String> authors;
+    @NotBlank(message = "Author is required")
+    private String author;
 
-    private List<String> genres;
+    @NotBlank(message = "Genre is required")
+    private String genre;
 
-    @NotNull(message = "Publication year is required")
+    @NotNull(message = "Year is required")
     @Min(value = 1000, message = "Year must be a valid year")
     private Integer year;
 
     private String edition;
     private String description;
+
+    @NotBlank(message = "Language is required")
     private String language;
-    private Boolean availability = true;
-    private String borrower;
 
+    @NotNull(message = "Availability status is required")
+    private Boolean availability;
+
+    @NotNull(message = "Available copies count is required")
     @Min(value = 0, message = "Available copies cannot be negative")
-    private Integer availableCopies = 1;
+    private Integer availableCopies;
 
+    @NotBlank(message = "Location is required")
     private String location;
-
-    // Constructor with required fields
-    public BookRequestDTO(String title, List<String> authors, Integer year) {
-        this.title = title;
-        this.authors = authors;
-        this.year = year;
-        this.availability = true;
-        this.availableCopies = 1;
-    }
-
-    // Mapping method to convert DTO to Book entity
-    public Book toEntity() {
-        Book book = new Book();
-        book.setTitle(this.title);
-        book.setAuthors(this.authors);
-        book.setGenres(this.genres);
-        book.setYear(this.year);
-        book.setEdition(this.edition);
-        book.setDescription(this.description);
-        book.setLanguage(this.language);
-        book.setAvailability(this.availability);
-        book.setBorrower(this.borrower);
-        book.setAvailableCopies(this.availableCopies);
-        book.setLocation(this.location);
-        return book;
-    }
 }
