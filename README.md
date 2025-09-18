@@ -271,7 +271,7 @@ curl http://localhost:8080/api/members/membership-types
 - 📋 SCRUM-27D: Member validation + notifications ✅
 
 ## Contributors
-- [Your Name] - Member Management Module Developer
+- Ravidu Ravisara - Member Management Module Developer
 
 ## License
 This project is part of an academic assignment for SE course.
