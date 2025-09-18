@@ -30,7 +30,7 @@ public class ReservationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reservation> update(@PathVariable String id, @Valid @RequestBody Reservation body) {
+    public ResponseEntity<Reservation> update(@PathVariable("id") String id, @Valid @RequestBody Reservation body) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setMemberId(body.getMemberId());
@@ -43,7 +43,7 @@ public class ReservationController {
     }
 
     @PostMapping("/{id}/receive")
-    public ResponseEntity<Reservation> markReceived(@PathVariable String id) {
+    public ResponseEntity<Reservation> markReceived(@PathVariable("id") String id) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setStatus("RECEIVED");
@@ -53,7 +53,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         if (!repository.existsById(id)) return ResponseEntity.notFound().build();
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
