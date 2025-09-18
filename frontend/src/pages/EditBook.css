@@ -1,0 +1,95 @@
+.edit-book-container { 
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+}
+
+.title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.book-form .form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.form-input {
+  border-radius: 10px;
+  border: 1px solid #ced4da;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+/* Checkbox styling */
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-left: 10px;
+  width: auto;
+  transform: scale(1.1);
+}
+
+/* Buttons */
+.form-buttons {
+  display: flex;
+  justify-content: center; /* center buttons */
+  gap: 15px; /* spacing between buttons */
+  margin-top: 2rem;
+}
+
+.btn-submit,
+.btn-cancel {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+}
+
+.btn-submit:hover {
+  background-color: #0056b3;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+}
+
+.btn-cancel:hover {
+  background-color: #007bff;
+  color: #fff;
+}
