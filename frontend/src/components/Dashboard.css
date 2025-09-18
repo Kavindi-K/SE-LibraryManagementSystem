@@ -1,14 +1,14 @@
 /* Dashboard.css */
 .dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4682B4 0%, #5F9EA0 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .dashboard-header {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(70, 130, 180, 0.3);
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
@@ -24,15 +24,15 @@
 }
 
 .dashboard-header h1 {
-  color: white;
+  color: #ffffff;
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 2.8rem;
   font-weight: 600;
 }
 
 .logout-button {
   background: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 0.5rem 1.5rem;
   border-radius: 25px;
@@ -55,7 +55,7 @@
 .welcome-section {
   text-align: center;
   margin-bottom: 2rem;
-  color: white;
+  color: #ffffff;
 }
 
 .welcome-section h2 {
@@ -78,18 +78,18 @@
 }
 
 .dashboard-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(70, 130, 180, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 .card-header {
@@ -98,18 +98,18 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid #B0C4DE;
 }
 
 .card-header h3 {
   margin: 0;
   font-size: 1.3rem;
-  color: #333;
+  color: #2F4F4F;
   font-weight: 600;
 }
 
 .role-badge {
-  background: #3498db;
+  background: #4682B4;
   color: white;
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
@@ -130,7 +130,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #B0C4DE;
 }
 
 .info-item:last-child {
@@ -139,12 +139,12 @@
 
 .label {
   font-weight: 600;
-  color: #555;
+  color: #2F4F4F;
   font-size: 0.9rem;
 }
 
 .value {
-  color: #333;
+  color: #2F4F4F;
   font-weight: 500;
 }
 
@@ -157,13 +157,13 @@
 }
 
 .status.activated {
-  background: #d4edda;
-  color: #155724;
+  background: #5F9EA0;
+  color: #ffffff;
 }
 
 .status.deactivated {
-  background: #f8d7da;
-  color: #721c24;
+  background: #B0C4DE;
+  color: #2F4F4F;
 }
 
 .stats-grid {
@@ -175,7 +175,7 @@
 .stat-item {
   text-align: center;
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #4682B4, #5F9EA0);
   border-radius: 10px;
   color: white;
 }
@@ -202,7 +202,7 @@
   flex-direction: column;
   align-items: center;
   padding: 1.5rem 1rem;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #4682B4 0%, #5F9EA0 100%);
   border: none;
   border-radius: 10px;
   color: white;
@@ -213,15 +213,15 @@
 
 .action-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(70, 130, 180, 0.4);
 }
 
 .action-button:nth-child(even) {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #5F9EA0 0%, #708090 100%);
 }
 
 .action-button:nth-child(3n) {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #708090 0%, #4682B4 100%);
 }
 
 .action-icon {
@@ -240,14 +240,15 @@
   align-items: flex-start;
   gap: 1rem;
   padding: 1rem;
-  background: #f8f9fa;
+  background: #E6F3FF;
   border-radius: 10px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #4682B4;
 }
 
 .activity-icon {
   font-size: 1.2rem;
   margin-top: 0.2rem;
+  color: #2F4F4F;
 }
 
 .activity-content {
@@ -256,13 +257,13 @@
 
 .activity-text {
   font-weight: 500;
-  color: #333;
+  color: #2F4F4F;
   margin-bottom: 0.3rem;
 }
 
 .activity-time {
   font-size: 0.8rem;
-  color: #666;
+  color: #4682B4;
 }
 
 .loading {
@@ -271,7 +272,7 @@
   align-items: center;
   height: 100vh;
   font-size: 1.5rem;
-  color: white;
+  color: #ffffff;
 }
 
 /* Responsive Design */
