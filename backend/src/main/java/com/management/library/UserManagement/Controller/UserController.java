@@ -41,6 +41,21 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<UserResponse>> loginUser(@Valid @RequestBody LoginRequest request) {
+        log.info("POST /api/users/login - Login attempt for username: {}", request.getUsername());
+
+        UserResponse userResponse = userService.loginUser(request);
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+                true,
+                "Login successful",
+                userResponse
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable String id) {
         log.info("GET /api/users/{} - Fetching user by ID", id);
