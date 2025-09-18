@@ -41,5 +41,4 @@ public class UpdateUserRequest {
         this.status = status;
         this.role = role;
     }
-
 }

@@ -1,35 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import Login from './components/Login'
-import Genres from './components/Genres'
-import { clearAuth, loadAuthFromStorage } from './api'
+import React, { useState } from 'react';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import './App.css';
 
 const App = () => {
-  const [isAuthed, setIsAuthed] = useState(false)
+  const [currentView, setCurrentView] = useState('login'); // 'login' or 'signup'
 
-  useEffect(() => {
-    loadAuthFromStorage()
-    const hasAuth = !!localStorage.getItem('auth.basic')
-    setIsAuthed(hasAuth)
-  }, [])
+  const switchToSignup = () => {
+    setCurrentView('signup');
+  };
 
-  const logout = () => {
-    clearAuth()
-    setIsAuthed(false)
-  }
-
-  if (!isAuthed) {
-    return <Login onAuthenticated={() => setIsAuthed(true)} />
-  }
+  const switchToLogin = () => {
+    setCurrentView('login');
+  };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h1>Library Admin</h1>
-        <button onClick={logout}>Logout</button>
-      </div>
-      <Genres />
+    <div className="app">
+      {currentView === 'login' ? (
+        <Login onSwitchToSignup={switchToSignup} />
+      ) : (
+        <Signup onSwitchToLogin={switchToLogin} />
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
