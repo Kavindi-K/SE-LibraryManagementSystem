@@ -36,7 +36,7 @@ public class BorrowingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Borrowing> update(@PathVariable String id, @Valid @RequestBody Borrowing body) {
+    public ResponseEntity<Borrowing> update(@PathVariable("id") String id, @Valid @RequestBody Borrowing body) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setMemberId(body.getMemberId());
@@ -52,7 +52,7 @@ public class BorrowingController {
     }
 
     @PostMapping("/{id}/return")
-    public ResponseEntity<Borrowing> markReturned(@PathVariable String id) {
+    public ResponseEntity<Borrowing> markReturned(@PathVariable("id") String id) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setStatus("RETURNED");
@@ -64,7 +64,7 @@ public class BorrowingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         if (!repository.existsById(id)) return ResponseEntity.notFound().build();
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
