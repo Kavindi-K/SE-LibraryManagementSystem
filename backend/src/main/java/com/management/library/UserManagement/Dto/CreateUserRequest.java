@@ -1,6 +1,5 @@
 package com.management.library.UserManagement.Dto;
 
-import com.management.library.UserManagement.Entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,16 +31,13 @@ public class CreateUserRequest {
 
     private String address;
 
-    @NotNull(message = "Role is required")
-    private User.UserRole role;
-
     // Default constructor
     public CreateUserRequest() {
     }
 
     // All args constructor
     public CreateUserRequest(String firstName, String lastName, String username, LocalDate dateOfBirth,
-                             String email, String password, String address, User.UserRole role) {
+                             String email, String password, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -49,7 +45,6 @@ public class CreateUserRequest {
         this.email = email;
         this.password = password;
         this.address = address;
-        this.role = role;
     }
 
     // Getters
@@ -81,10 +76,6 @@ public class CreateUserRequest {
         return address;
     }
 
-    public User.UserRole getRole() {
-        return role;
-    }
-
     // Setters
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -112,9 +103,5 @@ public class CreateUserRequest {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public void setRole(User.UserRole role) {
-        this.role = role;
     }
 }

@@ -13,8 +13,7 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    address: '',
-    role: 'MEMBER'
+    address: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -175,19 +174,6 @@ const Signup = () => {
               onChange={handleChange}
               className="signup-input"
             />
-          </div>
-          
-          <div className="input-group">
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="signup-select"
-            >
-              <option value="MEMBER">Member</option>
-              <option value="LIBRARIAN">Librarian</option>
-              <option value="STAFF">Staff</option>
-            </select>
           </div>
           
           <div className="input-row">
