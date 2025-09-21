@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';  
 import AdminHome from './components/AdminHome';   // ✅ Import AdminHome
 import './App.css';
+//this is a comment
 
 const App = () => {
   return (
