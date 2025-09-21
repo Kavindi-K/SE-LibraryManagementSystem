@@ -16,7 +16,6 @@ public class UpdateUserRequest {
 
     private String address;
     private User.UserStatus status;
-    private User.UserRole role;
 
     // Default constructor
     public UpdateUserRequest() {
@@ -24,7 +23,7 @@ public class UpdateUserRequest {
 
     // All args constructor
     public UpdateUserRequest(String firstName, String lastName, String username, LocalDate dateOfBirth,
-                             String email, String address, User.UserStatus status, User.UserRole role) {
+                             String email, String address, User.UserStatus status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -32,7 +31,6 @@ public class UpdateUserRequest {
         this.email = email;
         this.address = address;
         this.status = status;
-        this.role = role;
     }
 
     // Getters
@@ -64,10 +62,6 @@ public class UpdateUserRequest {
         return status;
     }
 
-    public User.UserRole getRole() {
-        return role;
-    }
-
     // Setters
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -95,9 +89,5 @@ public class UpdateUserRequest {
 
     public void setStatus(User.UserStatus status) {
         this.status = status;
-    }
-
-    public void setRole(User.UserRole role) {
-        this.role = role;
     }
 }
