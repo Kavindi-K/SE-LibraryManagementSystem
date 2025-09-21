@@ -112,20 +112,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/role/{role}")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getUsersByRole(@PathVariable User.UserRole role) {
-        log.info("GET /api/users/role/{} - Fetching users by role", role);
-
-        List<UserResponse> users = userService.getUsersByRole(role);
-        ApiResponse<List<UserResponse>> response = new ApiResponse<>(
-                true,
-                "Users retrieved successfully",
-                users
-        );
-
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/status/{status}")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getUsersByStatus(@PathVariable User.UserStatus status) {
         log.info("GET /api/users/status/{} - Fetching users by status", status);
@@ -234,9 +220,6 @@ public class UserController {
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsers", userService.getAllUsers().size());
-        stats.put("librarians", userService.getUserCountByRole(User.UserRole.LIBRARIAN));
-        stats.put("staff", userService.getUserCountByRole(User.UserRole.STAFF));
-        stats.put("members", userService.getUserCountByRole(User.UserRole.MEMBER));
         stats.put("activeUsers", userService.getUserCountByStatus(User.UserStatus.ACTIVATED));
         stats.put("deactivatedUsers", userService.getUserCountByStatus(User.UserStatus.DEACTIVATED));
 

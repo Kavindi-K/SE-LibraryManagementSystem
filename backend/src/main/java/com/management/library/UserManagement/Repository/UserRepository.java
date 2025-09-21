@@ -19,17 +19,10 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     boolean existsByEmail(String email);
 
-    List<User> findByRole(User.UserRole role);
-
     List<User> findByStatus(User.UserStatus status);
-
-    @Query("{ 'role': ?0, 'status': ?1 }")
-    List<User> findByRoleAndStatus(User.UserRole role, User.UserStatus status);
 
     @Query("{ $or: [ { 'firstName': { $regex: ?0, $options: 'i' } }, { 'lastName': { $regex: ?0, $options: 'i' } }, { 'username': { $regex: ?0, $options: 'i' } }, { 'email': { $regex: ?0, $options: 'i' } } ] }")
     List<User> findBySearchQuery(String searchQuery);
-
-    long countByRole(User.UserRole role);
 
     long countByStatus(User.UserStatus status);
 }

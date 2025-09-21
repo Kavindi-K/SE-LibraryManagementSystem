@@ -48,7 +48,6 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setAddress(request.getAddress());
-        user.setRole(request.getRole());
         user.setStatus(User.UserStatus.ACTIVATED);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -124,15 +123,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<UserResponse> getUsersByRole(User.UserRole role) {
-        log.info("Fetching users with role: {}", role);
-
-        List<User> users = userRepository.findByRole(role);
-        return users.stream()
-                .map(UserResponse::fromEntity)
-                .collect(Collectors.toList());
-    }
-
     public List<UserResponse> getUsersByStatus(User.UserStatus status) {
         log.info("Fetching users with status: {}", status);
 
@@ -188,9 +178,6 @@ public class UserService {
         }
         if (request.getStatus() != null) {
             user.setStatus(request.getStatus());
-        }
-        if (request.getRole() != null) {
-            user.setRole(request.getRole());
         }
 
         user.setUpdatedAt(LocalDateTime.now());
@@ -254,10 +241,6 @@ public class UserService {
 
         userRepository.delete(user);
         log.info("User deleted successfully with ID: {}", id);
-    }
-
-    public long getUserCountByRole(User.UserRole role) {
-        return userRepository.countByRole(role);
     }
 
     public long getUserCountByStatus(User.UserStatus status) {
