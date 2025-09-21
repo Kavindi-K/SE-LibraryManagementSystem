@@ -33,8 +33,6 @@ public class User {
 
     private UserStatus status = UserStatus.ACTIVATED;
 
-    private UserRole role = UserRole.MEMBER;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -46,7 +44,7 @@ public class User {
     }
 
     public User(String firstName, String lastName, String username, LocalDate dateOfBirth,
-                String email, String password, String address, UserStatus status, UserRole role) {
+                String email, String password, String address, UserStatus status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -55,7 +53,6 @@ public class User {
         this.password = password;
         this.address = address;
         this.status = status;
-        this.role = role;
     }
 
     // Getters
@@ -93,10 +90,6 @@ public class User {
 
     public UserStatus getStatus() {
         return status;
-    }
-
-    public UserRole getRole() {
-        return role;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -144,10 +137,6 @@ public class User {
         this.status = status;
     }
 
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -159,9 +148,5 @@ public class User {
     // Enums
     public enum UserStatus {
         ACTIVATED, DEACTIVATED
-    }
-
-    public enum UserRole {
-        LIBRARIAN, STAFF, MEMBER
     }
 }

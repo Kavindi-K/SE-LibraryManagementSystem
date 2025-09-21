@@ -14,7 +14,6 @@ public class UserResponse {
     private String email;
     private String address;
     private User.UserStatus status;
-    private User.UserRole role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -24,7 +23,7 @@ public class UserResponse {
 
     // All args constructor
     public UserResponse(String id, String firstName, String lastName, String username, LocalDate dateOfBirth,
-                        String email, String address, User.UserStatus status, User.UserRole role,
+                        String email, String address, User.UserStatus status,
                         LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.firstName = firstName;
@@ -34,7 +33,6 @@ public class UserResponse {
         this.email = email;
         this.address = address;
         this.status = status;
-        this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -50,7 +48,6 @@ public class UserResponse {
                 user.getEmail(),
                 user.getAddress(),
                 user.getStatus(),
-                user.getRole(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
@@ -87,10 +84,6 @@ public class UserResponse {
 
     public User.UserStatus getStatus() {
         return status;
-    }
-
-    public User.UserRole getRole() {
-        return role;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -132,10 +125,6 @@ public class UserResponse {
 
     public void setStatus(User.UserStatus status) {
         this.status = status;
-    }
-
-    public void setRole(User.UserRole role) {
-        this.role = role;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
