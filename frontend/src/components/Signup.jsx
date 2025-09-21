@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Signup.css';
 
-const Signup = ({ onSwitchToLogin }) => {
+const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -23,7 +26,6 @@ const Signup = ({ onSwitchToLogin }) => {
       ...prev,
       [name]: value
     }));
-    // Clear messages when user starts typing
     if (error) setError('');
     if (success) setSuccess('');
   };
@@ -41,6 +43,10 @@ const Signup = ({ onSwitchToLogin }) => {
       setError('Please enter a valid email address');
       return false;
     }
+    if (formData.username.length < 3) {
+      setError('Username must be at least 3 characters long');
+      return false;
+    }
     return true;
   };
 
@@ -53,48 +59,39 @@ const Signup = ({ onSwitchToLogin }) => {
     setError('');
 
     try {
-      // Prepare data for API (exclude confirmPassword)
       const { confirmPassword, ...userData } = formData;
       
-      const response = await fetch('http://localhost:8080/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData)
-      });
+      const response = await axios.post('http://localhost:8080/api/users', userData);
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        setSuccess('Account created successfully! You can now login.');
-        console.log('User created:', result.data);
+      if (response.data.success) {
+        setSuccess('Account created successfully! Redirecting to login...');
+        console.log('User created:', response.data.data);
         
-        // Clear form
-        setFormData({
-          firstName: '',
-          lastName: '',
-          username: '',
-          dateOfBirth: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          address: '',
-          role: 'MEMBER'
-        });
-        
-        // Switch to login after 2 seconds
+        // Navigate to login after 2 seconds
         setTimeout(() => {
-          onSwitchToLogin();
+          navigate('/login');
         }, 2000);
         
       } else {
-        // Handle API error response
-        setError(result.message || 'Failed to create account');
+        setError(response.data.message || 'Failed to create account');
       }
     } catch (error) {
       console.error('Signup error:', error);
-      setError('Network error. Please check your connection.');
+      
+      if (error.response) {
+        const errorMessage = error.response.data?.message || 'Failed to create account';
+        setError(errorMessage);
+        
+        if (error.response.status === 400 && error.response.data?.data) {
+          const fieldErrors = error.response.data.data;
+          const errorMessages = Object.values(fieldErrors).join(', ');
+          setError(errorMessages);
+        }
+      } else if (error.request) {
+        setError('Network error. Please check your connection.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -140,6 +137,7 @@ const Signup = ({ onSwitchToLogin }) => {
               value={formData.username}
               onChange={handleChange}
               required
+              minLength={3}
               className="signup-input"
             />
           </div>
@@ -201,6 +199,7 @@ const Signup = ({ onSwitchToLogin }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                minLength={6}
                 className="signup-input"
               />
             </div>
@@ -231,12 +230,9 @@ const Signup = ({ onSwitchToLogin }) => {
         
         <div className="login-link">
           <p>Already have an account? 
-            <button 
-              onClick={onSwitchToLogin}
-              className="switch-button"
-            >
+            <Link to="/login" className="switch-button">
               Login
-            </button>
+            </Link>
           </p>
         </div>
       </div>

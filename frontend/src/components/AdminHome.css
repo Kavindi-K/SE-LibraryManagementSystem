@@ -1,0 +1,69 @@
+.admin-home {
+  display: flex;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.logout-btn {
+  position: fixed;
+  bottom: 20px;  /* distance from bottom of the page */
+  left: 20px;    /* distance from left edge */
+  padding: 10px 20px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 1000; /* ensures it's above other elements */
+}
+
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+
+/* Sidebar */
+.admin-sidebar {
+  width: 220px;
+  background: #000;
+  color: #fff;
+  padding: 20px;
+}
+
+.admin-sidebar .logo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar ul li {
+  margin-bottom: 15px;
+}
+
+.admin-sidebar ul li button {
+  width: 100%;
+  padding: 10px;
+  background: #111;
+  color: #fff;
+  border: none;
+  text-align: left;
+  cursor: not-allowed; /* shows they’re inactive */
+}
+
+.admin-sidebar ul li button:hover {
+  background: #333;
+}
+
+/* Main Content */
+.admin-content {
+  flex: 1;
+  padding: 50px;
+  background: #f9f9f9;
+  text-align: center;
+}

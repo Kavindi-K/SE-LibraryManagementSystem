@@ -1,0 +1,35 @@
+.featured-books {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.featured-books h2 {
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.book-list {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.book-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 180px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.book-card img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}

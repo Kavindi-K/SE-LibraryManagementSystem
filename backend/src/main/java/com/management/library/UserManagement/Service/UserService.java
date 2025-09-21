@@ -2,9 +2,7 @@ package com.management.library.UserManagement.Service;
 
 import com.management.library.UserManagement.Dto.*;
 import com.management.library.UserManagement.Entity.User;
-import com.management.library.UserManagement.Exception.DuplicateResourceException;
-import com.management.library.UserManagement.Exception.ResourceNotFoundException;
-import com.management.library.UserManagement.Exception.InvalidPasswordException;
+import com.management.library.UserManagement.Exception.*;
 import com.management.library.UserManagement.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +57,35 @@ public class UserService {
         log.info("User created successfully with ID: {}", savedUser.getId());
 
         return UserResponse.fromEntity(savedUser);
+    }
+
+    public UserResponse loginUser(LoginRequest request) {
+        log.info("Login attempt for username: {}", request.getUsername());
+
+        // Find user by username
+        Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
+
+        if (optionalUser.isEmpty()) {
+            log.warn("Login failed - Username not found: {}", request.getUsername());
+            throw new InvalidCredentialsException("Invalid username or password");
+        }
+
+        User user = optionalUser.get();
+
+        // Check if user account is activated
+        if (user.getStatus() == User.UserStatus.DEACTIVATED) {
+            log.warn("Login failed - Account deactivated for username: {}", request.getUsername());
+            throw new AccountDeactivatedException("Account is deactivated");
+        }
+
+        // Verify password
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.warn("Login failed - Invalid password for username: {}", request.getUsername());
+            throw new InvalidCredentialsException("Invalid username or password");
+        }
+
+        log.info("User logged in successfully with username: {}", request.getUsername());
+        return UserResponse.fromEntity(user);
     }
 
     public UserResponse getUserById(String id) {

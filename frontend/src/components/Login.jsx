@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Login.css';
 
-const Login = ({ onSwitchToSignup }) => {
+const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -15,7 +18,6 @@ const Login = ({ onSwitchToSignup }) => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (error) setError('');
   };
 
@@ -25,30 +27,38 @@ const Login = ({ onSwitchToSignup }) => {
     setError('');
 
     try {
-      // First, get user by username to verify credentials
-      const response = await fetch(`http://localhost:8080/api/users/username/${formData.username}`);
-      
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          // In a real app, you'd verify password with backend
-          // For now, we'll just simulate successful login
-          console.log('Login successful:', result.data);
-          alert(`Welcome back, ${result.data.firstName}!`);
-          
-          // Store user data in localStorage or context
-          localStorage.setItem('user', JSON.stringify(result.data));
+      const response = await axios.post('http://localhost:8080/api/users/login', {
+        username: formData.username,
+        password: formData.password
+      });
+
+      if (response.data.success) {
+        console.log('Login successful:', response.data.data);
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.data));
+        localStorage.setItem('isAuthenticated', 'true');
+
+        // ✅ Admin login check
+        if (formData.username === 'Admin' && formData.password === 'admin123') {
+          navigate('/admin');
         } else {
-          setError('Invalid username or password');
+          navigate('/dashboard');
         }
-      } else if (response.status === 404) {
-        setError('User not found. Please check your username.');
       } else {
-        setError('Login failed. Please try again.');
+        setError(response.data.message || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Network error. Please check your connection.');
+
+      if (error.response) {
+        const errorMessage = error.response.data?.message || 'Login failed';
+        setError(errorMessage);
+      } else if (error.request) {
+        setError('Network error. Please check your connection.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,7 +69,7 @@ const Login = ({ onSwitchToSignup }) => {
       <div className="login-card">
         <h2 className="login-title">LOGIN</h2>
         <p className="login-subtitle">Please enter your login and password!</p>
-        
+
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
             <input
@@ -72,7 +82,7 @@ const Login = ({ onSwitchToSignup }) => {
               className="login-input"
             />
           </div>
-          
+
           <div className="input-group">
             <input
               type="password"
@@ -84,13 +94,13 @@ const Login = ({ onSwitchToSignup }) => {
               className="login-input"
             />
           </div>
-          
+
           {error && <div className="error-message">{error}</div>}
-          
+
           <div className="forgot-password">
             <a href="#" className="forgot-link">Forgot password?</a>
           </div>
-          
+
           <button 
             type="submit" 
             className="login-button"
@@ -99,15 +109,12 @@ const Login = ({ onSwitchToSignup }) => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        
+
         <div className="signup-link">
           <p>Don't have an account? 
-            <button 
-              onClick={onSwitchToSignup}
-              className="switch-button"
-            >
+            <Link to="/signup" className="switch-button">
               Sign up
-            </button>
+            </Link>
           </p>
         </div>
       </div>
