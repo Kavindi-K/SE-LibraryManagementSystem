@@ -6,7 +6,10 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @Configuration
 @EnableMongoAuditing
-@EnableMongoRepositories(basePackages = "com.management.library.UserManagement.Repository")
+@EnableMongoRepositories(basePackages = {
+    "com.management.library.UserManagement.Repository",
+    "com.management.library.MemberManagement.Repository"
+})
 public class MongoConfig {
     // MongoDB's configuration is handled by application.properties
     // This class enables auditing for @CreatedDate and @LastModifiedDate

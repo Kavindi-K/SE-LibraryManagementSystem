@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Dashboard from './components/Dashboard';
+import Homepage from './components/Homepage';  // ✅ Changed from Dashboard to Homepage
+import MemberProfile from './components/MemberProfile';  // ✅ Import MemberProfile
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';  
 import AdminHome from './components/AdminHome';   // ✅ Import AdminHome
@@ -21,12 +22,22 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected Dashboard */}
+          {/* Protected Homepage (formerly Dashboard) */}
           <Route 
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Homepage />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* ✅ Member Profile Page */}
+          <Route 
+            path="/member-profile" 
+            element={
+              <ProtectedRoute>
+                <MemberProfile />
               </ProtectedRoute>
             } 
           />
