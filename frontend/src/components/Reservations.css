@@ -1,0 +1,97 @@
+.reservations h2 { margin: 0; font-size: 22px; letter-spacing: 0.2px; }
+
+.reservations .form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reservations .card {
+  background: linear-gradient(180deg, var(--surface), var(--muted-surface));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 18px;
+  text-align: left;
+  box-shadow: 0 10px 30px -20px rgba(0,0,0,0.5);
+}
+
+.reservations .form .grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.reservations .form .grid > * { min-width: 0; }
+.reservations .form label {
+  display: block;
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+.reservations .form input, .reservations .form select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--muted-surface), var(--surface));
+  color: inherit;
+  min-width: 0;
+}
+.reservations .actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.reservations .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.reservations .table { overflow: auto; }
+.reservations .table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+.reservations .table th, .reservations .table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.reservations .table th { font-weight: 700; font-size: 13px; opacity: 0.8; }
+.reservations .table td { font-size: 14px; }
+
+.reservations .badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.reservations .badge.success { background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.5); color: #b7f9db; }
+.reservations .badge.warning { background: rgba(245,158,11,0.18); border: 1px solid rgba(245,158,11,0.5); color: #fde6bd; }
+.reservations .badge.secondary { background: rgba(55,65,81,0.35); border: 1px solid rgba(75,85,99,0.6); color: #d1d5db; }
+
+/* Light theme overrides for clearer contrast */
+.theme-light .reservations .badge.success { color: #065f46; }
+.theme-light .reservations .badge.warning { color: #78350f; }
+.theme-light .reservations .badge.secondary { color: #1f2937; }
+
+.reservations .row-actions { display: flex; gap: 6px; }
+.reservations .small { padding: 4px 8px; font-size: 12px; }
+.reservations .empty { text-align: center; opacity: 0.7; }
+
+@media (max-width: 1100px) {
+  .reservations .form .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .reservations .form .grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .reservations .row-actions { flex-wrap: wrap; }
+}
+
+.compact .reservations #root { padding: 1rem; }
+.compact .reservations .card { padding: 12px; margin-bottom: 12px; }
+.compact .reservations .form .grid { gap: 8px; }
+.compact .reservations .form input, .compact .reservations .form select { padding: 8px 10px; }
+.compact .reservations .table th, .compact .reservations .table td { padding: 6px 8px; }
