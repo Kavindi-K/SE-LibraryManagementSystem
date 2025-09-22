@@ -20,7 +20,8 @@ const AdminHome = () => {
       <ul>
         <li><Link to="#">Member Management</Link></li>
         <li><Link to="#">Books Management</Link></li>
-        <li><Link to="#">Reservation & Fine Management</Link></li>
+        <li><Link to="/admin/borrowings">Borrowing & Fine Management</Link></li>
+        <li><Link to="/admin/reservations">Books Reservations</Link></li>
     </ul>
 
         {/* 🔹 Logout Button */}
