@@ -1,69 +1,284 @@
 .admin-home {
   display: flex;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 .logout-btn {
-  position: fixed;
-  bottom: 20px;  /* distance from bottom of the page */
-  left: 20px;    /* distance from left edge */
-  padding: 10px 20px;
+  margin: 20px;
+  padding: 12px 20px;
   background: #e74c3c;
   color: white;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
-  z-index: 1000; /* ensures it's above other elements */
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  width: calc(100% - 40px);
 }
-
 
 .logout-btn:hover {
   background: #c0392b;
 }
 
-
 /* Sidebar */
 .admin-sidebar {
-  width: 220px;
-  background: #000;
+  width: 280px;
+  background: #2c3e50;
   color: #fff;
-  padding: 20px;
+  padding: 0;
+  position: relative;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-sidebar .logo {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 30px;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 25px 20px;
+  text-align: center;
+  color: #ecf0f1;
+  border-bottom: 2px solid #34495e;
+  margin: 0;
+  background: #34495e;
 }
 
 .admin-sidebar ul {
   list-style: none;
-  padding: 0;
+  padding: 20px 0;
+  margin: 0;
+  flex: 1;
 }
 
 .admin-sidebar ul li {
-  margin-bottom: 15px;
+  margin: 0;
 }
 
 .admin-sidebar ul li button {
   width: 100%;
-  padding: 10px;
-  background: #111;
-  color: #fff;
+  padding: 16px 24px;
+  background: transparent;
+  color: #bdc3c7;
   border: none;
   text-align: left;
-  cursor: not-allowed; /* shows they’re inactive */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 3px solid transparent;
 }
 
 .admin-sidebar ul li button:hover {
-  background: #333;
+  background: #34495e;
+  color: #ecf0f1;
+  border-left-color: #3498db;
+}
+
+.admin-sidebar ul li button.active {
+  background: #34495e;
+  color: #3498db;
+  border-left-color: #3498db;
+  font-weight: 600;
+}
+
+.admin-sidebar ul li button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  color: #7f8c8d;
+}
+
+.admin-sidebar ul li button:disabled:hover {
+  background: transparent;
+  border-left-color: transparent;
 }
 
 /* Main Content */
 .admin-content {
   flex: 1;
-  padding: 50px;
-  background: #f9f9f9;
+  background: #f8f9fa;
+  overflow-y: auto;
+}
+
+/* Dashboard Overview */
+.dashboard-overview {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-overview h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.dashboard-overview p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+}
+
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
   text-align: center;
+}
+
+.stat-info h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.stat-info p {
+  color: #6c757d;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.stat-info .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.stat-info .btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.stat-info .btn-primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.stat-info .btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.stat-info .btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Coming Soon */
+.coming-soon {
+  padding: 80px 40px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.coming-soon h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.coming-soon p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-home {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    padding: 15px;
+    position: relative;
+  }
+
+  .logout-btn {
+    position: static;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .admin-content {
+    padding: 20px;
+  }
+
+  .dashboard-overview {
+    padding: 20px;
+  }
+
+  .dashboard-overview h1 {
+    font-size: 2rem;
+  }
+
+  .overview-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .coming-soon {
+    padding: 40px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-sidebar .logo {
+    font-size: 18px;
+  }
+
+  .admin-sidebar ul li button {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .dashboard-overview h1 {
+    font-size: 1.8rem;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
 }

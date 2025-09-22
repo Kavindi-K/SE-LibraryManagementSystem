@@ -21,7 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // Manual constructor (replaces @RequiredArgsConstructor)
+    // Manual constructor
     public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,6 +54,9 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         log.info("User created successfully with ID: {}", savedUser.getId());
+
+        // Note: Member profile will be created only when user explicitly becomes a member
+        // This keeps user signup separate from member registration
 
         return UserResponse.fromEntity(savedUser);
     }
