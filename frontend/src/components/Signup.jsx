@@ -60,7 +60,7 @@ const Signup = () => {
     try {
       const { confirmPassword, ...userData } = formData;
       
-      const response = await axios.post('http://localhost:8080/api/users', userData);
+      const response = await axios.post('http://localhost:8081/api/users', userData);
 
       if (response.data.success) {
         setSuccess('Account created successfully! Redirecting to login...');
