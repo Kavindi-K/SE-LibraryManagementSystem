@@ -1,0 +1,63 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/opt/homebrew/Cellar/maven/3.9.11/libexec/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.management:library >-----------------------
+[INFO] Building library 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.5:run (default-cli) > test-compile @ library >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ library ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ library ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ library ---
+[INFO] skip non existing resourceDirectory /Users/pavanwishvajayasekara/Desktop/SE-LibraryManagementSystem copy/backend/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ library ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.5:run (default-cli) < test-compile @ library <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.5:run (default-cli) @ library ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-09-21T14:47:30.095+05:30  INFO 20279 --- [library] [           main] c.management.library.LibraryApplication  : Starting LibraryApplication using Java 24.0.2 with PID 20279 (/Users/pavanwishvajayasekara/Desktop/SE-LibraryManagementSystem copy/backend/target/classes started by pavanwishvajayasekara in /Users/pavanwishvajayasekara/Desktop/SE-LibraryManagementSystem copy/backend)
+2025-09-21T14:47:30.096+05:30  INFO 20279 --- [library] [           main] c.management.library.LibraryApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-09-21T14:47:30.239+05:30  INFO 20279 --- [library] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2025-09-21T14:47:30.253+05:30  INFO 20279 --- [library] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 3 MongoDB repository interfaces.
+2025-09-21T14:47:30.447+05:30  INFO 20279 --- [library] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-09-21T14:47:30.452+05:30  INFO 20279 --- [library] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-21T14:47:30.452+05:30  INFO 20279 --- [library] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-09-21T14:47:30.466+05:30  INFO 20279 --- [library] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-21T14:47:30.466+05:30  INFO 20279 --- [library] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 356 ms
+2025-09-21T14:47:30.641+05:30  INFO 20279 --- [library] [           main] org.mongodb.driver.client                : MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "5.5.1"}, "os": {"type": "Darwin", "name": "Mac OS X", "architecture": "aarch64", "version": "15.6.1"}, "platform": "Java/Homebrew/24.0.2"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='malika', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@294aba23, com.mongodb.Jep395RecordCodecProvider@69909c14, com.mongodb.KotlinCodecProvider@5d3b58ca]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[127.0.0.1:27017], srvHost=cluster0.pu2hdjk.mongodb.net, srvServiceName=mongodb, mode=MULTIPLE, requiredClusterType=REPLICA_SET, requiredReplicaSetName='atlas-hoopbu-shard-0', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=true, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2025-09-21T14:47:30.702+05:30  INFO 20279 --- [library] [djk.mongodb.net] org.mongodb.driver.cluster               : Adding discovered server ac-4sqoh1e-shard-00-02.pu2hdjk.mongodb.net:27017 to client view of cluster
+2025-09-21T14:47:30.710+05:30  INFO 20279 --- [library] [djk.mongodb.net] org.mongodb.driver.cluster               : Adding discovered server ac-4sqoh1e-shard-00-00.pu2hdjk.mongodb.net:27017 to client view of cluster
+2025-09-21T14:47:30.711+05:30  INFO 20279 --- [library] [djk.mongodb.net] org.mongodb.driver.cluster               : Adding discovered server ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017 to client view of cluster
+2025-09-21T14:47:30.844+05:30  INFO 20279 --- [library] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-09-21T14:47:30.918+05:30  INFO 20279 --- [library] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-09-21T14:47:30.921+05:30  INFO 20279 --- [library] [           main] c.management.library.LibraryApplication  : Started LibraryApplication in 0.951 seconds (process running for 1.049)
+2025-09-21T14:47:31.514+05:30  INFO 20279 --- [library] [ngodb.net:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017, type=REPLICA_SET_PRIMARY, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=436787917, minRoundTripTimeNanos=0, setName='atlas-hoopbu-shard-0', canonicalAddress=ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017, hosts=[ac-4sqoh1e-shard-00-00.pu2hdjk.mongodb.net:27017, ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017, ac-4sqoh1e-shard-00-02.pu2hdjk.mongodb.net:27017], passives=[], arbiters=[], primary='ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017', tagSet=TagSet{[Tag{name='availabilityZone', value='aps1-az3'}, Tag{name='diskState', value='READY'}, Tag{name='nodeType', value='ELECTABLE'}, Tag{name='provider', value='AWS'}, Tag{name='region', value='AP_SOUTH_1'}, Tag{name='workloadType', value='OPERATIONAL'}]}, electionId=7fffffff0000000000000077, setVersion=25, topologyVersion=TopologyVersion{processId=68c481cf82ba3b52cf300d8a, counter=6}, lastWriteDate=Sun Sep 21 14:47:31 IST 2025, lastUpdateTimeNanos=9772445104500}
+2025-09-21T14:47:31.514+05:30  INFO 20279 --- [library] [ngodb.net:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=ac-4sqoh1e-shard-00-02.pu2hdjk.mongodb.net:27017, type=REPLICA_SET_SECONDARY, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=436788000, minRoundTripTimeNanos=0, setName='atlas-hoopbu-shard-0', canonicalAddress=ac-4sqoh1e-shard-00-02.pu2hdjk.mongodb.net:27017, hosts=[ac-4sqoh1e-shard-00-00.pu2hdjk.mongodb.net:27017, ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017, ac-4sqoh1e-shard-00-02.pu2hdjk.mongodb.net:27017], passives=[], arbiters=[], primary='ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017', tagSet=TagSet{[Tag{name='availabilityZone', value='aps1-az2'}, Tag{name='diskState', value='READY'}, Tag{name='nodeType', value='ELECTABLE'}, Tag{name='provider', value='AWS'}, Tag{name='region', value='AP_SOUTH_1'}, Tag{name='workloadType', value='OPERATIONAL'}]}, electionId=null, setVersion=25, topologyVersion=TopologyVersion{processId=68c4845d3dad9a51d7de0091, counter=3}, lastWriteDate=Sun Sep 21 14:47:31 IST 2025, lastUpdateTimeNanos=9772445104500}
+2025-09-21T14:47:31.514+05:30  INFO 20279 --- [library] [ngodb.net:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=ac-4sqoh1e-shard-00-00.pu2hdjk.mongodb.net:27017, type=REPLICA_SET_SECONDARY, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=436807375, minRoundTripTimeNanos=0, setName='atlas-hoopbu-shard-0', canonicalAddress=ac-4sqoh1e-shard-00-00.pu2hdjk.mongodb.net:27017, hosts=[ac-4sqoh1e-shard-00-00.pu2hdjk.mongodb.net:27017, ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017, ac-4sqoh1e-shard-00-02.pu2hdjk.mongodb.net:27017], passives=[], arbiters=[], primary='ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017', tagSet=TagSet{[Tag{name='availabilityZone', value='aps1-az1'}, Tag{name='diskState', value='READY'}, Tag{name='nodeType', value='ELECTABLE'}, Tag{name='provider', value='AWS'}, Tag{name='region', value='AP_SOUTH_1'}, Tag{name='workloadType', value='OPERATIONAL'}]}, electionId=null, setVersion=25, topologyVersion=TopologyVersion{processId=68c47ef151ec5975548c06a9, counter=4}, lastWriteDate=Sun Sep 21 14:47:31 IST 2025, lastUpdateTimeNanos=9772445116541}
+2025-09-21T14:47:31.516+05:30  INFO 20279 --- [library] [ngodb.net:27017] org.mongodb.driver.cluster               : Discovered replica set primary ac-4sqoh1e-shard-00-01.pu2hdjk.mongodb.net:27017 with max election id 7fffffff0000000000000077 and max set version 25
+2025-09-21T14:49:01.425+05:30  INFO 20279 --- [library] [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-21T14:49:01.439+05:30  INFO 20279 --- [library] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
