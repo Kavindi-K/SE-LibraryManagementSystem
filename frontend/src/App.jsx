@@ -6,6 +6,8 @@ import Dashboard from './components/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';  
 import AdminHome from './components/AdminHome';   // ✅ Import AdminHome
+import Borrowings from './components/Borrowings';   // ✅ Import Borrowings
+import Reservations from './components/Reservations';   // ✅ Import Reservations
 import './App.css';
 //this is a comment
 
@@ -33,6 +35,12 @@ const App = () => {
 
           {/* ✅ Admin Home (no protection for now, you can wrap with ProtectedRoute if needed) */}
           <Route path="/admin" element={<AdminHome />} />
+
+          {/* ✅ Borrowings Management */}
+          <Route path="/admin/borrowings" element={<Borrowings />} />
+
+          {/* ✅ Reservations Management */}
+          <Route path="/admin/reservations" element={<Reservations />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
