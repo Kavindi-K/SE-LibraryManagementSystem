@@ -26,17 +26,32 @@ export default function Borrowings() {
   const [form, setForm] = useState(emptyForm())
   const [editingId, setEditingId] = useState('')
   const [filter, setFilter] = useState('ALL')
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
-    api.listBorrowings().then(setItems).catch(() => {})
+    function load() { api.listBorrowings().then(setItems).catch(() => {}) }
+    load()
+    const handler = () => load()
+    window.addEventListener('borrowings:refresh', handler)
+    return () => window.removeEventListener('borrowings:refresh', handler)
   }, [])
 
   const visibleItems = useMemo(() => {
-    if (filter === 'ALL') return items
-    if (filter === 'ACTIVE') return items.filter((it) => it.status === 'ACTIVE')
-    if (filter === 'RETURNED') return items.filter((it) => it.status === 'RETURNED')
-    return items
-  }, [items, filter])
+    let filtered = items
+    if (filter === 'ACTIVE') filtered = filtered.filter((it) => it.status === 'ACTIVE')
+    if (filter === 'RETURNED') filtered = filtered.filter((it) => it.status === 'RETURNED')
+
+    if (search.trim() !== '') {
+      const lower = search.toLowerCase()
+      filtered = filtered.filter(
+        (it) =>
+          it.bookId.toLowerCase().includes(lower) ||
+          it.memberId.toLowerCase().includes(lower) ||
+          toISODateInput(it.borrowDate).includes(lower)
+      )
+    }
+    return filtered
+  }, [items, filter, search])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -76,8 +91,13 @@ export default function Borrowings() {
 
   async function saveEdit(e) {
     e.preventDefault()
-    const updatedReturn = form.returnDate || null
-    const payload = { memberId: form.memberId, bookId: form.bookId, borrowDate: form.borrowDate, dueDate: form.dueDate, returnDate: updatedReturn }
+    const payload = {
+      memberId: form.memberId,
+      bookId: form.bookId,
+      borrowDate: form.borrowDate,
+      dueDate: form.dueDate,
+      returnDate: form.returnDate || null,
+    }
     const updated = await api.updateBorrowing(editingId, payload)
     setItems((prev) => prev.map((it) => (it.id === editingId ? updated : it)))
     setEditingId('')
@@ -105,6 +125,15 @@ export default function Borrowings() {
       <form className="card form" onSubmit={editingId ? saveEdit : createBorrowing}>
         <div className="form-header">
           <h2>Borrowings Management</h2>
+          <div className="header-center">
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search Book ID, Member ID, Borrow Date..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="toolbar">
             <label>Status Filter</label>
             <select value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -114,14 +143,27 @@ export default function Borrowings() {
             </select>
           </div>
         </div>
+
         <div className="grid">
           <div>
             <label>Member ID</label>
-            <input name="memberId" value={form.memberId} onChange={handleChange} placeholder="member ObjectId or code" required />
+            <input
+              name="memberId"
+              value={form.memberId}
+              onChange={handleChange}
+              placeholder="member ObjectId or code"
+              required
+            />
           </div>
           <div>
             <label>Book ID</label>
-            <input name="bookId" value={form.bookId} onChange={handleChange} placeholder="book ObjectId or code" required />
+            <input
+              name="bookId"
+              value={form.bookId}
+              onChange={handleChange}
+              placeholder="book ObjectId or code"
+              required
+            />
           </div>
           <div>
             <label>Borrow Date</label>
@@ -136,11 +178,14 @@ export default function Borrowings() {
             <input type="date" name="returnDate" value={form.returnDate} onChange={handleChange} />
           </div>
         </div>
+
         <div className="actions">
           {editingId ? (
             <>
               <button type="submit">Save</button>
-              <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button>
+              <button type="button" className="secondary" onClick={cancelEdit}>
+                Cancel
+              </button>
             </>
           ) : (
             <button type="submit">Create</button>
@@ -179,17 +224,25 @@ export default function Borrowings() {
                 </td>
                 <td>Rs. {it.lateFee || 0}</td>
                 <td className="row-actions">
-                  <button className="small" onClick={() => startEdit(it.id)}>Edit</button>
-                  <button className="small secondary" onClick={() => remove(it.id)}>Delete</button>
+                  <button className="small" onClick={() => startEdit(it.id)}>
+                    Edit
+                  </button>
+                  <button className="small secondary" onClick={() => remove(it.id)}>
+                    Delete
+                  </button>
                   {it.status !== 'RETURNED' && (
-                    <button className="small success" onClick={() => markReturned(it.id)}>Return</button>
+                    <button className="small success" onClick={() => markReturned(it.id)}>
+                      Return
+                    </button>
                   )}
                 </td>
               </tr>
             ))}
             {visibleItems.length === 0 && (
               <tr>
-                <td colSpan={10} className="empty">No records</td>
+                <td colSpan={10} className="empty">
+                  No records
+                </td>
               </tr>
             )}
           </tbody>

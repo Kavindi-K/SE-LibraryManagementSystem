@@ -23,16 +23,8 @@ const Dashboard = () => {
   };
 
   const getRoleColor = (role) => {
-    switch (role) {
-      case 'LIBRARIAN':
-        return '#e74c3c';
-      case 'STAFF':
-        return '#f39c12';
-      case 'MEMBER':
-        return '#27ae60';
-      default:
-        return '#3498db';
-    }
+    // Removed role-based styling since roles are eliminated
+    return '#3498db';
   };
 
   if (!user) {
@@ -65,12 +57,6 @@ const Dashboard = () => {
           <div className="dashboard-card profile-card">
             <div className="card-header">
               <h3>Your Profile</h3>
-              <span 
-                className="role-badge" 
-                style={{ backgroundColor: getRoleColor(user.role) }}
-              >
-                {user.role}
-              </span>
             </div>
             <div className="card-content">
               <div className="profile-info">

@@ -82,6 +82,8 @@ export default function Reservations() {
   async function markReceived(id) {
     const updated = await api.receiveReservation(id)
     setItems((prev) => prev.map((it) => (it.id === id ? updated : it)))
+    // Notify other screens (e.g., Borrowings) to refresh
+    window.dispatchEvent(new Event('borrowings:refresh'))
   }
 
   return (

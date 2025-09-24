@@ -2,12 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Dashboard from './components/Dashboard';
+import Homepage from './components/Homepage';  // ✅ Changed from Dashboard to Homepage
+import MemberProfile from './components/MemberProfile';  // ✅ Import MemberProfile
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';  
 import AdminHome from './components/AdminHome';   // ✅ Import AdminHome
-import Borrowings from './components/Borrowings';   // ✅ Import Borrowings
-import Reservations from './components/Reservations';   // ✅ Import Reservations
 import './App.css';
 //this is a comment
 
@@ -23,24 +22,28 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected Dashboard */}
+          {/* Protected Homepage (formerly Dashboard) */}
           <Route 
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Homepage />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* ✅ Member Profile Page */}
+          <Route 
+            path="/member-profile" 
+            element={
+              <ProtectedRoute>
+                <MemberProfile />
               </ProtectedRoute>
             } 
           />
 
           {/* ✅ Admin Home (no protection for now, you can wrap with ProtectedRoute if needed) */}
           <Route path="/admin" element={<AdminHome />} />
-
-          {/* ✅ Borrowings Management */}
-          <Route path="/admin/borrowings" element={<Borrowings />} />
-
-          {/* ✅ Reservations Management */}
-          <Route path="/admin/reservations" element={<Reservations />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

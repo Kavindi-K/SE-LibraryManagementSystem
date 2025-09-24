@@ -13,8 +13,7 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    address: '',
-    role: 'MEMBER'
+    address: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -61,7 +60,7 @@ const Signup = () => {
     try {
       const { confirmPassword, ...userData } = formData;
       
-      const response = await axios.post('http://localhost:8080/api/users', userData);
+      const response = await axios.post('http://localhost:8081/api/users', userData);
 
       if (response.data.success) {
         setSuccess('Account created successfully! Redirecting to login...');
@@ -175,19 +174,6 @@ const Signup = () => {
               onChange={handleChange}
               className="signup-input"
             />
-          </div>
-          
-          <div className="input-group">
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="signup-select"
-            >
-              <option value="MEMBER">Member</option>
-              <option value="LIBRARIAN">Librarian</option>
-              <option value="STAFF">Staff</option>
-            </select>
           </div>
           
           <div className="input-row">
