@@ -25,7 +25,10 @@ public class BorrowingController {
     }
 
     @GetMapping
-    public List<Borrowing> list() {
+    public List<Borrowing> list(@RequestParam(value = "memberId", required = false) String memberId) {
+        if (memberId != null && !memberId.isBlank()) {
+            return repository.findByMemberId(memberId);
+        }
         return repository.findAll();
     }
 
