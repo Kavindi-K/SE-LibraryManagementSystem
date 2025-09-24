@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MemberManagement from "./MemberManagement";
+import Reservations from "./Reservations";
+import Borrowing from "./Borrowings"; //this is a comment
 import DashboardStats from "./DashboardStats";
 import "./AdminHome.css";
+import Borrowings from "./Borrowings";
 
 const AdminHome = () => {
   const navigate = useNavigate();
@@ -29,13 +32,9 @@ const AdminHome = () => {
           </div>
         );
       case 'reservations':
-        return (
-          <div className="coming-soon">
-            <h2>📋 Reservation & Fine Management</h2>
-            <p>This feature will be implemented by your teammate.</p>
-            <p>Coming soon...</p>
-          </div>
-        );
+        return <Reservations />;
+      case 'borrowing':
+        return <Borrowings />;
       default:
         return (
           <div className="dashboard-overview">
@@ -126,10 +125,18 @@ const AdminHome = () => {
           </li>
           <li>
             <button 
+              className={activeSection === 'borrowing' ? 'active' : ''}
+              onClick={() => setActiveSection('borrowing')}
+            >
+              📚 Books Borrowing & Fine Management
+            </button>
+          </li>
+          <li>
+            <button 
               className={activeSection === 'reservations' ? 'active' : ''}
               onClick={() => setActiveSection('reservations')}
             >
-              📋 Reservation & Fine Management
+              📋 Book reservations Management
             </button>
           </li>
         </ul>
