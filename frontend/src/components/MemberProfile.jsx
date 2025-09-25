@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../api';
 import './MemberProfile.css';
 
 const MemberProfile = () => {
@@ -10,9 +11,10 @@ const MemberProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [activeTab, setActiveTab] = useState('books');
+  const [activeTab, setActiveTab] = useState('profile');
   const [editMode, setEditMode] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -33,12 +35,9 @@ const MemberProfile = () => {
 
   const loadMemberProfile = async (userId) => {
     try {
-      // Get member profile
       const memberResponse = await axios.get(`http://localhost:8081/api/members/profile/${userId}`);
       if (memberResponse.data.success) {
         setMember(memberResponse.data.data);
-        
-        // Get user details
         const userResponse = await axios.get(`http://localhost:8081/api/users/${userId}`);
         if (userResponse.data.success) {
           const userData = userResponse.data.data;
@@ -72,8 +71,6 @@ const MemberProfile = () => {
       if (response.data.success) {
         setSuccess('Profile updated successfully!');
         setEditMode(false);
-        
-        // Update local storage
         const updatedUser = { ...user, ...profileData };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
@@ -89,17 +86,14 @@ const MemberProfile = () => {
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Check file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         setError('Profile picture must be less than 2MB');
         return;
       }
-
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageData = e.target.result;
         setProfilePicture(imageData);
-        // Save to localStorage
         if (user?.id) {
           localStorage.setItem(`profilePicture_${user.id}`, imageData);
         }
@@ -109,29 +103,161 @@ const MemberProfile = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('isAuthenticated');
-    // Clear member data to force manual ID entry on next login
-    localStorage.removeItem('member');
-    localStorage.removeItem('isMemberAuthenticated');
+    localStorage.clear();
     navigate('/');
   };
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const [myBorrowings, setMyBorrowings] = useState([]);
+  const [myReservations, setMyReservations] = useState([]);
+  const [newReservation, setNewReservation] = useState({ bookId: '', reservationDate: new Date().toISOString().slice(0,10) });
+
+  useEffect(() => {
+    async function loadMemberData() {
+      if (!member?.id && !member?.memberId) return;
+      try {
+        const memberKey = member.memberId || member.id;
+        const borrowings = await api.listBorrowings({ memberId: memberKey });
+        const reservations = await api.listReservations({ memberId: memberKey });
+        // Client-side safety filter in case backend returns extra
+        setMyBorrowings(Array.isArray(borrowings) ? borrowings.filter(b => b.memberId === memberKey) : []);
+        setMyReservations(Array.isArray(reservations) ? reservations.filter(r => r.memberId === memberKey) : []);
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadMemberData();
+  }, [member]);
+
+  async function createMyReservation(e) {
+    e.preventDefault();
+    if (!member?.memberId || !newReservation.bookId) return;
+    const payload = { memberId: member.memberId, bookId: newReservation.bookId, reservationDate: newReservation.reservationDate, status: 'PENDING' };
+    const created = await api.createReservation(payload);
+    setMyReservations((prev) => [created, ...prev]);
+    setNewReservation({ bookId: '', reservationDate: new Date().toISOString().slice(0,10) });
+  }
+
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'profile':
+        return (
+          <div className="tab-content">
+            <h3>👤 Profile Settings</h3>
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            <form onSubmit={handleProfileUpdate}>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" value={user?.email || ''} disabled />
+                </div>
+                <div className="form-group">
+                  <label>User ID</label>
+                  <input type="text" value={user?.id || ''} disabled />
+                </div>
+                <div className="form-group">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    value={profileData.firstName}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, firstName: e.target.value })
+                    }
+                    disabled={!editMode}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    value={profileData.lastName}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, lastName: e.target.value })
+                    }
+                    disabled={!editMode}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Phone</label>
+                  <input
+                    type="tel"
+                    value={profileData.phone}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, phone: e.target.value })
+                    }
+                    disabled={!editMode}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Date of Birth</label>
+                  <input
+                    type="date"
+                    value={profileData.dateOfBirth}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, dateOfBirth: e.target.value })
+                    }
+                    disabled={!editMode}
+                  />
+                </div>
+                <div className="form-group full-width">
+                  <label>Address</label>
+                  <textarea
+                    value={profileData.address}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, address: e.target.value })
+                    }
+                    disabled={!editMode}
+                  />
+                </div>
+              </div>
+              {editMode ? (
+                <div className="button-group">
+                  <button type="submit" className="save-btn">
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button 
+                    type="button" 
+                    className="cancel-btn"
+                    onClick={() => {
+                      setEditMode(false);
+                      loadMemberProfile(user.id);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="edit-btn"
+                  onClick={() => setEditMode(true)}
+                >
+                  Edit Profile
+                </button>
+              )}
+            </form>
+          </div>
+        );
+
       case 'books':
         return (
           <div className="tab-content">
-            <h3>Books</h3>
-            <div className="placeholder-content">
-              <p>📚 Book browsing and search features will be available here.</p>
-              <p>You'll be able to:</p>
-              <ul>
-                <li>Browse the library catalog</li>
-                <li>Search for books by title, author, or genre</li>
-                <li>View book details and availability</li>
-                <li>Add books to your wishlist</li>
-              </ul>
+            <h3>📚 Books</h3>
+            <p>Browse catalog, search books, and add to wishlist.</p>
+            <div className="section-card">
+              <h4>Book Search</h4>
+              <div className="search-box">
+                <input type="text" placeholder="Search books by title, author, or ISBN..." />
+                <button className="search-btn">Search</button>
+              </div>
+            </div>
+            <div className="section-card">
+              <h4>Your Wishlist</h4>
+              <p>No books in your wishlist yet.</p>
             </div>
           </div>
         );
@@ -139,47 +265,71 @@ const MemberProfile = () => {
       case 'borrowing-reservation-fines':
         return (
           <div className="tab-content">
-            <h3>Borrowing, Reservations & Fines</h3>
-            
-            {/* Borrowing Section */}
+            <h3>📋 Borrowing, Reservations & Fines</h3>
             <div className="section-card">
-              <h4>📖 Current Borrowings</h4>
-              <div className="placeholder-content">
-                <p>Your currently borrowed books and due dates will appear here.</p>
-                <ul>
-                  <li>View currently borrowed books</li>
-                  <li>Check due dates and renewal options</li>
-                  <li>Browse borrowing history</li>
-                  <li>Download borrowing receipts</li>
-                </ul>
-              </div>
+              <h4>📖 Your Borrowings</h4>
+              {myBorrowings.length === 0 ? (
+                <div className="status-indicator"><span className="status-badge">No items borrowed</span></div>
+              ) : (
+                <div className="table-wrapper">
+                  <table className="simple-table">
+                    <thead>
+                      <tr>
+                        <th>Borrow No</th><th>Book</th><th>Borrow</th><th>Due</th><th>Return</th><th>Status</th><th>Late Fee</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myBorrowings.map((b) => (
+                        <tr key={b.id}>
+                          <td>{b.borrowingNumber}</td>
+                          <td>{b.bookId}</td>
+                          <td>{b.borrowDate}</td>
+                          <td>{b.dueDate}</td>
+                          <td>{b.returnDate || '-'}</td>
+                          <td>{b.status}</td>
+                          <td>{b.lateFee || 0}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-
-            {/* Reservations Section */}
             <div className="section-card">
-              <h4>📅 Reservations</h4>
-              <div className="placeholder-content">
-                <p>Book reservations and holds will be managed here.</p>
-                <ul>
-                  <li>Reserve books that are currently borrowed</li>
-                  <li>View your reservation queue</li>
-                  <li>Get notified when reserved books are available</li>
-                  <li>Cancel reservations if needed</li>
-                </ul>
-              </div>
+              <h4>📅 Your Reservations</h4>
+              <form className="inline-form" onSubmit={createMyReservation}>
+                <input placeholder="Enter Book ID" value={newReservation.bookId} onChange={(e)=>setNewReservation({...newReservation, bookId:e.target.value})} />
+                <input type="date" value={newReservation.reservationDate} onChange={(e)=>setNewReservation({...newReservation, reservationDate:e.target.value})} />
+                <button type="submit">Reserve</button>
+              </form>
+              {myReservations.length === 0 ? (
+                <div className="status-indicator"><span className="status-badge">No active reservations</span></div>
+              ) : (
+                <div className="table-wrapper">
+                  <table className="simple-table">
+                    <thead>
+                      <tr>
+                        <th>Reserve No</th><th>Book</th><th>Date</th><th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myReservations.map((r) => (
+                        <tr key={r.id}>
+                          <td>{r.reservationNumber}</td>
+                          <td>{r.bookId}</td>
+                          <td>{r.reservationDate}</td>
+                          <td>{r.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-
-            {/* Fines Section */}
             <div className="section-card">
-              <h4>💰 Fines & Fees</h4>
-              <div className="placeholder-content">
-                <p>Your fines, fees, and payment history will be shown here.</p>
-                <ul>
-                  <li>View outstanding fines</li>
-                  <li>Pay fines online</li>
-                  <li>Download payment receipts</li>
-                  <li>View fee calculation details</li>
-                </ul>
+              <h4>💰 Fines</h4>
+              <div className="status-indicator">
+                <span className="status-badge success">No outstanding fines</span>
               </div>
             </div>
           </div>
@@ -191,7 +341,6 @@ const MemberProfile = () => {
   };
 
   useEffect(() => {
-    // Load saved profile picture
     if (user?.id) {
       const savedPicture = localStorage.getItem(`profilePicture_${user.id}`);
       if (savedPicture) {
@@ -200,187 +349,108 @@ const MemberProfile = () => {
     }
   }, [user]);
 
-  if (loading) {
+  if (loading)
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p>Loading your profile...</p>
+        Loading...
       </div>
     );
-  }
 
   return (
-    <div className="member-profile">
-      {/* Header */}
+    <div className={`member-profile ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      {/* Header - Clean design without toggle button */}
       <header className="member-header">
         <div className="header-left">
-          <h1>NexaLibrary University Library</h1>
+          <h1>NexaLibrary University</h1>
         </div>
         <div className="header-right">
           <span className="welcome-text">Welcome, {profileData.firstName}</span>
-          <button onClick={handleLogout} className="logout-btn">
+          <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </header>
 
       <div className="member-layout">
-        {/* Sidebar */}
+        {/* Sidebar with toggle button */}
         <aside className="member-sidebar">
           <div className="sidebar-header">
+            <button className="sidebar-toggle" onClick={toggleSidebar}>
+              <span className="toggle-icon">
+                {sidebarCollapsed ? '→' : '←'}
+              </span>
+              <span className="toggle-text">
+                {sidebarCollapsed ? 'Expand' : 'Collapse'}
+              </span>
+            </button>
             <h2>Member Portal</h2>
             <p>ID: {member?.memberId}</p>
           </div>
-          
           <nav className="sidebar-nav">
-            <button 
+            <button
+              className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => setActiveTab('profile')}
+            >
+              <span className="nav-icon">👤</span>
+              <span className="nav-text">Profile</span>
+            </button>
+            <button
               className={`nav-item ${activeTab === 'books' ? 'active' : ''}`}
               onClick={() => setActiveTab('books')}
             >
               <span className="nav-icon">📚</span>
-              Books
+              <span className="nav-text">Books</span>
             </button>
-            
-            <button 
-              className={`nav-item ${activeTab === 'borrowing-reservation-fines' ? 'active' : ''}`}
+            <button
+              className={`nav-item ${
+                activeTab === 'borrowing-reservation-fines' ? 'active' : ''
+              }`}
               onClick={() => setActiveTab('borrowing-reservation-fines')}
             >
               <span className="nav-icon">📋</span>
-              Borrowing-Reservation-Fines
+              <span className="nav-text">Borrowing & Fines</span>
             </button>
           </nav>
+          <div className="sidebar-footer">
+            <p>Member since: {member?.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'N/A'}</p>
+          </div>
         </aside>
 
         {/* Main Content */}
         <main className="member-main">
-          {/* Profile Information Section - Always Visible */}
-          <div className="profile-content">
+          <div className="content-header">
             <div className="profile-header">
-              <div className="profile-picture-section">
-                <div className="profile-picture">
-                  {profilePicture ? (
-                    <img src={profilePicture} alt="Profile" />
-                  ) : (
-                    <div className="default-avatar">
-                      {profileData.firstName?.charAt(0)}{profileData.lastName?.charAt(0)}
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  id="profilePicture"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                  style={{ display: 'none' }}
-                />
-                <label htmlFor="profilePicture" className="upload-btn">
-                  Change Photo
-                </label>
-              </div>
-              
-              <div className="member-info">
-                <h2>{profileData.firstName} {profileData.lastName}</h2>
-                <p className="member-id">Member ID: {member?.memberId}</p>
-                <p className="membership-type">Membership: {member?.membershipType}</p>
-                <p className="member-status">Status: {member?.status}</p>
-              </div>
-            </div>
-
-            {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">{success}</div>}
-
-            <div className="profile-form-section">
-              <div className="form-header">
-                <h3>Personal Information</h3>
-                <button 
-                  type="button" 
-                  onClick={() => setEditMode(!editMode)}
-                  className="edit-btn"
-                >
-                  {editMode ? 'Cancel' : 'Edit Profile'}
-                </button>
-              </div>
-
-              <form onSubmit={handleProfileUpdate}>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label>Email (Cannot be changed)</label>
-                    <input type="email" value={user?.email || ''} disabled />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>User ID (Cannot be changed)</label>
-                    <input type="text" value={user?.id || ''} disabled />
-                  </div>
-
-                  <div className="form-group">
-                    <label>First Name</label>
-                    <input 
-                      type="text" 
-                      value={profileData.firstName}
-                      onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
-                      disabled={!editMode}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Last Name</label>
-                    <input 
-                      type="text" 
-                      value={profileData.lastName}
-                      onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
-                      disabled={!editMode}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Phone</label>
-                    <input 
-                      type="tel" 
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                      disabled={!editMode}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Date of Birth</label>
-                    <input 
-                      type="date" 
-                      value={profileData.dateOfBirth}
-                      onChange={(e) => setProfileData({...profileData, dateOfBirth: e.target.value})}
-                      disabled={!editMode}
-                    />
-                  </div>
-
-                  <div className="form-group full-width">
-                    <label>Address</label>
-                    <textarea 
-                      value={profileData.address}
-                      onChange={(e) => setProfileData({...profileData, address: e.target.value})}
-                      disabled={!editMode}
-                      rows="3"
-                    />
-                  </div>
-                </div>
-
-                {editMode && (
-                  <div className="form-actions">
-                    <button type="submit" className="save-btn" disabled={loading}>
-                      {loading ? 'Saving...' : 'Save Changes'}
-                    </button>
+              <div className="profile-picture">
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" />
+                ) : (
+                  <div className="default-avatar">
+                    {profileData.firstName?.[0]}
+                    {profileData.lastName?.[0]}
                   </div>
                 )}
-              </form>
+              </div>
+              <div className="profile-info">
+                <h2>{profileData.firstName} {profileData.lastName}</h2>
+                <p>Member ID: {member?.memberId}</p>
+              </div>
+            </div>
+            <div className="header-actions">
+              <input
+                type="file"
+                id="profilePicture"
+                accept="image/*"
+                onChange={handleProfilePictureChange}
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="profilePicture" className="upload-btn">
+                Change Photo
+              </label>
             </div>
           </div>
 
-          {/* Tab Content Section */}
-          <div className="tab-section">
-            {renderTabContent()}
-          </div>
+          {renderTabContent()}
         </main>
       </div>
     </div>

@@ -8,7 +8,8 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoAuditing
 @EnableMongoRepositories(basePackages = {
     "com.management.library.UserManagement.Repository",
-    "com.management.library.MemberManagement.Repository"
+    "com.management.library.MemberManagement.Repository",
+    "com.management.library.BorrowingReservation.repository"
 })
 public class MongoConfig {
     // MongoDB's configuration is handled by application.properties
