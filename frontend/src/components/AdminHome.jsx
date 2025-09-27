@@ -1,15 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MemberManagement from "./MemberManagement";
 import Reservations from "./Reservations";
-import Borrowing from "./Borrowings"; //this is a comment
+import Borrowings from "./Borrowings"; // Fixed: removed duplicate import
 import DashboardStats from "./DashboardStats";
+import BookList from "./BookList";
+import BookForm from "./BookForm";
+import BookStats from "./BookStats";
 import "./AdminHome.css";
-import Borrowings from "./Borrowings";
 
 const AdminHome = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
+  
+  // Book management state
+  const [books, setBooks] = useState([]);
+  const [editingBook, setEditingBook] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [stats, setStats] = useState({
+    totalBooks: 0,
+    availableBooks: 0,
+    unavailableBooks: 0,
+    totalCopies: 0,
+    availableCopies: 0
+  });
+
+  const API_BASE_URL = 'http://localhost:8081/api/books';
 
   const handleLogout = () => {
     // Clear user data
@@ -19,16 +38,210 @@ const AdminHome = () => {
     navigate("/");
   };
 
+  // Book management functions
+  const fetchBooks = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(API_BASE_URL);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched books:', data); // Debug log
+        setBooks(data);
+      } else {
+        console.error('Failed to fetch books - Status:', response.status);
+        setError('Failed to fetch books');
+      }
+    } catch (err) {
+      console.error('Error fetching books:', err);
+      setError('Error connecting to server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/stats`);
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    }
+  };
+
+  const addBook = async (bookData) => {
+    setLoading(true);
+    try {
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookData),
+      });
+
+      if (response.ok) {
+        setSuccess('Book added successfully!');
+        setShowForm(false);
+        console.log('Book added successfully, refreshing list...'); // Debug log
+        fetchBooks();
+        fetchStats();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to add book');
+      }
+    } catch (err) {
+      setError('Error adding book');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateBook = async (id, bookData) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookData),
+      });
+
+      if (response.ok) {
+        setSuccess('Book updated successfully!');
+        setEditingBook(null);
+        setShowForm(false);
+        fetchBooks();
+        fetchStats();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to update book');
+      }
+    } catch (err) {
+      setError('Error updating book');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteBook = async (id) => {
+    if (window.confirm('Are you sure you want to delete this book?')) {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setSuccess('Book deleted successfully!');
+          fetchBooks();
+          fetchStats();
+        } else {
+          setError('Failed to delete book');
+        }
+      } catch (err) {
+        setError('Error deleting book');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleEditBook = (book) => {
+    setEditingBook(book);
+    setShowForm(true);
+  };
+
+  const handleFormSubmit = (bookData) => {
+    if (editingBook) {
+      updateBook(editingBook.id, bookData);
+    } else {
+      addBook(bookData);
+    }
+  };
+
+  const handleFormCancel = () => {
+    setEditingBook(null);
+    setShowForm(false);
+    setError('');
+    setSuccess('');
+  };
+
+  // Load books when Books Management section is active
+  useEffect(() => {
+    if (activeSection === 'books') {
+      fetchBooks();
+      fetchStats();
+    }
+  }, [activeSection]);
+
+  // Clear messages after 5 seconds
+  useEffect(() => {
+    if (error || success) {
+      const timer = setTimeout(() => {
+        setError('');
+        setSuccess('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, success]);
+
   const renderContent = () => {
     switch(activeSection) {
       case 'members':
         return <MemberManagement />;
       case 'books':
         return (
-          <div className="coming-soon">
+          <div className="books-management">
             <h2>📚 Books Management</h2>
-            <p>This feature will be implemented by your teammate.</p>
-            <p>Coming soon...</p>
+            
+            {/* Success/Error Messages */}
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            
+            {/* Book Stats */}
+            <BookStats stats={stats} />
+            
+            {/* Add Book Button */}
+            {!showForm && (
+              <div className="book-actions">
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => setShowForm(true)}
+                  disabled={loading}
+                >
+                  ➕ Add New Book
+                </button>
+              </div>
+            )}
+            
+            {/* Book Form */}
+            {showForm && (
+              <BookForm
+                book={editingBook}
+                onSubmit={handleFormSubmit}
+                onCancel={handleFormCancel}
+                loading={loading}
+              />
+            )}
+            
+            {/* Book List */}
+            {!showForm && (
+              <>
+                <div style={{ marginBottom: '20px' }}>
+                  <strong>Books Count: {books.length}</strong> {/* Debug info */}
+                </div>
+                <BookList
+                  books={books}
+                  onEdit={handleEditBook}
+                  onDelete={deleteBook}
+                  loading={loading}
+                />
+              </>
+            )}
           </div>
         );
       case 'reservations':
@@ -64,11 +277,10 @@ const AdminHome = () => {
                   <h3>Books Management</h3>
                   <p>Catalog management and book inventory</p>
                   <button 
-                    className="btn btn-secondary" 
-                    disabled
-                    title="Feature coming soon"
+                    className="btn btn-primary"
+                    onClick={() => setActiveSection('books')}
                   >
-                    Coming Soon
+                    Go to Books
                   </button>
                 </div>
               </div>
@@ -148,6 +360,14 @@ const AdminHome = () => {
       {/* Main Content */}
       <div className="admin-content">
         {renderContent()}
+        
+        {/* Loading Overlay */}
+        {loading && (
+          <div className="loading-overlay">
+            <div className="spinner"></div>
+            <p>Loading...</p>
+          </div>
+        )}
       </div>
     </div>
   );
