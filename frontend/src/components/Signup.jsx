@@ -98,128 +98,147 @@ const Signup = () => {
 
   return (
     <div className="signup-container">
-      <div className="signup-card">
-        <h2 className="signup-title">SIGN UP</h2>
-        <p className="signup-subtitle">Create your account to get started!</p>
-        
-        <form onSubmit={handleSubmit} className="signup-form">
-          <div className="input-row">
+      <div className="signup-content">
+        {/* Welcome Section - Left Side */}
+        <div className="signup-welcome">
+          <div className="library-image">
+            <img 
+               src="/library_signup.png" 
+              alt="Library" 
+            />
+          </div>
+          <h1>Welcome to</h1>
+          <h2>Our Library</h2>
+          <p>Join our community of book lovers</p>
+          <p>Discover, read, and share knowledge</p>
+          <p>Your literary journey starts here</p>
+        </div>
+
+        {/* Signup Form - Right Side */}
+        <div className="signup-card">
+          <h2 className="signup-title">SIGN UP</h2>
+          <p className="signup-subtitle">Create your account to get started!</p>
+          
+          <form onSubmit={handleSubmit} className="signup-form">
+            <div className="input-row">
+              <div className="input-group">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  className="signup-input"
+                />
+              </div>
+              <div className="input-group">
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  className="signup-input"
+                />
+              </div>
+            </div>
+            
             <div className="input-group">
               <input
                 type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                minLength={3}
+                className="signup-input"
+              />
+            </div>
+            
+            <div className="input-group">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
                 onChange={handleChange}
                 required
                 className="signup-input"
               />
             </div>
+            
+            <div className="input-group">
+              <input
+                type="date"
+                name="dateOfBirth"
+                placeholder="Date of Birth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                required
+                className="signup-input"
+              />
+              <div className="dob-hint">Please enter your date of birth</div>
+            </div>
+            
             <div className="input-group">
               <input
                 type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
+                name="address"
+                placeholder="Address"
+                value={formData.address}
                 onChange={handleChange}
-                required
                 className="signup-input"
               />
             </div>
-          </div>
-          
-          <div className="input-group">
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              minLength={3}
-              className="signup-input"
-            />
-          </div>
-          
-          <div className="input-group">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="signup-input"
-            />
-          </div>
-          
-          <div className="input-group">
-            <input
-              type="date"
-              name="dateOfBirth"
-              placeholder="Date of Birth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              required
-              className="signup-input"
-            />
-          </div>
-          
-          <div className="input-group">
-            <input
-              type="text"
-              name="address"
-              placeholder="Address"
-              value={formData.address}
-              onChange={handleChange}
-              className="signup-input"
-            />
-          </div>
-          
-          <div className="input-row">
-            <div className="input-group">
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                minLength={6}
-                className="signup-input"
-              />
+            
+            <div className="input-row">
+              <div className="input-group">
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                  className="signup-input"
+                />
+              </div>
+              <div className="input-group">
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="signup-input"
+                />
+              </div>
             </div>
-            <div className="input-group">
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className="signup-input"
-              />
-            </div>
+            
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            
+            <button 
+              type="submit" 
+              className="signup-button"
+              disabled={loading}
+            >
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
+          
+          <div className="login-link">
+            <p>Already have an account? 
+              <Link to="/login" className="switch-button">
+                Login
+              </Link>
+            </p>
           </div>
-          
-          {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">{success}</div>}
-          
-          <button 
-            type="submit" 
-            className="signup-button"
-            disabled={loading}
-          >
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
-        
-        <div className="login-link">
-          <p>Already have an account? 
-            <Link to="/login" className="switch-button">
-              Login
-            </Link>
-          </p>
         </div>
       </div>
     </div>

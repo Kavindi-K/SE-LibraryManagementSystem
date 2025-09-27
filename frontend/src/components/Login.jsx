@@ -5,19 +5,13 @@ import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (error) setError('');
   };
 
@@ -33,13 +27,9 @@ const Login = () => {
       });
 
       if (response.data.success) {
-        console.log('Login successful:', response.data.data);
-
-        // Store user data in localStorage
         localStorage.setItem('user', JSON.stringify(response.data.data));
         localStorage.setItem('isAuthenticated', 'true');
 
-        // ✅ Admin login check
         if (formData.username === 'Admin' && formData.password === 'admin123') {
           navigate('/admin');
         } else {
@@ -49,11 +39,8 @@ const Login = () => {
         setError(response.data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-
       if (error.response) {
-        const errorMessage = error.response.data?.message || 'Login failed';
-        setError(errorMessage);
+        setError(error.response.data?.message || 'Login failed');
       } else if (error.request) {
         setError('Network error. Please check your connection.');
       } else {
@@ -67,54 +54,69 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2 className="login-title">LOGIN</h2>
-        <p className="login-subtitle">Please enter your login and password!</p>
+        {/* Logo Section */}
+        <div className="logo-section">
+          <div className="book-logo">
+            <div className="book book1"></div>
+            <div className="book book2"></div>
+            <div className="book book3"></div>
+          </div>
+          <h1 className="main-title">LIBRARY</h1>
+          <p className="subtitle">MANAGEMENT SYSTEM</p>
+        </div>
 
+        {/* Login Form */}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              className="login-input"
-            />
+            <label className="input-label">User Name</label>
+            <div className="input-wrapper">
+              <span className="input-icon">👤</span>
+              <input
+                type="text"
+                name="username"
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                className="login-input"
+              />
+            </div>
           </div>
 
           <div className="input-group">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="login-input"
-            />
+            <label className="input-label">Password</label>
+            <div className="input-wrapper">
+              <span className="input-icon">🔒</span>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="login-input"
+              />
+            </div>
           </div>
 
           {error && <div className="error-message">{error}</div>}
 
-          <div className="forgot-password">
-            <a href="#" className="forgot-link">Forgot password?</a>
-          </div>
-
-          <button 
-            type="submit" 
-            className="login-button"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? (
+              <span className="loading-text">
+                <span className="loading-spinner"></span> Logging in...
+              </span>
+            ) : (
+              'Login'
+            )}
           </button>
         </form>
 
-        <div className="signup-link">
-          <p>Don't have an account? 
-            <Link to="/signup" className="switch-button">
-              Sign up
-            </Link>
+        {/* Additional Links */}
+        <div className="additional-links">
+          <a href="#" className="forgot-link">Forgot Password?</a>
+          <p className="signup-text">
+            Don't have an account? <Link to="/signup" className="signup-link">Sign Up</Link>
           </p>
         </div>
       </div>
