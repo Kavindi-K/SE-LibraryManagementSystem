@@ -309,9 +309,6 @@ const Homepage = () => {
                   <div className="rating">
                     {'★'.repeat(Math.floor(book.rating))} {book.rating}
                   </div>
-                  <button className="reserve-btn" disabled={!book.available}>
-                    {book.available ? 'Reserve Book' : 'Unavailable'}
-                  </button>
                 </div>
               </div>
             ))}

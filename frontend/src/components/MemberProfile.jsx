@@ -212,6 +212,21 @@ const MemberProfile = () => {
     }
   }
 
+  async function deleteReservation(reservationId) {
+    if (!window.confirm('Are you sure you want to delete this reservation?')) {
+      return;
+    }
+    
+    try {
+      await api.deleteReservation(reservationId);
+      setMyReservations((prev) => prev.filter(reservation => reservation.id !== reservationId));
+      setSuccess('Reservation deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting reservation:', err);
+      setError('Failed to delete reservation. Please try again.');
+    }
+  }
+
   const booksByGenre = {};
   if (selectedGenre === 'all' && !searchQuery && availabilityFilter === 'all') {
     filteredBooks.forEach(book => {
@@ -384,23 +399,78 @@ const MemberProfile = () => {
             <div className="section">
               <h4>📚 Current Borrowings ({myBorrowings.length})</h4>
               {myBorrowings.length > 0 ? (
-                <div className="borrowings-list">
-                  {myBorrowings.map((borrowing) => (
-                    <div key={borrowing.id} className="borrowing-item">
-                      <div className="borrowing-info">
-                        <h5>Book ID: {borrowing.bookId}</h5>
-                        <p>Borrowed: {new Date(borrowing.borrowDate).toLocaleDateString()}</p>
-                        <p>Due: {new Date(borrowing.dueDate).toLocaleDateString()}</p>
-                        <p>Status: <span className={`status ${borrowing.status.toLowerCase()}`}>{borrowing.status}</span></p>
-                        {borrowing.lateFee > 0 && (
-                          <p className="late-fee">Late Fee: ${borrowing.lateFee}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                <div className="table-wrapper">
+                  <table className="detailed-table">
+                    <thead>
+                      <tr>
+                        <th>Book ID</th>
+                        <th>Borrow Date</th>
+                        <th>Due Date</th>
+                        <th>Days Remaining</th>
+                        <th>Status</th>
+                        <th>Late Fee</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myBorrowings.map((borrowing) => {
+                        const dueDate = new Date(borrowing.dueDate);
+                        const today = new Date();
+                        const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                        const isOverdue = daysRemaining < 0;
+                        
+                        return (
+                          <tr key={borrowing.id} className={isOverdue ? 'overdue-row' : ''}>
+                            <td className="book-id-cell">
+                              <div className="book-id-info">
+                                <span className="book-id">{borrowing.bookId}</span>
+                              </div>
+                            </td>
+                            <td className="date-cell">
+                              <div className="date-info">
+                                <span className="date">{new Date(borrowing.borrowDate).toLocaleDateString()}</span>
+                              </div>
+                            </td>
+                            <td className="date-cell">
+                              <div className="date-info">
+                                <span className="date">{dueDate.toLocaleDateString()}</span>
+                              </div>
+                            </td>
+                            <td className="days-cell">
+                              <span className={`days-remaining ${isOverdue ? 'overdue' : daysRemaining <= 3 ? 'warning' : 'normal'}`}>
+                                {isOverdue ? `${Math.abs(daysRemaining)} days overdue` : `${daysRemaining} days`}
+                              </span>
+                            </td>
+                            <td className="status-cell">
+                              <span className={`status-badge ${borrowing.status.toLowerCase()}`}>
+                                {borrowing.status}
+                              </span>
+                            </td>
+                            <td className="fee-cell">
+                              {borrowing.lateFee > 0 ? (
+                                <span className="late-fee-amount">${borrowing.lateFee.toFixed(2)}</span>
+                              ) : (
+                                <span className="no-fee">No fee</span>
+                              )}
+                            </td>
+                            <td className="actions-cell">
+                              <button className="action-btn view-btn">View Details</button>
+                              {borrowing.status === 'ACTIVE' && (
+                                <button className="action-btn return-btn">Return</button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               ) : (
-                <p className="no-data">No current borrowings</p>
+                <div className="no-data-container">
+                  <div className="no-data-icon">📚</div>
+                  <p className="no-data">No current borrowings</p>
+                  <p className="no-data-subtitle">You haven't borrowed any books yet</p>
+                </div>
               )}
             </div>
 
@@ -408,19 +478,65 @@ const MemberProfile = () => {
             <div className="section">
               <h4>📋 Reservations ({myReservations.length})</h4>
               {myReservations.length > 0 ? (
-                <div className="reservations-list">
-                  {myReservations.map((reservation) => (
-                    <div key={reservation.id} className="reservation-item">
-                      <div className="reservation-info">
-                        <h5>Book ID: {reservation.bookId}</h5>
-                        <p>Reserved: {new Date(reservation.reservationDate).toLocaleDateString()}</p>
-                        <p>Status: <span className={`status ${reservation.status.toLowerCase()}`}>{reservation.status}</span></p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="table-wrapper">
+                  <table className="detailed-table">
+                    <thead>
+                      <tr>
+                        <th>Book ID</th>
+                        <th>Reservation Date</th>
+                        <th>Status</th>
+                        <th>Expected Pickup</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myReservations.map((reservation) => {
+                        const reservationDate = new Date(reservation.reservationDate);
+                        const expectedPickup = new Date(reservationDate.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 days from reservation
+                        
+                        return (
+                          <tr key={reservation.id}>
+                            <td className="book-id-cell">
+                              <div className="book-id-info">
+                                <span className="book-id">{reservation.bookId}</span>
+                              </div>
+                            </td>
+                            <td className="date-cell">
+                              <div className="date-info">
+                                <span className="date">{reservationDate.toLocaleDateString()}</span>
+                              </div>
+                            </td>
+                            <td className="status-cell">
+                              <span className={`status-badge ${reservation.status.toLowerCase()}`}>
+                                {reservation.status}
+                              </span>
+                            </td>
+                            <td className="date-cell">
+                              <div className="date-info">
+                                <span className="date">{expectedPickup.toLocaleDateString()}</span>
+                              </div>
+                            </td>
+                            <td className="actions-cell">
+                              <button className="action-btn view-btn">View Details</button>
+                              <button 
+                                className="action-btn delete-btn" 
+                                onClick={() => deleteReservation(reservation.id)}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               ) : (
-                <p className="no-data">No current reservations</p>
+                <div className="no-data-container">
+                  <div className="no-data-icon">📋</div>
+                  <p className="no-data">No current reservations</p>
+                  <p className="no-data-subtitle">You haven't made any reservations yet</p>
+                </div>
               )}
             </div>
           </div>
@@ -438,7 +554,7 @@ const MemberProfile = () => {
       <header className="member-header">
         <div className="header-left"><h1>NexaLibrary University</h1></div>
         <div className="header-right">
-          <span className="welcome-text">Welcome Pavan</span>
+          <span className="welcome-text">👋 Welcome, {profileData.firstName || 'Member'}!</span>
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
@@ -451,7 +567,10 @@ const MemberProfile = () => {
               <span className="toggle-text">{sidebarCollapsed ? 'Expand' : 'Collapse'}</span>
             </button>
             <h2>Member Portal</h2>
-            <p>ID: {member?.memberId}</p>
+            <div className="sidebar-member-info">
+              <p className="member-id-display">ID: {member?.memberId || 'N/A'}</p>
+              <p className="member-status-display">Status: {member?.status || 'Active'}</p>
+            </div>
           </div>
           <nav className="sidebar-nav">
             <button className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
@@ -477,7 +596,14 @@ const MemberProfile = () => {
               </div>
               <div className="profile-info">
                 <h2>{profileData.firstName} {profileData.lastName}</h2>
-                <p>Member ID: {member?.memberId}</p>
+                <div className="member-id-section">
+                  <span className="member-id-label">Member ID:</span>
+                  <span className="member-id-value">{member?.memberId || 'N/A'}</span>
+                </div>
+                <div className="member-status-section">
+                  <span className="member-status-label">Status:</span>
+                  <span className="member-status-value">{member?.status || 'Active'}</span>
+                </div>
               </div>
             </div>
             <div className="header-actions">
