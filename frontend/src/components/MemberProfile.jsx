@@ -57,7 +57,7 @@ const MemberProfile = () => {
 
   const loadMemberProfile = async (userId) => {
     try {
-      const memberResponse = await axios.get(`http://localhost:8081/api/members/profile/${userId}`);
+      const memberResponse = await axios.get(`http://localhost:8081/api/members/user/${userId}`);
       if (memberResponse.data.success) {
         setMember(memberResponse.data.data);
         const userResponse = await axios.get(`http://localhost:8081/api/users/${userId}`);
@@ -353,7 +353,76 @@ const MemberProfile = () => {
         return (
           <div className="tab-content">
             <h3>📋 Borrowing, Reservations & Fines</h3>
-            {/* Borrowings, Reservations & Fines code (same as your original) */}
+            {/* Create New Reservation (moved to top) */}
+            <div className="section">
+              <h4>➕ Create New Reservation</h4>
+              <form onSubmit={createMyReservation} className="reservation-form">
+                <div className="form-group">
+                  <label>Book ID:</label>
+                  <input
+                    type="text"
+                    value={newReservation.bookId}
+                    onChange={(e) => setNewReservation({ ...newReservation, bookId: e.target.value })}
+                    placeholder="Enter book ID"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Reservation Date:</label>
+                  <input
+                    type="date"
+                    value={newReservation.reservationDate}
+                    onChange={(e) => setNewReservation({ ...newReservation, reservationDate: e.target.value })}
+                    required
+                  />
+                </div>
+                <button type="submit" className="submit-btn">Create Reservation</button>
+              </form>
+            </div>
+
+            {/* Current Borrowings */}
+            <div className="section">
+              <h4>📚 Current Borrowings ({myBorrowings.length})</h4>
+              {myBorrowings.length > 0 ? (
+                <div className="borrowings-list">
+                  {myBorrowings.map((borrowing) => (
+                    <div key={borrowing.id} className="borrowing-item">
+                      <div className="borrowing-info">
+                        <h5>Book ID: {borrowing.bookId}</h5>
+                        <p>Borrowed: {new Date(borrowing.borrowDate).toLocaleDateString()}</p>
+                        <p>Due: {new Date(borrowing.dueDate).toLocaleDateString()}</p>
+                        <p>Status: <span className={`status ${borrowing.status.toLowerCase()}`}>{borrowing.status}</span></p>
+                        {borrowing.lateFee > 0 && (
+                          <p className="late-fee">Late Fee: ${borrowing.lateFee}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-data">No current borrowings</p>
+              )}
+            </div>
+
+            {/* Reservations */}
+            <div className="section">
+              <h4>📋 Reservations ({myReservations.length})</h4>
+              {myReservations.length > 0 ? (
+                <div className="reservations-list">
+                  {myReservations.map((reservation) => (
+                    <div key={reservation.id} className="reservation-item">
+                      <div className="reservation-info">
+                        <h5>Book ID: {reservation.bookId}</h5>
+                        <p>Reserved: {new Date(reservation.reservationDate).toLocaleDateString()}</p>
+                        <p>Status: <span className={`status ${reservation.status.toLowerCase()}`}>{reservation.status}</span></p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-data">No current reservations</p>
+              )}
+            </div>
           </div>
         );
 
@@ -369,7 +438,7 @@ const MemberProfile = () => {
       <header className="member-header">
         <div className="header-left"><h1>NexaLibrary University</h1></div>
         <div className="header-right">
-          <span className="welcome-text">Welcome, {profileData.firstName}</span>
+          <span className="welcome-text">Welcome Pavan</span>
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
