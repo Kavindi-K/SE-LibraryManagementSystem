@@ -164,17 +164,24 @@
 
 .progress-bar {
   height: 8px;
-  background: #e9ecef;
+  background: #e9ecef; /* gray for empty space */
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 10px;
+  position: relative; /* important */
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 4px 0 0 4px; /* only round the left side */
   transition: width 0.8s ease-in-out;
-  position: relative;
+  position: absolute; /* ensures fill sits inside */
+  top: 0;
+  left: 0;
+}
+
+.progress-fill.availability {
+  background: linear-gradient(135deg, #442fe3, #40c057); /* green fill */
 }
 
 .progress-fill::after {
@@ -182,20 +189,19 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%; 
+  height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 2s infinite;
 }
+
 
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
 
-.progress-fill.availability {
-  background: linear-gradient(135deg, #51cf66, #40c057);
-}
+
 
 .progress-info {
   display: flex;
