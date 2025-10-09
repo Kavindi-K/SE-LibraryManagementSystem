@@ -231,9 +231,7 @@ const AdminHome = () => {
             {/* Book List */}
             {!showForm && (
               <>
-                <div style={{ marginBottom: '20px' }}>
-                  <strong>Books Count: {books.length}</strong> {/* Debug info */}
-                </div>
+                <div style={{ marginBottom: '20px' }}></div>
                 <BookList
                   books={books}
                   onEdit={handleEditBook}
