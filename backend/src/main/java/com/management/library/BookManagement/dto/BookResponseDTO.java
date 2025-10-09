@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class BookResponseDTO {
 
     private String id;
+    private String bookNo;
     private String title;
     private String image;
     private String author;
@@ -23,11 +24,12 @@ public class BookResponseDTO {
     public BookResponseDTO() {
     }
 
-    public BookResponseDTO(String id, String title, String image, String author, String genre,
+    public BookResponseDTO(String id, String bookNo, String title, String image, String author, String genre,
                            Integer year, String edition, String description, String language,
                            Boolean availability, Integer availableCopies, String location,
                            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.bookNo = bookNo;
         this.title = title;
         this.image = image;
         this.author = author;
@@ -50,6 +52,14 @@ public class BookResponseDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getBookNo() {
+        return bookNo;
+    }
+
+    public void setBookNo(String bookNo) {
+        this.bookNo = bookNo;
     }
 
     public String getTitle() {

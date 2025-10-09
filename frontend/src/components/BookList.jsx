@@ -16,7 +16,8 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
         book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
         book.genre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.location.toLowerCase().includes(searchTerm.toLowerCase());
+        book.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.bookNo.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesAvailability = 
         filterAvailability === 'all' ||
@@ -72,15 +73,6 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
     return sortDirection === 'asc' ? '⬆️' : '⬇️';
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   if (loading && books.length === 0) {
     return (
       <div className="book-list-container">
@@ -95,14 +87,14 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
   return (
     <div className="book-list-container">
       <div className="list-header">
-        <h2>📚 Books Library ({filteredAndSortedBooks.length} books)</h2>
+        <h2>Books Library ({filteredAndSortedBooks.length} books)</h2>
         
         {/* Search and Filters */}
         <div className="filters-section">
           <div className="search-box">
             <input
               type="text"
-              placeholder="🔍 Search books by title, author, genre, or location..."
+              placeholder="Search books by title, author, genre, book no, or location..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -146,6 +138,9 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
             <table className="books-table">
               <thead>
                 <tr>
+                  <th onClick={() => handleSort('bookNo')} className="sortable">
+                    Book No {getSortIcon('bookNo')}
+                  </th>
                   <th onClick={() => handleSort('title')} className="sortable">
                     Title {getSortIcon('title')}
                   </th>
@@ -176,6 +171,9 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
               <tbody>
                 {currentBooks.map((book) => (
                   <tr key={book.id} className="book-row">
+                    <td className="book-no">
+                      <span className="book-no-badge">{book.bookNo}</span>
+                    </td>
                     <td className="book-title">
                       <div className="title-cell">
                         {book.image && (
@@ -207,7 +205,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
                     </td>
                     <td>
                       <span className={`status-badge ${book.availability ? 'available' : 'unavailable'}`}>
-                        {book.availability ? '✅ Available' : '❌ Unavailable'}
+                        {book.availability ? 'Available' : 'Unavailable'}
                       </span>
                     </td>
                     <td>
@@ -219,14 +217,14 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
                         className="btn btn-small btn-secondary"
                         title="Edit Book"
                       >
-                        ✏️
+                        Edit
                       </button>
                       <button
                         onClick={() => onDelete(book.id)}
                         className="btn btn-small btn-danger"
                         title="Delete Book"
                       >
-                        🗑️
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -240,6 +238,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
             {currentBooks.map((book) => (
               <div key={book.id} className="book-card">
                 <div className="book-card-header">
+                  <span className="book-no-badge-mobile">{book.bookNo}</span>
                   {book.image && (
                     <img 
                       src={book.image} 
@@ -257,7 +256,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
                     )}
                     <p className="book-card-author">by {book.author}</p>
                     <span className={`status-badge ${book.availability ? 'available' : 'unavailable'}`}>
-                      {book.availability ? '✅ Available' : '❌ Unavailable'}
+                      {book.availability ? 'Available' : 'Unavailable'}
                     </span>
                   </div>
                 </div>
@@ -296,13 +295,13 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
                     onClick={() => onEdit(book)}
                     className="btn btn-small btn-secondary"
                   >
-                    ✏️ Edit
+                    Edit
                   </button>
                   <button
                     onClick={() => onDelete(book.id)}
                     className="btn btn-small btn-danger"
                   >
-                    🗑️ Delete
+                    Delete
                   </button>
                 </div>
               </div>
@@ -317,7 +316,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
                 disabled={currentPage === 1}
                 className="btn btn-small btn-secondary"
               >
-                ⬅️ Previous
+                Previous
               </button>
               
               <div className="page-numbers">
@@ -340,7 +339,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
                 disabled={currentPage === totalPages}
                 className="btn btn-small btn-secondary"
               >
-                Next ➡️
+                Next
               </button>
             </div>
           )}

@@ -3,6 +3,7 @@ import './BookForm.css';
 
 const BookForm = ({ book, onSubmit, onCancel, loading }) => {
   const [formData, setFormData] = useState({
+    bookNo: '',
     title: '',
     image: '',
     author: '',
@@ -21,6 +22,7 @@ const BookForm = ({ book, onSubmit, onCancel, loading }) => {
   useEffect(() => {
     if (book) {
       setFormData({
+        bookNo: book.bookNo || '',
         title: book.title || '',
         image: book.image || '',
         author: book.author || '',
@@ -54,6 +56,10 @@ const BookForm = ({ book, onSubmit, onCancel, loading }) => {
 
   const validateForm = () => {
     const newErrors = {};
+    
+    if (!formData.bookNo.trim()) {
+      newErrors.bookNo = 'Book number is required';
+    }
     
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
@@ -117,6 +123,25 @@ const BookForm = ({ book, onSubmit, onCancel, loading }) => {
       
       <form onSubmit={handleSubmit} className="form">
         <div className="form-grid">
+          {/* Book Number */}
+          <div className="form-group">
+            <label htmlFor="bookNo" className="form-label">
+              Book Number <span className="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="bookNo"
+              name="bookNo"
+              value={formData.bookNo}
+              onChange={handleChange}
+              className={`form-input ${errors.bookNo ? 'error' : ''}`}
+              placeholder="e.g., B10001"
+              disabled={book ? true : false}
+            />
+            {errors.bookNo && <span className="error-text">{errors.bookNo}</span>}
+            {!book && <span className="helper-text">Format: B followed by numbers (e.g., B10001)</span>}
+          </div>
+
           {/* Title */}
           <div className="form-group">
             <label htmlFor="title" className="form-label">
@@ -298,7 +323,7 @@ const BookForm = ({ book, onSubmit, onCancel, loading }) => {
               className="form-checkbox"
             />
             <label htmlFor="availability" className="checkbox-label">
-              📚 Book is currently available for borrowing
+              Book is currently available for borrowing
             </label>
           </div>
         </div>
@@ -311,14 +336,14 @@ const BookForm = ({ book, onSubmit, onCancel, loading }) => {
             className="btn btn-secondary"
             disabled={loading}
           >
-            ❌ Cancel
+            Cancel
           </button>
           <button
             type="submit"
             className="btn btn-primary"
             disabled={loading}
           >
-            {loading ? '⏳ Saving...' : (book ? '💾 Update Book' : '➕ Add Book')}
+            {loading ? 'Saving...' : (book ? 'Update Book' : 'Add Book')}
           </button>
         </div>
       </form>

@@ -22,6 +22,7 @@ public class BookService {
     // Create a new book
     public BookResponseDTO createBook(BookCreateDTO bookCreateDTO) {
         Book book = new Book();
+        book.setBookNo(bookCreateDTO.getBookNo());
         book.setTitle(bookCreateDTO.getTitle());
         book.setImage(bookCreateDTO.getImage());
         book.setAuthor(bookCreateDTO.getAuthor());
@@ -54,6 +55,12 @@ public class BookService {
         return book.map(this::convertToResponseDTO);
     }
 
+    // Get book by book number
+    public Optional<BookResponseDTO> getBookByBookNo(String bookNo) {
+        Optional<Book> book = bookRepository.findByBookNo(bookNo);
+        return book.map(this::convertToResponseDTO);
+    }
+
     // Update book
     public Optional<BookResponseDTO> updateBook(String id, BookUpdateDTO bookUpdateDTO) {
         Optional<Book> existingBookOpt = bookRepository.findById(id);
@@ -62,6 +69,9 @@ public class BookService {
             Book existingBook = existingBookOpt.get();
 
             // Update only non-null fields
+            if (bookUpdateDTO.getBookNo() != null) {
+                existingBook.setBookNo(bookUpdateDTO.getBookNo());
+            }
             if (bookUpdateDTO.getTitle() != null) {
                 existingBook.setTitle(bookUpdateDTO.getTitle());
             }
@@ -222,6 +232,7 @@ public class BookService {
     private BookResponseDTO convertToResponseDTO(Book book) {
         return new BookResponseDTO(
                 book.getId(),
+                book.getBookNo(),
                 book.getTitle(),
                 book.getImage(),
                 book.getAuthor(),
