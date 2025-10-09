@@ -6,10 +6,14 @@ import com.management.library.UserManagement.Exception.*;
 import com.management.library.UserManagement.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,11 +24,16 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String mailFromAddress;
 
     // Manual constructor
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
     }
 
     public UserResponse createUser(CreateUserRequest request) {
@@ -248,5 +257,51 @@ public class UserService {
 
     public long getUserCountByStatus(User.UserStatus status) {
         return userRepository.countByStatus(status);
+    }
+
+    public void requestPasswordReset(ForgotPasswordRequest request) {
+        log.info("Requesting password reset for email: {}", request.getEmail());
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
+
+        // Generate a 6-digit numeric token
+        SecureRandom secureRandom = new SecureRandom();
+        String token = String.format("%06d", secureRandom.nextInt(1_000_000));
+        user.setResetToken(token);
+        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(2));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        // Send token via email
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(mailFromAddress);
+            message.setTo(user.getEmail());
+            message.setSubject("Library - Password Reset Token");
+            message.setText("Use this token to reset your password: " + token + " This token expires in 2 minutes.");
+            mailSender.send(message);
+            log.info("Password reset token email sent to: {}", user.getEmail());
+        } catch (Exception ex) {
+            log.error("Failed to send reset email: {}", ex.getMessage());
+            // Still expose generic response to caller; admins can inspect logs.
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        log.info("Resetting password using token");
+
+        User user = userRepository.findByResetToken(request.getToken())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid or expired reset token"));
+
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException("Reset token has expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }

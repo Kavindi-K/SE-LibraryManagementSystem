@@ -228,6 +228,13 @@
 
 .signup-link:hover { color: #e55a0f; }
 
+/* Forgot panel styles */
+.forgot-link.as-button { background: none; border: none; padding: 0; cursor: pointer; }
+.forgot-panel { margin-top: 14px; text-align: left; }
+.forgot-form { margin-top: 10px; display: flex; flex-direction: column; gap: 14px; }
+.forgot-button { background: #1f7ae0; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.success-message { background: #ecfdf5; color: #065f46; padding: 10px; border-radius: 8px; border: 1px solid #a7f3d0; }
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .login-container { padding: 40px 15px; }

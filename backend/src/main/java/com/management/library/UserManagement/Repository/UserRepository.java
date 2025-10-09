@@ -25,4 +25,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findBySearchQuery(String searchQuery);
 
     long countByStatus(User.UserStatus status);
+
+    Optional<User> findByResetToken(String resetToken);
 }
