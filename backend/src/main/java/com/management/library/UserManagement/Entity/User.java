@@ -33,6 +33,10 @@ public class User {
 
     private UserStatus status = UserStatus.ACTIVATED;
 
+    // Password reset fields
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -92,6 +96,14 @@ public class User {
         return status;
     }
 
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public LocalDateTime getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -135,6 +147,14 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

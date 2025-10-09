@@ -172,6 +172,30 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/password/forgot")
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        log.info("POST /api/users/password/forgot - Requesting reset for email: {}", request.getEmail());
+        userService.requestPasswordReset(request);
+        ApiResponse<String> response = new ApiResponse<>(
+                true,
+                "If the email exists, a reset token has been issued",
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity<ApiResponse<String>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        log.info("POST /api/users/password/reset - Resetting password using token");
+        userService.resetPassword(request);
+        ApiResponse<String> response = new ApiResponse<>(
+                true,
+                "Password has been reset successfully",
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PutMapping("/{id}/activate")
     public ResponseEntity<ApiResponse<String>> activateUser(@PathVariable String id) {
         log.info("PUT /api/users/{}/activate - Activating user", id);
