@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Min;
 
 public class BookCreateDTO {
 
+    @NotBlank(message = "Book number is required")
+    private String bookNo;
+
     @NotBlank(message = "Title is required")
     private String title;
 
@@ -41,9 +44,10 @@ public class BookCreateDTO {
     public BookCreateDTO() {
     }
 
-    public BookCreateDTO(String title, String image, String author, String genre,
+    public BookCreateDTO(String bookNo, String title, String image, String author, String genre,
                          Integer year, String edition, String description, String language,
                          Boolean availability, Integer availableCopies, String location) {
+        this.bookNo = bookNo;
         this.title = title;
         this.image = image;
         this.author = author;
@@ -58,6 +62,14 @@ public class BookCreateDTO {
     }
 
     // Getters and Setters
+    public String getBookNo() {
+        return bookNo;
+    }
+
+    public void setBookNo(String bookNo) {
+        this.bookNo = bookNo;
+    }
+
     public String getTitle() {
         return title;
     }

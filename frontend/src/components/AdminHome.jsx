@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MemberManagement from "./MemberManagement";
 import Reservations from "./Reservations";
-import Borrowings from "./Borrowings"; // Fixed: removed duplicate import
+import Borrowings from "./Borrowings";
 import DashboardStats from "./DashboardStats";
 import BookList from "./BookList";
 import BookForm from "./BookForm";
@@ -27,6 +27,7 @@ const AdminHome = () => {
     totalCopies: 0,
     availableCopies: 0
   });
+  const [nextBookNo, setNextBookNo] = useState('B10001');
 
   const API_BASE_URL = 'http://localhost:8081/api/books';
 
@@ -38,6 +39,27 @@ const AdminHome = () => {
     navigate("/");
   };
 
+  // Generate next book number
+  const generateNextBookNo = (booksList) => {
+    if (booksList.length === 0) {
+      return 'B10001';
+    }
+    
+    // Extract numbers from bookNo and find the max
+    const numbers = booksList
+      .map(book => {
+        const match = book.bookNo?.match(/B(\d+)/);
+        return match ? parseInt(match[1]) : 10000;
+      })
+      .filter(num => !isNaN(num));
+    
+    if (numbers.length === 0) return 'B10001';
+    
+    const maxNum = Math.max(...numbers);
+    const nextNum = maxNum + 1;
+    return `B${nextNum}`;
+  };
+
   // Book management functions
   const fetchBooks = async () => {
     setLoading(true);
@@ -45,8 +67,10 @@ const AdminHome = () => {
       const response = await fetch(API_BASE_URL);
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched books:', data); // Debug log
+        console.log('Fetched books:', data);
         setBooks(data);
+        // Generate next book number after fetching
+        setNextBookNo(generateNextBookNo(data));
       } else {
         console.error('Failed to fetch books - Status:', response.status);
         setError('Failed to fetch books');
@@ -74,18 +98,24 @@ const AdminHome = () => {
   const addBook = async (bookData) => {
     setLoading(true);
     try {
+      // Auto-generate bookNo if not provided
+      const bookWithNo = {
+        ...bookData,
+        bookNo: bookData.bookNo || nextBookNo
+      };
+
       const response = await fetch(API_BASE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(bookData),
+        body: JSON.stringify(bookWithNo),
       });
 
       if (response.ok) {
         setSuccess('Book added successfully!');
         setShowForm(false);
-        console.log('Book added successfully, refreshing list...'); // Debug log
+        console.log('Book added successfully, refreshing list...');
         fetchBooks();
         fetchStats();
       } else {
@@ -93,6 +123,7 @@ const AdminHome = () => {
         setError(errorData.message || 'Failed to add book');
       }
     } catch (err) {
+      console.error('Error adding book:', err);
       setError('Error adding book');
     } finally {
       setLoading(false);
@@ -121,6 +152,7 @@ const AdminHome = () => {
         setError(errorData.message || 'Failed to update book');
       }
     } catch (err) {
+      console.error('Error updating book:', err);
       setError('Error updating book');
     } finally {
       setLoading(false);
@@ -143,6 +175,7 @@ const AdminHome = () => {
           setError('Failed to delete book');
         }
       } catch (err) {
+        console.error('Error deleting book:', err);
         setError('Error deleting book');
       } finally {
         setLoading(false);
@@ -196,7 +229,7 @@ const AdminHome = () => {
       case 'books':
         return (
           <div className="books-management">
-            <h2>📚 Books Management</h2>
+            <h2>Books Management</h2>
             
             {/* Success/Error Messages */}
             {error && <div className="error-message">{error}</div>}
@@ -213,8 +246,9 @@ const AdminHome = () => {
                   onClick={() => setShowForm(true)}
                   disabled={loading}
                 >
-                  ➕ Add New Book
+                  Add New Book
                 </button>
+                <span className="next-book-no">Next Book No: {nextBookNo}</span>
               </div>
             )}
             
@@ -225,6 +259,7 @@ const AdminHome = () => {
                 onSubmit={handleFormSubmit}
                 onCancel={handleFormCancel}
                 loading={loading}
+                suggestedBookNo={!editingBook ? nextBookNo : null}
               />
             )}
             
@@ -249,7 +284,7 @@ const AdminHome = () => {
       default:
         return (
           <div className="dashboard-overview">
-            <h1>Welcome, Admin 👋</h1>
+            <h1>Welcome, Admin</h1>
             <p>Here's your comprehensive library management dashboard with live member statistics.</p>
             
             <DashboardStats />
@@ -314,7 +349,7 @@ const AdminHome = () => {
               className={activeSection === 'dashboard' ? 'active' : ''}
               onClick={() => setActiveSection('dashboard')}
             >
-              📊 Dashboard
+              Dashboard
             </button>
           </li>
           <li>
@@ -322,7 +357,7 @@ const AdminHome = () => {
               className={activeSection === 'members' ? 'active' : ''}
               onClick={() => setActiveSection('members')}
             >
-              👥 Member Management
+              Member Management
             </button>
           </li>
           <li>
@@ -330,7 +365,7 @@ const AdminHome = () => {
               className={activeSection === 'books' ? 'active' : ''}
               onClick={() => setActiveSection('books')}
             >
-              📚 Books Management
+              Books Management
             </button>
           </li>
           <li>
@@ -338,7 +373,7 @@ const AdminHome = () => {
               className={activeSection === 'borrowing' ? 'active' : ''}
               onClick={() => setActiveSection('borrowing')}
             >
-              📚 Books Borrowing & Fine Management
+              Books Borrowing & Fine Management
             </button>
           </li>
           <li>
@@ -346,7 +381,7 @@ const AdminHome = () => {
               className={activeSection === 'reservations' ? 'active' : ''}
               onClick={() => setActiveSection('reservations')}
             >
-              📋 Book reservations Management
+              Book Reservations Management
             </button>
           </li>
         </ul>

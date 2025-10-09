@@ -11,6 +11,12 @@ import java.util.Optional;
 @Repository
 public interface BookRepository extends MongoRepository<Book, String> {
 
+    // Find books by book number
+    Optional<Book> findByBookNo(String bookNo);
+
+    // Check if book number exists
+    boolean existsByBookNo(String bookNo);
+
     // Find books by availability status
     List<Book> findByAvailability(Boolean availability);
 

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 
 public class BookUpdateDTO {
 
+    private String bookNo;
     private String title;
     private String image;
     private String author;
@@ -23,9 +24,10 @@ public class BookUpdateDTO {
     public BookUpdateDTO() {
     }
 
-    public BookUpdateDTO(String title, String image, String author, String genre,
+    public BookUpdateDTO(String bookNo, String title, String image, String author, String genre,
                          Integer year, String edition, String description, String language,
                          Boolean availability, Integer availableCopies, String location) {
+        this.bookNo = bookNo;
         this.title = title;
         this.image = image;
         this.author = author;
@@ -40,6 +42,14 @@ public class BookUpdateDTO {
     }
 
     // Getters and Setters
+    public String getBookNo() {
+        return bookNo;
+    }
+
+    public void setBookNo(String bookNo) {
+        this.bookNo = bookNo;
+    }
+
     public String getTitle() {
         return title;
     }

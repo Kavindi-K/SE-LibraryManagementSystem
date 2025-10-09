@@ -11,6 +11,9 @@ public class Book {
     @Id
     private String id;
 
+    @Field("bookno")
+    private String bookNo;
+
     @Field("title")
     private String title;
 
@@ -54,9 +57,10 @@ public class Book {
     public Book() {
     }
 
-    public Book(String title, String image, String author, String genre, Integer year,
+    public Book(String bookNo, String title, String image, String author, String genre, Integer year,
                 String edition, String description, String language, Boolean availability,
                 Integer availableCopies, String location) {
+        this.bookNo = bookNo;
         this.title = title;
         this.image = image;
         this.author = author;
@@ -79,6 +83,14 @@ public class Book {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getBookNo() {
+        return bookNo;
+    }
+
+    public void setBookNo(String bookNo) {
+        this.bookNo = bookNo;
     }
 
     public String getTitle() {
