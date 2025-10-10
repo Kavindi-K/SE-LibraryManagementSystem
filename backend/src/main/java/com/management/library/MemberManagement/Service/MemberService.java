@@ -62,7 +62,11 @@ public class MemberService {
     }
 
     public MemberResponse createMemberFromUser(String userId, String firstName, String lastName, String email) {
-        log.info("Auto-creating member for user: {}", userId);
+        return createMemberFromUser(userId, firstName, lastName, email, Member.MembershipType.BASIC);
+    }
+
+    public MemberResponse createMemberFromUser(String userId, String firstName, String lastName, String email, Member.MembershipType membershipType) {
+        log.info("Auto-creating member for user: {} with membership type: {}", userId, membershipType);
 
         // Check if member already exists for this user
         if (memberRepository.existsByUserId(userId)) {
@@ -75,7 +79,7 @@ public class MemberService {
         request.setFirstName(firstName);
         request.setLastName(lastName);
         request.setEmail(email);
-        request.setMembershipType(Member.MembershipType.BASIC); // Default membership
+        request.setMembershipType(membershipType); // Use the provided membership type
         request.setStatus(Member.MemberStatus.ACTIVE);
 
         return createMember(request);

@@ -64,12 +64,21 @@ public class MemberRegistrationController {
                 // Member not found, which is good - we can proceed
             }
 
-            // Create member using the existing createMemberFromUser method
+            // Create member using the existing createMemberFromUser method with membershipType
+            Member.MembershipType membershipTypeEnum;
+            try {
+                membershipTypeEnum = Member.MembershipType.valueOf(membershipType.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Invalid membership type: " + membershipType));
+            }
+
             MemberResponse memberResponse = memberService.createMemberFromUser(
                 userId, 
                 user.getFirstName(), 
                 user.getLastName(), 
-                user.getEmail()
+                user.getEmail(),
+                membershipTypeEnum
             );
 
             // Send welcome email with membershipType
