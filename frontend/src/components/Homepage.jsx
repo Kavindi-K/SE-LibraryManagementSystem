@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import SearchBar from './SearchBar';
+import GenreFilter from './GenreFilter';
+import BookGrid from './BookGrid';
+import BookCard from './BookCard';
+import BookDetails from './BookDetails';
 import './Homepage.css';
 
 const Homepage = () => {
@@ -21,23 +26,17 @@ const Homepage = () => {
   const [success, setSuccess] = useState('');
   const [isExistingMember, setIsExistingMember] = useState(false);
 
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user') || '{}');
-    setUser(userData);
-    
-    // Pre-fill email if user is logged in
-    if (userData && userData.email) {
-      setMemberFormData(prev => ({
-        ...prev,
-        email: userData.email
-      }));
-      
-      // Check if user is already a member
-      checkMembershipStatus(userData.id);
-    }
-  }, []);
+  // Book-related states
+  const [books, setBooks] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [genres, setGenres] = useState([]);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [booksLoading, setBooksLoading] = useState(true);
+  const [booksError, setBooksError] = useState('');
 
-  const checkMembershipStatus = async (userId) => {
+  const checkMembershipStatus = useCallback(async (userId) => {
     if (!userId) return;
     
     try {
@@ -46,17 +45,79 @@ const Homepage = () => {
         setIsExistingMember(true);
       }
     } catch (error) {
-      // User is not a member yet
       setIsExistingMember(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    setUser(userData);
+    
+    if (userData && userData.email) {
+      setMemberFormData(prev => ({
+        ...prev,
+        email: userData.email
+      }));
+      
+      checkMembershipStatus(userData.id);
+    }
+
+    // Fetch books first, then extract genres from books data
+    fetchBooks();
+  }, [checkMembershipStatus]);
+
+  // Filter books based on genre and search query
+  useEffect(() => {
+    let filtered = books;
+
+    // Filter by genre
+    if (selectedGenre !== 'all') {
+      filtered = filtered.filter(book => book.genre === selectedGenre);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(book =>
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query) ||
+        book.description.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredBooks(filtered);
+    
+    // Extract genres from books when books change
+    if (books.length > 0) {
+      const uniqueGenres = [...new Set(books.map(book => book.genre))].filter(Boolean).sort();
+      setGenres(uniqueGenres);
+    }
+  }, [books, selectedGenre, searchQuery]);
+
+  const fetchBooks = async () => {
+    try {
+      setBooksLoading(true);
+      setBooksError('');
+      const response = await axios.get('http://localhost:8081/api/books');
+      if (response.data && Array.isArray(response.data)) {
+        setBooks(response.data);
+        setFilteredBooks(response.data);
+      } else {
+        setBooksError('Failed to load books');
+      }
+    } catch (err) {
+      console.error('Error fetching books:', err);
+      setBooksError('Error loading books. Please try again.');
+    } finally {
+      setBooksLoading(false);
     }
   };
 
+
   const handleBecomeMemberClick = () => {
     if (isExistingMember) {
-      // Show member ID modal for existing members to enter their ID
       setShowMemberIdModal(true);
     } else {
-      // Show registration modal for new members
       setShowMemberModal(true);
     }
   };
@@ -64,7 +125,6 @@ const Homepage = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('isAuthenticated');
-    // Clear member data to force manual ID entry on next login
     localStorage.removeItem('member');
     localStorage.removeItem('isMemberAuthenticated');
     navigate('/login');
@@ -95,21 +155,18 @@ const Homepage = () => {
     setSuccess('');
 
     try {
-      // Validate form data
       if (!memberFormData.email || !memberFormData.password) {
         setError('Please fill in all required fields');
         setLoading(false);
         return;
       }
 
-      // Check if the email matches the logged-in user's email
       if (user && user.email !== memberFormData.email) {
         setError('Email must match your registered account email');
         setLoading(false);
         return;
       }
 
-      // Verify password matches the user's password (basic verification)
       const verifyResponse = await axios.post('http://localhost:8081/api/users/login', {
         username: user.username,
         password: memberFormData.password
@@ -121,7 +178,6 @@ const Homepage = () => {
         return;
       }
 
-      // Register as member
       const memberResponse = await axios.post('http://localhost:8081/api/members/register', {
         userId: user.id,
         email: memberFormData.email,
@@ -136,14 +192,11 @@ const Homepage = () => {
           membershipType: 'BASIC'
         });
         
-        // Update member status immediately
         setIsExistingMember(true);
         
-        // Store member data only for immediate redirect
         localStorage.setItem('member', JSON.stringify(memberResponse.data.data));
         localStorage.setItem('isMemberAuthenticated', 'true');
         
-        // Redirect to member profile after 3 seconds to show the message
         setTimeout(() => {
           setShowMemberModal(false);
           navigate('/member-profile');
@@ -154,7 +207,6 @@ const Homepage = () => {
     } catch (error) {
       console.error('Member registration error:', error);
       if (error.response?.status === 400 && error.response?.data?.message?.includes('already a member')) {
-        // User is already a member, show error and direct them to use Member ID
         setError('You are already a registered member. Please use "Already a Member?" option below and enter your Member ID to access your profile.');
       } else if (error.response?.data?.message) {
         setError(error.response.data.message);
@@ -181,7 +233,6 @@ const Homepage = () => {
       const response = await axios.get(`http://localhost:8081/api/members/member-id/${memberIdLoginData.memberId}`);
 
       if (response.data.success) {
-        // Store member data and redirect to profile
         localStorage.setItem('member', JSON.stringify(response.data.data));
         localStorage.setItem('isMemberAuthenticated', 'true');
         
@@ -197,41 +248,21 @@ const Homepage = () => {
     }
   };
 
-  // Mock featured books data
-  const featuredBooks = [
-    {
-      id: 1,
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      cover: "/book.png",
-      available: true,
-      rating: 4.5
-    },
-    {
-      id: 2,
-      title: "To Kill a Mockingbird",
-      author: "Harper Lee",
-      cover: "/book2.png",
-      available: true,
-      rating: 4.8
-    },
-    {
-      id: 3,
-      title: "1984",
-      author: "George Orwell",
-      cover: "/book3.png",
-      available: false,
-      rating: 4.7
-    },
-    {
-      id: 4,
-      title: "Pride and Prejudice",
-      author: "Jane Austen",
-      cover: "/book.png",
-      available: true,
-      rating: 4.6
-    }
-  ];
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+  };
+
+  const handleGenreChange = (genre) => {
+    setSelectedGenre(genre);
+  };
+
+  const handleBookSelect = (book) => {
+    setSelectedBook(book);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedBook(null);
+  };
 
   return (
     <div className="homepage-container">
@@ -293,28 +324,43 @@ const Homepage = () => {
       {/* Featured Books Section */}
       <section id="featured" className="featured-books-section">
         <div className="container">
-          <h2>Featured Books</h2>
-          <div className="books-grid">
-            {featuredBooks.map(book => (
-              <div key={book.id} className="book-card">
-                <div className="book-cover">
-                  <img src={book.cover} alt={book.title} />
-                  <div className={`availability ${book.available ? 'available' : 'unavailable'}`}>
-                    {book.available ? 'Available' : 'Checked Out'}
-                  </div>
-                </div>
-                <div className="book-info">
-                  <h3>{book.title}</h3>
-                  <p className="author">by {book.author}</p>
-                  <div className="rating">
-                    {'★'.repeat(Math.floor(book.rating))} {book.rating}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2>Explore Our Collection</h2>
+          
+          {/* Search Bar */}
+          <SearchBar onSearch={handleSearchChange} />
+          
+          {/* Genre Filter */}
+          <GenreFilter 
+            genres={genres} 
+            selectedGenre={selectedGenre}
+            onGenreChange={handleGenreChange}
+          />
+
+          {/* Books Display */}
+          {booksLoading ? (
+            <div className="loading-message">Loading books...</div>
+          ) : booksError ? (
+            <div className="error-message">{booksError}</div>
+          ) : filteredBooks.length > 0 ? (
+            <BookGrid 
+              books={filteredBooks} 
+              onBookSelect={handleBookSelect}
+            />
+          ) : (
+            <div className="no-books-message">
+              <p>No books found. Try adjusting your search or filters.</p>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Book Detail Modal */}
+      {selectedBook && (
+        <BookDetails 
+          book={selectedBook}
+          onClose={handleCloseDetail}
+        />
+      )}
 
       {/* Library Services Section */}
       <section id="services" className="services-section">
