@@ -98,20 +98,23 @@ const Signup = () => {
 
   return (
     <div className="signup-container">
+      <div className="signup-background">
+        <img src="/herosection.avif" alt="SARASAVI Library" className="signup-bg-img" />
+        <img src="/overlay.jpg" alt="Overlay" className="signup-overlay-img" />
+      </div>
       <div className="signup-content">
         {/* Welcome Section - Left Side */}
         <div className="signup-welcome">
-          <div className="library-image">
-            <img 
-               src="/library_signup.png" 
-              alt="Library" 
-            />
+          <div className="logo-section">
+            <img src="/logo.png" alt="SARASAVI Logo" className="signup-logo" />
+            <div className="logo-text">
+              <h1>SARASAVI</h1>
+              <h2>LIBRARY & LEARNING HUB</h2>
+            </div>
           </div>
-          <h1>Welcome to</h1>
-          <h2>Our Library</h2>
-          <p>Join our community of book lovers</p>
+          <p>Join our community of learners</p>
           <p>Discover, read, and share knowledge</p>
-          <p>Your literary journey starts here</p>
+          <p>Your educational journey starts here</p>
         </div>
 
         {/* Signup Form - Right Side */}

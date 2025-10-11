@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { api } from '../api';
 import './BookDetails.css';
 
-const BookDetails = ({ book, onClose }) => {
+const BookDetails = ({ book, onClose, onBorrowSuccess }) => {
   const [quantity, setQuantity] = useState(1);
+  const [borrowing, setBorrowing] = useState(false);
+  const [error, setError] = useState('');
 
   if (!book) {
     return null;
@@ -13,11 +16,80 @@ const BookDetails = ({ book, onClose }) => {
     setQuantity(Math.max(1, Math.min(value, book.availableCopies || 1)));
   };
 
-  const handleBorrow = () => {
-    if (book.availability && quantity > 0) {
-      // Handle borrow logic here
-      console.log(`Borrowed ${quantity} copy(ies) of ${book.title}`);
+  const handleBorrow = async () => {
+    if (!book.availability || quantity <= 0) {
+      setError('This book is not available for borrowing');
+      return;
+    }
+
+    // Get user and member info from localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user || !user.id) {
+      setError('Please log in to borrow books');
+      return;
+    }
+
+    setBorrowing(true);
+    setError('');
+
+    try {
+      // Get member info using user ID
+      const memberResponse = await fetch(`http://localhost:8081/api/members/user/${user.id}`);
+      if (!memberResponse.ok) {
+        throw new Error('Member information not found');
+      }
+
+      const memberData = await memberResponse.json();
+      if (!memberData.success || !memberData.data) {
+        throw new Error('Member information not found');
+      }
+
+      const member = memberData.data;
+      const memberId = member.memberId || member.id;
+
+      // Create borrowing record
+      const borrowingData = {
+        memberId: memberId,
+        bookId: book.id,
+        borrowDate: new Date().toISOString(),
+        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+        status: 'ACTIVE',
+        lateFee: 0,
+        quantity: quantity
+      };
+
+      const borrowingResult = await api.createBorrowing(borrowingData);
+
+      // Update book availability if needed
+      const newAvailableCopies = book.availableCopies - quantity;
+      const updateBookData = {
+        ...book,
+        availableCopies: newAvailableCopies,
+        availability: newAvailableCopies > 0
+      };
+
+      // Update book in the backend
+      await fetch(`http://localhost:8081/api/books/${book.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateBookData),
+      });
+
+      // Success - call callback if provided
+      if (onBorrowSuccess) {
+        onBorrowSuccess(borrowingResult, book);
+      }
+
+      alert(`Successfully borrowed ${quantity} copy(ies) of "${book.title}". Due date: ${new Date(borrowingData.dueDate).toLocaleDateString()}`);
       onClose();
+
+    } catch (err) {
+      console.error('Error borrowing book:', err);
+      setError(err.message || 'Failed to borrow book. Please try again.');
+    } finally {
+      setBorrowing(false);
     }
   };
 
@@ -139,8 +211,9 @@ const BookDetails = ({ book, onClose }) => {
                 <button 
                   className="btn btn-borrow"
                   onClick={handleBorrow}
+                  disabled={borrowing}
                 >
-                  Borrow Book
+                  {borrowing ? 'Borrowing...' : 'Borrow Book'}
                 </button>
               </div>
             )}
@@ -151,6 +224,13 @@ const BookDetails = ({ book, onClose }) => {
                 This book is currently unavailable. Please check back later or reserve it.
               </div>
             )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -159,3 +239,4 @@ const BookDetails = ({ book, onClose }) => {
 };
 
 export default BookDetails;
+

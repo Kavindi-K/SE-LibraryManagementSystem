@@ -270,8 +270,11 @@ const Homepage = () => {
       <header className="homepage-header">
         <div className="header-content">
           <div className="logo-section">
-            <img src="/library.png" alt="Library Logo" className="library-logo" />
-            <h1>NexaLibrary Library</h1>
+            <img src="/logo.png" alt="SARASAVI Logo" className="logo-image" />
+            <div className="logo-text">
+              <h1 className="logo-title">SARASAVI</h1>
+              <p className="logo-subtitle">LIBRARY & LEARNING HUB</p>
+            </div>
           </div>
           
           <nav className="header-nav">
@@ -292,7 +295,7 @@ const Homepage = () => {
             <div className="user-profile">
               <span className="welcome-text">Welcome, {user?.username || 'User'}</span>
               <button onClick={handleLogout} className="logout-btn">
-                Logout
+                <img src="/logout.png" alt="Logout" className="logout-icon" />
               </button>
             </div>
           </div>
@@ -301,21 +304,29 @@ const Homepage = () => {
 
       {/* Hero Section */}
       <section className="hero-section">
+        <div className="hero-background">
+          <img src="/homepage.jpg" alt="SARASAVI Library" className="hero-bg-img" />
+          <div className="hero-overlay"></div>
+        </div>
         <div className="hero-content">
-          <h2>Discover Knowledge at NexaLibrary</h2>
-          <p>Your gateway to academic excellence and lifelong learning</p>
+          <div className="hero-badge">
+            <span>🌟 Welcome to the Future of Learning</span>
+          </div>
+          <h2>Discover Knowledge at <span className="highlight">SARASAVI</span></h2>
+          <p>Your gateway to academic excellence and lifelong learning. Explore our vast collection of books, 
+             digital resources, and innovative learning tools designed to empower your educational journey.</p>
           <div className="hero-stats">
             <div className="stat">
-              <h3>50,000+</h3>
-              <p>Books Available</p>
+              <span className="stat-number">50,000+</span>
+              <span className="stat-label">Books Available</span>
             </div>
             <div className="stat">
-              <h3>24/7</h3>
-              <p>Digital Access</p>
+              <span className="stat-number">24/7</span>
+              <span className="stat-label">Digital Access</span>
             </div>
             <div className="stat">
-              <h3>500+</h3>
-              <p>Study Seats</p>
+              <span className="stat-number">500+</span>
+              <span className="stat-label">Study Seats</span>
             </div>
           </div>
         </div>
@@ -393,33 +404,44 @@ const Homepage = () => {
 
       {/* About Library Section */}
       <section id="about" className="about-section">
+        <div className="about-background">
+          <img src="/second.jpg" alt="SARASAVI Library" className="about-bg-img" />
+          <div className="about-overlay"></div>
+        </div>
         <div className="container">
-          <div className="about-content">
+          <div className="about-content-overlay">
             <div className="about-text">
-              <h2>About NexaLibrary</h2>
+              <div className="about-badge">
+                <span>About SARASAVI</span>
+              </div>
+              <h2>Empowering Education Through Innovation</h2>
               <p>
-                The NexaLibrary Library serves as the academic heart of our institution, 
+                The SARASAVI Library & Learning Hub serves as the academic heart of our institution, 
                 providing comprehensive resources and services to support learning, teaching, 
                 and research activities. Our modern facility houses an extensive collection 
                 of books, journals, and digital resources across various disciplines.
               </p>
               <div className="library-hours">
                 <h3>Library Hours</h3>
-                <div className="hours-grid">
-                  <div>
-                    <strong>Monday - Friday:</strong> 8:00 AM - 10:00 PM
-                  </div>
-                  <div>
-                    <strong>Saturday:</strong> 9:00 AM - 8:00 PM
-                  </div>
-                  <div>
-                    <strong>Sunday:</strong> 10:00 AM - 6:00 PM
-                  </div>
-                </div>
+                <ul className="hours-list">
+                  <li className="hours-item">
+                    <span className="hours-day">Monday - Friday</span>
+                    <span className="hours-time">8:00 AM - 10:00 PM</span>
+                  </li>
+                  <li className="hours-item">
+                    <span className="hours-day">Saturday</span>
+                    <span className="hours-time">9:00 AM - 8:00 PM</span>
+                  </li>
+                  <li className="hours-item">
+                    <span className="hours-day">Sunday</span>
+                    <span className="hours-time">10:00 AM - 6:00 PM</span>
+                  </li>
+                  <li className="hours-item">
+                    <span className="hours-day">Holidays</span>
+                    <span className="hours-time">10:00 AM - 2:00 PM</span>
+                  </li>
+                </ul>
               </div>
-            </div>
-            <div className="about-image">
-              <img src="/library.png" alt="NexaLibrary" />
             </div>
           </div>
         </div>
@@ -428,23 +450,23 @@ const Homepage = () => {
       {/* Contact Section */}
       <section id="contact" className="contact-section">
         <div className="container">
-          <h2>Contact Us</h2>
+          <h2>Get in Touch</h2>
           <div className="contact-info">
             <div className="contact-item">
-              <h4>Location</h4>
-              <p>NexaLibrary, New Kandy Road, Malabe, Sri Lanka</p>
+              <h4>📍 Location</h4>
+              <p>SARASAVI Learning Hub<br/>New Kandy Road, Malabe</p>
             </div>
             <div className="contact-item">
-              <h4>Phone</h4>
+              <h4>📞 Phone</h4>
               <p>+94 11 754 4801</p>
             </div>
             <div className="contact-item">
-              <h4>Email</h4>
-              <p>library@nexalibrary.lk</p>
+              <h4>✉️ Email</h4>
+              <p>info@sarasavi.lk</p>
             </div>
             <div className="contact-item">
-              <h4>Help Desk</h4>
-              <p>Available during library hours for assistance</p>
+              <h4>🕒 Hours</h4>
+              <p>Mon-Fri: 8AM-10PM<br/>Sat-Sun: 9AM-6PM</p>
             </div>
           </div>
         </div>
@@ -624,7 +646,7 @@ const Homepage = () => {
       {/* Footer */}
       <footer className="homepage-footer">
         <div className="container">
-          <p>&copy; 2025 NexaLibrary Library. All rights reserved.</p>
+          <p>&copy; 2025 SARASAVI Library & Learning Hub. All rights reserved.</p>
         </div>
       </footer>
     </div>
