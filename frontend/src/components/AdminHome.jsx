@@ -12,7 +12,7 @@ import "./AdminHome.css";
 const AdminHome = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
-  
+
   // Book management state
   const [books, setBooks] = useState([]);
   const [editingBook, setEditingBook] = useState(null);
@@ -230,18 +230,18 @@ const AdminHome = () => {
         return (
           <div className="books-management">
             <h2>Books Management</h2>
-            
+
             {/* Success/Error Messages */}
             {error && <div className="error-message">{error}</div>}
             {success && <div className="success-message">{success}</div>}
-            
+
             {/* Book Stats */}
             <BookStats stats={stats} />
-            
+
             {/* Add Book Button */}
             {!showForm && (
               <div className="book-actions">
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={() => setShowForm(true)}
                   disabled={loading}
@@ -251,7 +251,7 @@ const AdminHome = () => {
                 <span className="next-book-no">Next Book No: {nextBookNo}</span>
               </div>
             )}
-            
+
             {/* Book Form */}
             {showForm && (
               <BookForm
@@ -262,7 +262,7 @@ const AdminHome = () => {
                 suggestedBookNo={!editingBook ? nextBookNo : null}
               />
             )}
-            
+
             {/* Book List */}
             {!showForm && (
               <>
@@ -286,16 +286,16 @@ const AdminHome = () => {
           <div className="dashboard-overview">
             <h1>Welcome, Admin</h1>
             <p>Here's your comprehensive library management dashboard with live member statistics.</p>
-            
+
             <DashboardStats />
-            
+
             <div className="overview-stats">
               <div className="stat-card">
                 <div className="stat-icon">👥</div>
                 <div className="stat-info">
                   <h3>Member Management</h3>
                   <p>Manage library members, memberships, and profiles</p>
-                  <button 
+                  <button
                     className="btn btn-primary"
                     onClick={() => setActiveSection('members')}
                   >
@@ -309,26 +309,11 @@ const AdminHome = () => {
                 <div className="stat-info">
                   <h3>Books Management</h3>
                   <p>Catalog management and book inventory</p>
-                  <button 
+                  <button
                     className="btn btn-primary"
                     onClick={() => setActiveSection('books')}
                   >
                     Go to Books
-                  </button>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-icon">📋</div>
-                <div className="stat-info">
-                  <h3>Reservations & Fines</h3>
-                  <p>Handle reservations and fine management</p>
-                  <button 
-                    className="btn btn-secondary" 
-                    disabled
-                    title="Feature coming soon"
-                  >
-                    Coming Soon
                   </button>
                 </div>
               </div>
@@ -345,7 +330,7 @@ const AdminHome = () => {
         <h2 className="logo">Admin Dashboard</h2>
         <ul>
           <li>
-            <button 
+            <button
               className={activeSection === 'dashboard' ? 'active' : ''}
               onClick={() => setActiveSection('dashboard')}
             >
@@ -353,7 +338,7 @@ const AdminHome = () => {
             </button>
           </li>
           <li>
-            <button 
+            <button
               className={activeSection === 'members' ? 'active' : ''}
               onClick={() => setActiveSection('members')}
             >
@@ -361,7 +346,7 @@ const AdminHome = () => {
             </button>
           </li>
           <li>
-            <button 
+            <button
               className={activeSection === 'books' ? 'active' : ''}
               onClick={() => setActiveSection('books')}
             >
@@ -369,7 +354,7 @@ const AdminHome = () => {
             </button>
           </li>
           <li>
-            <button 
+            <button
               className={activeSection === 'borrowing' ? 'active' : ''}
               onClick={() => setActiveSection('borrowing')}
             >
@@ -377,7 +362,7 @@ const AdminHome = () => {
             </button>
           </li>
           <li>
-            <button 
+            <button
               className={activeSection === 'reservations' ? 'active' : ''}
               onClick={() => setActiveSection('reservations')}
             >
@@ -393,7 +378,7 @@ const AdminHome = () => {
       {/* Main Content */}
       <div className="admin-content">
         {renderContent()}
-        
+
         {/* Loading Overlay */}
         {loading && (
           <div className="loading-overlay">

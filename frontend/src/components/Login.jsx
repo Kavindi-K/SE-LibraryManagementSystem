@@ -111,16 +111,18 @@ const Login = () => {
 
   return (
     <div className="login-container">
+      <div className="login-background">
+        <img src="/herosection.avif" alt="SARASAVI Library" className="login-bg-img" />
+        <img src="/overlay.jpg" alt="Overlay" className="login-overlay-img" />
+      </div>
       <div className="login-card">
         {/* Logo Section */}
         <div className="logo-section">
-          <div className="book-logo">
-            <div className="book book1"></div>
-            <div className="book book2"></div>
-            <div className="book book3"></div>
+          <img src="/logo.png" alt="SARASAVI Logo" className="login-logo" />
+          <div className="logo-text">
+            <h1 className="main-title">SARASAVI</h1>
+            <p className="subtitle">LIBRARY & LEARNING HUB</p>
           </div>
-          <h1 className="main-title">LIBRARY</h1>
-          <p className="subtitle">MANAGEMENT SYSTEM</p>
         </div>
 
         {/* Login Form */}

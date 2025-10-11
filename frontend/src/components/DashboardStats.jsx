@@ -334,25 +334,6 @@ const DashboardStats = () => {
           </div>
         </div>
       </div>
-
-      {/* System Overview */}
-      <div className="stats-section">
-        <h2 className="section-title">🚀 System Status</h2>
-        <div className="system-status">
-          <div className="status-item implemented">
-            <span className="status-icon">✅</span>
-            <span className="status-text">Member Management - Fully Implemented</span>
-          </div>
-          <div className="status-item pending">
-            <span className="status-icon">🔄</span>
-            <span className="status-text">Book Management - Awaiting Teammate Implementation</span>
-          </div>
-          <div className="status-item pending">
-            <span className="status-icon">🔄</span>
-            <span className="status-text">Reservation & Fine Management - Awaiting Teammate Implementation</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
