@@ -74,9 +74,11 @@ export default function Reservations() {
   }
 
   async function remove(id) {
-    await api.deleteReservation(id)
-    setItems((prev) => prev.filter((it) => it.id !== id))
-    if (editingId === id) cancelEdit()
+    if (window.confirm('Are you sure you want to delete this reservation? This action cannot be undone.')) {
+      await api.deleteReservation(id)
+      setItems((prev) => prev.filter((it) => it.id !== id))
+      if (editingId === id) cancelEdit()
+    }
   }
 
   async function markReceived(id) {

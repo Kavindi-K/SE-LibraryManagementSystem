@@ -32,10 +32,16 @@ const Login = () => {
       });
 
       if (response.data.success) {
-        localStorage.setItem('user', JSON.stringify(response.data.data));
+        // Store user data and authentication status
+        const userData = response.data.data;
+        localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('isAuthenticated', 'true');
 
-        if (formData.username === 'Admin' && formData.password === 'admin123') {
+        // Check if user is admin and store admin status
+        const isAdmin = formData.username === 'Admin' && formData.password === 'admin123';
+        localStorage.setItem('isAdmin', isAdmin.toString());
+
+        if (isAdmin) {
           navigate('/admin');
         } else {
           navigate('/dashboard');

@@ -1,461 +1,303 @@
-/* Modern Admin Dashboard Styles */
+/* Modern Admin Dashboard Styles - Fixed Layout */
 .admin-home {
   display: flex;
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  position: relative;
+  background: #f8fafc;
+  color: #1a202c;
 }
 
-.admin-home::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  z-index: -1;
-}
-
-/* Logout Button */
-.logout-btn {
-  margin: 20px;
-  padding: 14px 24px;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  text-align: center;
-  width: calc(100% - 40px);
-  box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.logout-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.logout-btn:hover::before {
-  left: 100%;
-}
-
-.logout-btn:hover {
-  background: linear-gradient(135deg, #ee5a52, #ff6b6b);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(238, 90, 82, 0.4);
-}
-
-/* Modern Sidebar */
+/* Sidebar - Left Side Navigation */
 .admin-sidebar {
-  width: 300px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  width: 280px;
+  background: #1e40af;
   color: #fff;
-  padding: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  padding: 0;
+  box-shadow: 4px 0 24px 0 rgba(59,130,246,0.08);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
   z-index: 1000;
-  border-radius: 0 25px 25px 0;
 }
 
 .admin-sidebar .logo {
-  font-size: 22px;
-  font-weight: 800;
-  padding: 30px 25px;
-  text-align: center;
-  color: #ffffff;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  padding: 32px 24px 24px 24px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
   margin: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .admin-sidebar ul {
   list-style: none;
-  padding: 25px 0;
+  padding: 0;
   margin: 0;
   flex: 1;
-  overflow-y: auto;
 }
 
-.admin-sidebar ul li {
-  margin: 0 15px 8px 15px;
+.admin-sidebar li {
+  margin: 0;
 }
 
-.admin-sidebar ul li button {
+.admin-sidebar button {
   width: 100%;
-  padding: 18px 24px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
+  background: none;
   border: none;
+  color: #fff;
+  font-size: 1rem;
+  padding: 16px 24px;
   text-align: left;
+  transition: background 0.2s;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 15px;
-  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 15px;
-  border-radius: 15px;
-  position: relative;
-  overflow: hidden;
+  gap: 12px;
 }
 
-.admin-sidebar ul li button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-  transition: width 0.3s ease;
-  z-index: -1;
-}
-
-.admin-sidebar ul li button:hover::before {
-  width: 100%;
-}
-
-.admin-sidebar ul li button:hover {
-  color: #ffffff;
-  transform: translateX(8px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.admin-sidebar ul li button.active {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
-  color: #ffffff;
-  font-weight: 600;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.admin-sidebar ul li button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.admin-sidebar ul li button:disabled:hover {
-  background: transparent;
-  transform: none;
-  box-shadow: none;
+.admin-sidebar button:hover,
+.admin-sidebar button.active {
+  background: rgba(255,255,255,0.1);
+  color: #fbbf24;
 }
 
 /* Main Content Area */
 .admin-content {
   flex: 1;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  overflow-y: auto;
-  margin-left: 300px;
-  min-height: 100vh;
-  border-radius: 25px 0 0 25px;
-  box-shadow: -4px 0 30px rgba(0, 0, 0, 0.1);
-}
-
-/* Modern Dashboard Overview */
-.dashboard-overview {
-  padding: 50px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.dashboard-overview h1 {
-  color: #2d3748;
-  margin-bottom: 15px;
-  font-size: 3rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -1px;
-}
-
-.dashboard-overview p {
-  color: #718096;
-  font-size: 1.2rem;
-  margin-bottom: 50px;
-  font-weight: 400;
-  line-height: 1.6;
-}
-
-/* Enhanced Stats Grid */
-.overview-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 30px;
-  margin-top: 50px;
-}
-
-.stat-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-  backdrop-filter: blur(20px);
-  padding: 40px;
-  border-radius: 25px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-}
-
-.stat-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
-}
-
-.stat-icon {
-  font-size: 3.5rem;
-  margin-bottom: 25px;
-  text-align: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.3));
-}
-
-.stat-info h3 {
-  color: #2d3748;
-  margin-bottom: 15px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.stat-info p {
-  color: #718096;
-  margin-bottom: 25px;
-  font-size: 1rem;
-  line-height: 1.6;
-  font-weight: 400;
-}
-
-.stat-info .btn {
-  padding: 14px 28px;
-  border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-info .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-}
-
-.stat-info .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #764ba2, #667eea);
-}
-
-.stat-info .btn-secondary {
-  background: linear-gradient(135deg, #6c757d, #495057);
-  color: white;
-  box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
-}
-
-.stat-info .btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(108, 117, 125, 0.4);
-}
-
-.stat-info .btn-secondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
-}
-
-/* Coming Soon Section */
-.coming-soon {
-  padding: 100px 50px;
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(10px);
-  border-radius: 25px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.coming-soon h2 {
-  color: #2d3748;
-  margin-bottom: 25px;
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.coming-soon p {
-  color: #718096;
-  font-size: 1.2rem;
-  line-height: 1.8;
-  margin-bottom: 15px;
-  font-weight: 400;
-}
-
-/* Loading Overlay */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(10px);
+  margin-left: 280px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Header - Top Bar */
+.admin-header {
+  background: #fff;
+  padding: 0 32px;
+  height: 80px;
+  display: flex;
   align-items: center;
-  z-index: 9999;
-  color: white;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
 
-.spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top: 4px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 25px;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+.admin-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.admin-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-/* Enhanced Responsive Design */
+.admin-logo-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.admin-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-logo-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-logo-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Logout Button */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ef4444;
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+.logout-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Dashboard Content */
+.dashboard-overview {
+  padding: 32px;
+  background: #f8fafc;
+  flex: 1;
+}
+
+/* Responsive Design */
 @media (max-width: 1024px) {
   .admin-sidebar {
-    width: 260px;
+    width: 240px;
   }
-
+  
   .admin-content {
-    margin-left: 260px;
-  }
-
-  .dashboard-overview {
-    padding: 40px;
-  }
-
-  .overview-stats {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    margin-left: 240px;
   }
 }
 
 @media (max-width: 768px) {
-  .admin-home {
-    flex-direction: column;
-  }
-
   .admin-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    border-radius: 0;
-    backdrop-filter: blur(15px);
+    width: 60px;
   }
-
+  
+  .admin-sidebar .logo {
+    padding: 24px 12px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .admin-sidebar button {
+    padding: 16px 12px;
+    justify-content: center;
+  }
+  
   .admin-content {
-    margin-left: 0;
-    border-radius: 0;
+    margin-left: 60px;
   }
-
-  .dashboard-overview {
-    padding: 30px 20px;
+  
+  .admin-header {
+    padding: 0 16px;
   }
-
-  .dashboard-overview h1 {
-    font-size: 2.5rem;
-  }
-
-  .overview-stats {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .stat-card {
-    padding: 30px;
-  }
-
-  .coming-soon {
-    padding: 60px 30px;
+  
+  .admin-logo-text {
+    display: none;
   }
 }
 
-@media (max-width: 480px) {
-  .admin-sidebar .logo {
-    font-size: 20px;
-    padding: 25px 20px;
-  }
+.admin-sidebar h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  margin-left: 32px;
+  letter-spacing: 1px;
+}
 
-  .admin-sidebar ul li button {
-    padding: 15px 20px;
-    font-size: 14px;
-  }
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  margin-top: 16px;
+}
 
-  .dashboard-overview h1 {
-    font-size: 2rem;
-  }
+.admin-nav button, .admin-nav a {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 12px 32px;
+  text-align: left;
+  border-radius: 8px 0 0 8px;
+  transition: background 0.18s, color 0.18s;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+}
 
-  .stat-icon {
-    font-size: 3rem;
-  }
+.admin-nav button.active, .admin-nav a.active, .admin-nav button:hover, .admin-nav a:hover {
+  background: rgba(255,255,255,0.13);
+  color: #fbbf24;
+}
 
-  .stat-card {
-    padding: 25px;
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  min-height: 100vh;
+}
+
+.admin-main {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(6px);
+  border-radius: 32px 0 0 0;
+  margin: 24px 24px 24px 0;
+  box-shadow: 0 8px 32px 0 rgba(59,130,246,0.07);
+  padding: 32px 32px 32px 32px;
+}
+
+/* DashboardStats graphs container override */
+.dashboard-stats {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    width: 60px;
+    padding: 24px 0;
+    align-items: center;
+  }
+  .admin-sidebar h2 {
+    font-size: 1.2rem;
+    margin-left: 0;
+    margin-bottom: 18px;
+  }
+  .admin-nav button, .admin-nav a {
+    font-size: 0.95rem;
+    padding: 10px 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-header {
+    padding: 0 12px;
+    height: 56px;
+  }
+  .admin-header-title {
+    font-size: 1.1rem;
+  }
+  .logout-btn {
+    font-size: 0.95rem;
+    padding: 6px 10px 6px 8px;
   }
 }
 

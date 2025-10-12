@@ -5,6 +5,7 @@ import Signup from './components/Signup';
 import Homepage from './components/Homepage';
 import MemberProfile from './components/MemberProfile';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import LandingPage from './components/LandingPage';
 import AdminHome from './components/AdminHome';
 import BookList from './components/BookList';
@@ -297,8 +298,15 @@ const App = () => {
             } 
           />
 
-          {/* Admin Home (using existing AdminHome component) */}
-          <Route path="/admin" element={<AdminHome />} />
+          {/* Admin Home (protected) */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminHome />
+              </AdminRoute>
+            } 
+          />
 
           {/* Library Management System (your original functionality) */}
           <Route 

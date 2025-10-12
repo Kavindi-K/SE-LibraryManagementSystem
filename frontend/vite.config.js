@@ -14,4 +14,20 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    // Replace process.env with import.meta.env for Vite
+    'process.env': {},
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+        },
+      },
+    },
+  },
 })

@@ -125,6 +125,7 @@ const Homepage = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('isAdmin');
     localStorage.removeItem('member');
     localStorage.removeItem('isMemberAuthenticated');
     navigate('/login');
