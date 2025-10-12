@@ -1,0 +1,15 @@
+# Railway Deployment Configuration
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MONGODB_URI=${{MONGODB_URI}}
+      - PORT=${{PORT}}
+      - CORS_ORIGINS=${{CORS_ORIGINS}}
+    ports:
+      - "8080:8080"
