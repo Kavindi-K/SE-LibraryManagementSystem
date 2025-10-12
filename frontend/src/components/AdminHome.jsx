@@ -7,6 +7,7 @@ import DashboardStats from "./DashboardStats";
 import BookList from "./BookList";
 import BookForm from "./BookForm";
 import BookStats from "./BookStats";
+// Use /logo.png directly for logout button (Vite public asset)
 import "./AdminHome.css";
 
 const AdminHome = () => {
@@ -35,6 +36,7 @@ const AdminHome = () => {
     // Clear user data
     localStorage.removeItem("user");
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("isAdmin");
     // Navigate to landing page
     navigate("/");
   };
@@ -203,6 +205,19 @@ const AdminHome = () => {
     setSuccess('');
   };
 
+  // Authentication check on component mount
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const isAdmin = localStorage.getItem('isAdmin') === 'true';
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // Double verification: check both admin flag and username
+    if (!isAuthenticated || !isAdmin || user.username !== 'Admin') {
+      // Redirect to login if not properly authenticated as admin
+      navigate('/login');
+    }
+  }, [navigate]);
+
   // Load books when Books Management section is active
   useEffect(() => {
     if (activeSection === 'books') {
@@ -288,36 +303,6 @@ const AdminHome = () => {
             <p>Here's your comprehensive library management dashboard with live member statistics.</p>
 
             <DashboardStats />
-
-            <div className="overview-stats">
-              <div className="stat-card">
-                <div className="stat-icon">👥</div>
-                <div className="stat-info">
-                  <h3>Member Management</h3>
-                  <p>Manage library members, memberships, and profiles</p>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setActiveSection('members')}
-                  >
-                    Go to Members
-                  </button>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-icon">📚</div>
-                <div className="stat-info">
-                  <h3>Books Management</h3>
-                  <p>Catalog management and book inventory</p>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setActiveSection('books')}
-                  >
-                    Go to Books
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         );
     }
@@ -327,14 +312,14 @@ const AdminHome = () => {
     <div className="admin-home">
       {/* Sidebar */}
       <nav className="admin-sidebar">
-        <h2 className="logo">Admin Dashboard</h2>
+        <h2 className="logo">Navigation</h2>
         <ul>
           <li>
             <button
               className={activeSection === 'dashboard' ? 'active' : ''}
               onClick={() => setActiveSection('dashboard')}
             >
-              Dashboard
+              📊 Dashboard
             </button>
           </li>
           <li>
@@ -342,7 +327,7 @@ const AdminHome = () => {
               className={activeSection === 'members' ? 'active' : ''}
               onClick={() => setActiveSection('members')}
             >
-              Member Management
+              👥 Member Management
             </button>
           </li>
           <li>
@@ -350,7 +335,7 @@ const AdminHome = () => {
               className={activeSection === 'books' ? 'active' : ''}
               onClick={() => setActiveSection('books')}
             >
-              Books Management
+              � Books Management
             </button>
           </li>
           <li>
@@ -358,7 +343,7 @@ const AdminHome = () => {
               className={activeSection === 'borrowing' ? 'active' : ''}
               onClick={() => setActiveSection('borrowing')}
             >
-              Books Borrowing & Fine Management
+              � Borrowing & Fines
             </button>
           </li>
           <li>
@@ -366,18 +351,41 @@ const AdminHome = () => {
               className={activeSection === 'reservations' ? 'active' : ''}
               onClick={() => setActiveSection('reservations')}
             >
-              Book Reservations Management
+              � Reservations
             </button>
           </li>
         </ul>
-
-        {/* Logout Button */}
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className="admin-content">
-        {renderContent()}
+        {/* Header Bar */}
+        <header className="admin-header">
+          <div className="admin-header-content">
+            <div className="admin-logo-section">
+              <img 
+                src="/logo.png" 
+                alt="SARASAVI Logo" 
+                className="admin-logo-image"
+              />
+              <div className="admin-logo-text">
+                <h1 className="admin-logo-title">SARASAVI</h1>
+                <p className="admin-logo-subtitle">LIBRARY & LEARNING HUB</p>
+              </div>
+            </div>
+            
+            <h2 className="admin-title">Admin Dashboard</h2>
+            
+            <button className="logout-btn" onClick={handleLogout}>
+              <img src="/logout.png" alt="Logout" className="logout-icon" />
+            </button>
+          </div>
+        </header>
+
+        {/* Dashboard Content */}
+        <main className="dashboard-overview">
+          {renderContent()}
+        </main>
 
         {/* Loading Overlay */}
         {loading && (

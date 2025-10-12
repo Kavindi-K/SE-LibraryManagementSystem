@@ -110,9 +110,11 @@ export default function Borrowings() {
   }
 
   async function remove(id) {
-    await api.deleteBorrowing(id)
-    setItems((prev) => prev.filter((it) => it.id !== id))
-    if (editingId === id) cancelEdit()
+    if (window.confirm('Are you sure you want to delete this borrowing record? This action cannot be undone.')) {
+      await api.deleteBorrowing(id)
+      setItems((prev) => prev.filter((it) => it.id !== id))
+      if (editingId === id) cancelEdit()
+    }
   }
 
   async function markReturned(id) {
