@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { api } from '../api';
 
 // Recharts with fallback
-let BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend;
+let BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
+    AreaChart, Area, LineChart, Line;
 try {
   const recharts = require('recharts');
   BarChart = recharts.BarChart;
@@ -17,6 +17,10 @@ try {
   Pie = recharts.Pie;
   Cell = recharts.Cell;
   Legend = recharts.Legend;
+  AreaChart = recharts.AreaChart;
+  Area = recharts.Area;
+  LineChart = recharts.LineChart;
+  Line = recharts.Line;
 } catch (e) {
   console.warn('Recharts not available, using fallback components');
 }
@@ -58,7 +62,7 @@ const DashboardStats = () => {
     { name: 'Reserved', value: mockStats.reservedBooks },
     { name: 'Overdue', value: mockStats.overdueBooks },
   ];
-  const booksPieColors = ['#3b82f6', '#22d3ee', '#a78bfa', '#f59e42'];
+  const booksPieColors = ['#4C51BF', '#34D399', '#8B5CF6', '#6366F1'];
 
   const reservationsBarData = [
     { name: 'Total', value: mockStats.totalReservations },
@@ -79,7 +83,7 @@ const DashboardStats = () => {
       try {
         const [books, borrowings, reservations] = await Promise.all([
           // Books are fetched directly elsewhere, reuse same endpoint here
-          fetch('http://localhost:8081/api/books').then((r) => (r.ok ? r.json() : [])),
+          api.listBooks().catch(() => []),
           api.listBorrowings().catch(() => []),
           api.listReservations().catch(() => []),
         ]);
@@ -164,25 +168,25 @@ const DashboardStats = () => {
         familyResponse,
         finesResponse
       ] = await Promise.all([
-        axios.get('http://localhost:8081/api/members/stats/total'),
-        axios.get('http://localhost:8081/api/members/stats/status/ACTIVE'),
-        axios.get('http://localhost:8081/api/members/stats/status/SUSPENDED'),
-        axios.get('http://localhost:8081/api/members/stats/membership-type/PREMIUM'),
-        axios.get('http://localhost:8081/api/members/stats/membership-type/BASIC'),
-        axios.get('http://localhost:8081/api/members/stats/membership-type/STUDENT'),
-        axios.get('http://localhost:8081/api/members/stats/membership-type/FAMILY'),
-        axios.get('http://localhost:8081/api/members/with-fines')
+        api.getTotalMembersCount(),
+        api.getMemberCountByStatus('ACTIVE'),
+        api.getMemberCountByStatus('SUSPENDED'),
+        api.getMemberCountByMembershipType('PREMIUM'),
+        api.getMemberCountByMembershipType('BASIC'),
+        api.getMemberCountByMembershipType('STUDENT'),
+        api.getMemberCountByMembershipType('FAMILY'),
+        api.getMembersWithFines()
       ]);
 
       setMemberStats({
-        totalMembers: totalResponse.data?.data || 0,
-        activeMembers: activeResponse.data?.data || 0,
-        suspendedMembers: suspendedResponse.data?.data || 0,
-        premiumMembers: premiumResponse.data?.data || 0,
-        basicMembers: basicResponse.data?.data || 0,
-        studentMembers: studentResponse.data?.data || 0,
-        familyMembers: familyResponse.data?.data || 0,
-        membersWithFines: finesResponse.data?.data?.length || 0
+        totalMembers: totalResponse.data || 0,
+        activeMembers: activeResponse.data || 0,
+        suspendedMembers: suspendedResponse.data || 0,
+        premiumMembers: premiumResponse.data || 0,
+        basicMembers: basicResponse.data || 0,
+        studentMembers: studentResponse.data || 0,
+        familyMembers: familyResponse.data || 0,
+        membersWithFines: finesResponse.data?.length || 0
       });
     } catch (error) {
       console.error('Error fetching member statistics:', error);
@@ -221,16 +225,13 @@ const DashboardStats = () => {
     console.warn('Dashboard Stats Error:', error);
   }
 
-  // Always show content even if there are errors
-  if (error) {
-    console.warn('Dashboard Stats Error:', error);
-  }
-
   return (
     <div className="dashboard-stats" style={{ 
       padding: '20px',
       maxWidth: '1400px',
-      margin: '0 auto'
+      margin: '0 auto',
+      background: '#f8fafc',
+      minHeight: '100vh'
     }}>
       {/* Error message if API fails */}
       {error && (
@@ -247,295 +248,437 @@ const DashboardStats = () => {
         </div>
       )}
       
-      {/* Charts Section - 3 columns */}
+      {/* Top Row - Key Metrics */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '24px',
-        marginBottom: '32px'
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '20px',
+        marginBottom: '24px'
       }}>
-        {/* Book Management Chart */}
+        {/* Book Availability Percentage */}
+        <div style={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+          borderRadius: 16, 
+          padding: 24,
+          color: 'white',
+          textAlign: 'center',
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '500' }}>Book Availability</h3>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            {ResponsiveContainer && PieChart ? (
+              <ResponsiveContainer width={120} height={120}>
+                <PieChart>
+                  <Pie 
+                    data={[{ name: 'Available', value: mockStats.availableBooks }, { name: 'Unavailable', value: mockStats.borrowedBooks + mockStats.reservedBooks }]} 
+                    dataKey="value" 
+                    cx="50%" 
+                    cy="50%" 
+                    innerRadius={35}
+                    outerRadius={55} 
+                    startAngle={90}
+                    endAngle={450}
+                  >
+                    <Cell fill="rgba(255,255,255,0.3)" />
+                    <Cell fill="rgba(255,255,255,0.1)" />
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            ) : null}
+            <div style={{ 
+              position: 'absolute', 
+              top: '50%', 
+              left: '50%', 
+              transform: 'translate(-50%, -50%)',
+              fontSize: '24px',
+              fontWeight: 'bold'
+            }}>
+              {Math.round((mockStats.availableBooks / (mockStats.totalBooks || 1)) * 100)}%
+            </div>
+          </div>
+          <div style={{ fontSize: '12px', marginTop: '8px', opacity: 0.9 }}>
+            {mockStats.availableBooks} of {mockStats.totalBooks} books
+          </div>
+        </div>
+
+        {/* Monthly Borrowings */}
         <div style={{ 
           background: '#fff', 
           borderRadius: 16, 
-          boxShadow: '0 4px 20px rgba(59,130,246,0.1)', 
           padding: 24,
-          minHeight: '300px'
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
         }}>
-          <h3 style={{ 
-            color: '#2563eb', 
-            marginBottom: 16, 
-            fontSize: '18px',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            📚 Book Management
-          </h3>
-          {ResponsiveContainer && PieChart ? (
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie 
-                  data={booksPieData} 
-                  dataKey="value" 
-                  nameKey="name" 
-                  cx="50%" 
-                  cy="50%" 
-                  outerRadius={80} 
-                  label={({name, value}) => `${name}: ${value}`}
-                >
-                  {booksPieData.map((entry, idx) => (
-                    <Cell key={`cell-${idx}`} fill={booksPieColors[idx % booksPieColors.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Monthly Borrowings</h3>
+          {ResponsiveContainer && BarChart ? (
+            <ResponsiveContainer width="100%" height={120}>
+              <BarChart data={[
+                { month: 'Jan', borrowed: 12, returned: 8 },
+                { month: 'Feb', borrowed: 18, returned: 15 },
+                { month: 'Mar', borrowed: 15, returned: 12 }
+              ]}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="month" fontSize={12} />
+                <YAxis fontSize={12} />
+                <Bar dataKey="borrowed" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="returned" fill="#10b981" radius={[2, 2, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div style={{ height: 240, display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>
-              {booksPieData.map((item, idx) => (
-                <div key={idx} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  padding: '12px 16px', 
-                  background: booksPieColors[idx], 
-                  color: 'white', 
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  <span>{item.name}</span>
-                  <span style={{ fontWeight: 'bold' }}>{item.value}</span>
-                </div>
-              ))}
+            <div style={{ height: 120, display: 'flex', alignItems: 'end', gap: '8px', padding: '20px 0' }}>
+              <div style={{ flex: 1, background: '#3b82f6', height: '60%', borderRadius: '4px 4px 0 0' }}></div>
+              <div style={{ flex: 1, background: '#10b981', height: '40%', borderRadius: '4px 4px 0 0' }}></div>
+              <div style={{ flex: 1, background: '#3b82f6', height: '50%', borderRadius: '4px 4px 0 0' }}></div>
             </div>
           )}
         </div>
 
-        {/* Reservations Chart */}
+        {/* Live Statistics */}
         <div style={{ 
           background: '#fff', 
           borderRadius: 16, 
-          boxShadow: '0 4px 20px rgba(59,130,246,0.1)', 
           padding: 24,
-          minHeight: '300px'
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
         }}>
-          <h3 style={{ 
-            color: '#2563eb', 
-            marginBottom: 16, 
-            fontSize: '18px',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            📅 Reservations
-          </h3>
-          {ResponsiveContainer && BarChart ? (
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={reservationsBarData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" fontSize={12} />
-                <YAxis allowDecimals={false} fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#3b82f6" radius={[6,6,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={{ height: 240, display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '20px' }}>
-              {reservationsBarData.map((item, idx) => (
-                <div key={idx} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  padding: '12px 16px', 
-                  background: '#3b82f6', 
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Live Statistics</h3>
+          <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: '#6b7280' }}>Real Time Data</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {[
+              { label: 'Active Borrowings', value: mockStats.borrowedBooks, color: '#3b82f6' },
+              { label: 'Pending Reservations', value: mockStats.activeReservations, color: '#8b5cf6' },
+              { label: 'Overdue Books', value: mockStats.overdueBooks, color: '#ef4444' },
+              { label: 'Total Members', value: memberStats.totalMembers, color: '#10b981' }
+            ].map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#6b7280' }}>{item.label}</span>
+                <div style={{ 
+                  background: item.color, 
                   color: 'white', 
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500'
+                  padding: '4px 8px', 
+                  borderRadius: '12px', 
+                  fontSize: '12px', 
+                  fontWeight: '600' 
                 }}>
-                  <span>{item.name}</span>
-                  <span style={{ fontWeight: 'bold' }}>{item.value}</span>
+                  {item.value}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Fines Chart */}
+        {/* Financial Overview */}
         <div style={{ 
           background: '#fff', 
           borderRadius: 16, 
-          boxShadow: '0 4px 20px rgba(59,130,246,0.1)', 
           padding: 24,
-          minHeight: '300px'
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
         }}>
-          <h3 style={{ 
-            color: '#2563eb', 
-            marginBottom: 16, 
-            fontSize: '18px',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            � Fines
-          </h3>
-          {ResponsiveContainer && BarChart ? (
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={finesBarData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" fontSize={12} />
-                <YAxis allowDecimals={false} fontSize={12} />
-                <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
-                <Bar dataKey="value" fill="#f59e0b" radius={[6,6,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={{ height: 240, display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '20px' }}>
-              {finesBarData.map((item, idx) => (
-                <div key={idx} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  padding: '12px 16px', 
-                  background: '#f59e0b', 
-                  color: 'white', 
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  <span>{item.name}</span>
-                  <span style={{ fontWeight: 'bold' }}>${item.value}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Financial Overview</h3>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Total Fines</div>
+            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#374151' }}>${mockStats.totalFines}</div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '12px', color: '#6b7280' }}>Paid</span>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: '#10b981' }}>${mockStats.paidFines}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '12px', color: '#6b7280' }}>Pending</span>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: '#ef4444' }}>${mockStats.pendingFines}</span>
+          </div>
         </div>
       </div>
 
-      {/* Member Statistics Section */}
-      <div style={{ 
-        background: '#fff',
-        borderRadius: 16,
-        boxShadow: '0 4px 20px rgba(59,130,246,0.1)',
-        padding: 32
+      {/* Middle Row - Detailed Charts */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '2fr 1fr 1fr',
+        gap: '20px',
+        marginBottom: '24px'
       }}>
-        <h2 style={{ 
-          color: '#2563eb', 
-          marginBottom: 24, 
-          fontSize: '24px', 
-          fontWeight: '700',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
+        {/* Borrowing Trends */}
+        <div style={{ 
+          background: '#fff', 
+          borderRadius: 16, 
+          padding: 24,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
         }}>
-          📊 Member Statistics
-        </h2>
-        
-        {/* Stats Cards - 4 columns */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '20px',
-          marginBottom: '32px'
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-            color: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            boxShadow: '0 4px 16px rgba(59,130,246,0.3)'
-          }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>👥</div>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>{memberStats.totalMembers}</div>
-            <div style={{ fontSize: '14px', opacity: 0.9 }}>Total Members</div>
-          </div>
-
-          <div style={{
-            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-            color: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            boxShadow: '0 4px 16px rgba(34,197,94,0.3)'
-          }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>✅</div>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>{memberStats.activeMembers}</div>
-            <div style={{ fontSize: '14px', opacity: 0.9 }}>Active Members</div>
-          </div>
-
-          <div style={{
-            background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-            color: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            boxShadow: '0 4px 16px rgba(245,158,11,0.3)'
-          }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>⚠️</div>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>{memberStats.suspendedMembers}</div>
-            <div style={{ fontSize: '14px', opacity: 0.9 }}>Suspended</div>
-          </div>
-
-          <div style={{
-            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-            color: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            boxShadow: '0 4px 16px rgba(239,68,68,0.3)'
-          }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>💰</div>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>{memberStats.membersWithFines}</div>
-            <div style={{ fontSize: '14px', opacity: 0.9 }}>With Fines</div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Borrowing Trends</h3>
+          <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: '#6b7280' }}>Monthly Activity Visualization</p>
+          <div style={{ height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '16px 0' }}>
+            {[
+              { month: 'Jan', borrowed: 45, returned: 38 },
+              { month: 'Feb', borrowed: 52, returned: 48 },
+              { month: 'Mar', borrowed: 48, returned: 45 },
+              { month: 'Apr', borrowed: 61, returned: 55 },
+              { month: 'May', borrowed: 55, returned: 52 },
+              { month: 'Jun', borrowed: 67, returned: 61 }
+            ].map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', fontSize: '12px', color: '#6b7280' }}>{item.month}</div>
+                <div style={{ flex: 1, display: 'flex', gap: '4px' }}>
+                  <div style={{ 
+                    width: `${(item.borrowed / 70) * 100}%`, 
+                    height: '20px', 
+                    background: 'linear-gradient(90deg, #3b82f6, #1d4ed8)', 
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 'bold'
+                  }}>
+                    {item.borrowed}
+                  </div>
+                  <div style={{ 
+                    width: `${(item.returned / 70) * 100}%`, 
+                    height: '20px', 
+                    background: 'linear-gradient(90deg, #10b981, #059669)', 
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 'bold'
+                  }}>
+                    {item.returned}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '12px', height: '12px', background: '#3b82f6', borderRadius: '2px' }}></div>
+                <span>Borrowed</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '12px', height: '12px', background: '#10b981', borderRadius: '2px' }}></div>
+                <span>Returned</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Membership Types */}
-        <div>
-          <h3 style={{ 
-            color: '#2563eb', 
-            marginBottom: '20px', 
-            fontSize: '20px',
-            fontWeight: '600'
-          }}>
-            Membership Distribution
-          </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '16px'
-          }}>
+        {/* Member Distribution */}
+        <div style={{ 
+          background: '#fff', 
+          borderRadius: 16, 
+          padding: 24,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Member Distribution</h3>
+          <div style={{ height: 160, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
             {[
-              { label: 'Basic', count: memberStats.basicMembers, color: '#3b82f6' },
-              { label: 'Premium', count: memberStats.premiumMembers, color: '#f59e0b' },
-              { label: 'Student', count: memberStats.studentMembers, color: '#22c55e' },
-              { label: 'Family', count: memberStats.familyMembers, color: '#8b5cf6' }
+              { name: 'Basic', value: memberStats.basicMembers, color: '#3b82f6' },
+              { name: 'Premium', value: memberStats.premiumMembers, color: '#10b981' },
+              { name: 'Student', value: memberStats.studentMembers, color: '#8b5cf6' },
+              { name: 'Family', value: memberStats.familyMembers, color: '#f59e0b' }
             ].map((item, idx) => (
-              <div key={idx} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '16px',
-                background: '#f8fafc',
-                borderRadius: '10px',
-                border: `2px solid ${item.color}20`
-              }}>
-                <span style={{ fontWeight: '600', color: '#374151' }}>{item.label}</span>
-                <span style={{ 
-                  background: item.color,
-                  color: 'white',
-                  padding: '6px 12px',
-                  borderRadius: '20px',
-                  fontSize: '14px',
-                  fontWeight: 'bold'
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ 
+                  width: '12px', 
+                  height: '12px', 
+                  background: item.color, 
+                  borderRadius: '50%' 
+                }}></div>
+                <div style={{ flex: 1, fontSize: '14px', color: '#374151' }}>{item.name}</div>
+                <div style={{ 
+                  background: item.color, 
+                  color: 'white', 
+                  padding: '4px 8px', 
+                  borderRadius: '12px', 
+                  fontSize: '12px', 
+                  fontWeight: 'bold' 
                 }}>
-                  {item.count}
-                </span>
+                  {item.value}
+                </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Status Overview */}
+        <div style={{ 
+          background: '#fff', 
+          borderRadius: 16, 
+          padding: 24,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Status Overview</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {[
+              { label: 'Active', value: memberStats.activeMembers, color: '#10b981' },
+              { label: 'Suspended', value: memberStats.suspendedMembers, color: '#ef4444' },
+              { label: 'Available', value: mockStats.availableBooks, color: '#3b82f6' },
+              { label: 'Borrowed', value: mockStats.borrowedBooks, color: '#8b5cf6' }
+            ].map((item, idx) => (
+              <div key={idx} style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  borderRadius: '50%', 
+                  background: `conic-gradient(${item.color} ${(item.value / 100) * 360}deg, #e5e7eb 0deg)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px',
+                  position: 'relative'
+                }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    color: item.color
+                  }}>
+                    {item.value}
+                  </div>
+                </div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>{item.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row - Annual Data */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '2fr 1fr',
+        gap: '20px'
+      }}>
+        {/* Annual Borrowings */}
+        <div style={{ 
+          background: '#fff', 
+          borderRadius: 16, 
+          padding: 20,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}>
+          <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Annual Borrowings</h3>
+          <p style={{ margin: '0 0 12px 0', fontSize: '12px', color: '#6b7280' }}>Yearly Visualization by Month</p>
+          <div style={{ height: 140, display: 'flex', gap: '4px', alignItems: 'end', justifyContent: 'space-between' }}>
+            {[
+              { month: 'Jan', borrowed: 45, returned: 40 },
+              { month: 'Feb', borrowed: 52, returned: 48 },
+              { month: 'Mar', borrowed: 48, returned: 45 },
+              { month: 'Apr', borrowed: 61, returned: 55 },
+              { month: 'May', borrowed: 55, returned: 52 },
+              { month: 'Jun', borrowed: 67, returned: 61 },
+              { month: 'Jul', borrowed: 58, returned: 54 },
+              { month: 'Aug', borrowed: 63, returned: 58 },
+              { month: 'Sep', borrowed: 59, returned: 55 },
+              { month: 'Oct', borrowed: 65, returned: 60 },
+              { month: 'Nov', borrowed: 62, returned: 57 },
+              { month: 'Dec', borrowed: 70, returned: 65 }
+            ].map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', flex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'center' }}>
+                  <div style={{ 
+                    width: '12px', 
+                    height: `${(item.borrowed / 70) * 80}px`, 
+                    background: 'linear-gradient(180deg, #3b82f6, #1d4ed8)', 
+                    borderRadius: '2px 2px 0 0',
+                    minHeight: '3px'
+                  }}></div>
+                  <div style={{ 
+                    width: '12px', 
+                    height: `${(item.returned / 70) * 80}px`, 
+                    background: 'linear-gradient(180deg, #10b981, #059669)', 
+                    borderRadius: '0 0 2px 2px',
+                    minHeight: '3px'
+                  }}></div>
+                </div>
+                <div style={{ fontSize: '8px', color: '#6b7280', fontWeight: '500' }}>{item.month}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '10px', color: '#6b7280', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ width: '10px', height: '10px', background: '#3b82f6', borderRadius: '2px' }}></div>
+              <span>Borrowed</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ width: '10px', height: '10px', background: '#10b981', borderRadius: '2px' }}></div>
+              <span>Returned</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Library Statistics */}
+        <div style={{ 
+          background: '#fff', 
+          borderRadius: 16, 
+          padding: 24,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Library Statistics</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>Collection Size</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ 
+                  width: '100%', 
+                  height: '8px', 
+                  background: '#e5e7eb', 
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ 
+                    width: '75%', 
+                    height: '100%', 
+                    background: 'linear-gradient(90deg, #3b82f6, #1d4ed8)',
+                    borderRadius: '4px'
+                  }}></div>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>{mockStats.totalBooks}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>Utilization Rate</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ 
+                  width: '100%', 
+                  height: '8px', 
+                  background: '#e5e7eb', 
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ 
+                    width: '68%', 
+                    height: '100%', 
+                    background: 'linear-gradient(90deg, #10b981, #059669)',
+                    borderRadius: '4px'
+                  }}></div>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>68%</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>Member Satisfaction</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ 
+                  width: '100%', 
+                  height: '8px', 
+                  background: '#e5e7eb', 
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ 
+                    width: '82%', 
+                    height: '100%', 
+                    background: 'linear-gradient(90deg, #8b5cf6, #7c3aed)',
+                    borderRadius: '4px'
+                  }}></div>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>82%</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

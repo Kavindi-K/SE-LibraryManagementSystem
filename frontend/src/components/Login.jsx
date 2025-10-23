@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../api';
 import './Login.css';
 
 const Login = () => {
@@ -26,14 +26,14 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8081/api/users/login', {
+      const response = await api.loginUser({
         username: formData.username,
         password: formData.password
       });
 
-      if (response.data.success) {
+      if (response.success) {
         // Store user data and authentication status
-        const userData = response.data.data;
+        const userData = response.data;
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('isAuthenticated', 'true');
 
@@ -47,7 +47,7 @@ const Login = () => {
           navigate('/dashboard');
         }
       } else {
-        setError(response.data.message || 'Login failed');
+        setError(response.message || 'Login failed');
       }
     } catch (error) {
       if (error.response) {
@@ -72,7 +72,7 @@ const Login = () => {
     setError('');
     setForgotStatus('');
     try {
-      await axios.post('http://localhost:8081/api/users/password/forgot', { email: forgotEmail });
+      await api.forgotPassword({ email: forgotEmail });
       setForgotStatus('If the email exists, a reset token has been sent to your EMAIL.');
     } catch (err) {
       if (err.response) {
@@ -97,7 +97,7 @@ const Login = () => {
     setError('');
     setForgotStatus('');
     try {
-      await axios.post('http://localhost:8081/api/users/password/reset', { token: resetToken, newPassword });
+      await api.resetPassword({ token: resetToken, newPassword });
       setForgotStatus('Password reset successful. You can now log in.');
       setShowForgot(false);
       setResetToken('');

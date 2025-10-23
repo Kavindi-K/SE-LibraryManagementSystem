@@ -34,17 +34,16 @@ const BookDetails = ({ book, onClose, onBorrowSuccess }) => {
 
     try {
       // Get member info using user ID
-      const memberResponse = await fetch(`http://localhost:8081/api/members/user/${user.id}`);
-      if (!memberResponse.ok) {
+      const memberResponse = await api.getMemberByUserId(user.id);
+      if (!memberResponse.success) {
         throw new Error('Member information not found');
       }
 
-      const memberData = await memberResponse.json();
-      if (!memberData.success || !memberData.data) {
+      if (!memberResponse.success || !memberResponse.data) {
         throw new Error('Member information not found');
       }
 
-      const member = memberData.data;
+      const member = memberResponse.data;
       const memberId = member.memberId || member.id;
 
       // Create borrowing record
@@ -69,13 +68,7 @@ const BookDetails = ({ book, onClose, onBorrowSuccess }) => {
       };
 
       // Update book in the backend
-      await fetch(`http://localhost:8081/api/books/${book.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateBookData),
-      });
+      await api.updateBook(book.id, updateBookData);
 
       // Success - call callback if provided
       if (onBorrowSuccess) {

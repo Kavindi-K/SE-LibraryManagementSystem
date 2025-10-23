@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import './BookList.css';
+import './AdminTheme.css';
 
 const BookList = ({ books, onEdit, onDelete, loading }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -75,57 +75,55 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
 
   if (loading && books.length === 0) {
     return (
-      <div className="book-list-container">
-        <div className="loading-books">
-          <div className="spinner"></div>
-          <p>Loading books...</p>
+      <div style={{ maxWidth: '1400px', margin: '20px auto', padding: '0 15px' }}>
+        <div className="admin-loading">
+          <div className="admin-spinner"></div>
+          Loading books...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="book-list-container">
-      <div className="list-header">
+    <div style={{ maxWidth: '1400px', margin: '20px auto', padding: '0 15px' }}>
+      <div className="admin-form-header">
         <h2>Books Library ({filteredAndSortedBooks.length} books)</h2>
-        
-        {/* Search and Filters */}
-        <div className="filters-section">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search books by title, author, genre, book no, or location..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="search-input"
-            />
-          </div>
-          
-          <div className="filter-controls">
-            <select
-              value={filterAvailability}
-              onChange={(e) => {
-                setFilterAvailability(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="filter-select"
-            >
-              <option value="all">All Books</option>
-              <option value="available">Available Only</option>
-              <option value="unavailable">Unavailable Only</option>
-            </select>
-          </div>
+      </div>
+      
+      {/* Search and Filters */}
+      <div className="admin-filters">
+        <div className="admin-search-box">
+          <input
+            type="text"
+            placeholder="Search books by title, author, genre, book no, or location..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="admin-search-input"
+          />
         </div>
+        
+        <select
+          value={filterAvailability}
+          onChange={(e) => {
+            setFilterAvailability(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="admin-filter-select"
+        >
+          <option value="all">All Books</option>
+          <option value="available">Available Only</option>
+          <option value="unavailable">Unavailable Only</option>
+        </select>
       </div>
 
       {filteredAndSortedBooks.length === 0 ? (
-        <div className="no-books">
-          <div className="no-books-icon">📚</div>
-          <h3>No books found</h3>
-          <p>
+        <div className="admin-text-center" style={{ padding: '60px 20px', color: 'var(--admin-gray-500)' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📚</div>
+          <h3 style={{ margin: '0 0 8px 0', color: 'var(--admin-gray-700)' }}>No books found</h3>
+          <p style={{ margin: 0 }}>
             {searchTerm || filterAvailability !== 'all'
               ? 'Try adjusting your search or filter criteria.'
               : 'Start by adding your first book to the library.'}
@@ -134,98 +132,100 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
       ) : (
         <>
           {/* Desktop Table View */}
-          <div className="table-container desktop-view">
-            <table className="books-table">
+          <div className="admin-table-container">
+            <table className="admin-table">
               <thead>
                 <tr>
-                  <th onClick={() => handleSort('bookNo')} className="sortable">
+                  <th onClick={() => handleSort('bookNo')} style={{ cursor: 'pointer' }}>
                     Book No {getSortIcon('bookNo')}
                   </th>
-                  <th onClick={() => handleSort('title')} className="sortable">
+                  <th onClick={() => handleSort('title')} style={{ cursor: 'pointer' }}>
                     Title {getSortIcon('title')}
                   </th>
-                  <th onClick={() => handleSort('author')} className="sortable">
+                  <th onClick={() => handleSort('author')} style={{ cursor: 'pointer' }}>
                     Author {getSortIcon('author')}
                   </th>
-                  <th onClick={() => handleSort('genre')} className="sortable">
+                  <th onClick={() => handleSort('genre')} style={{ cursor: 'pointer' }}>
                     Genre {getSortIcon('genre')}
                   </th>
-                  <th onClick={() => handleSort('year')} className="sortable">
+                  <th onClick={() => handleSort('year')} style={{ cursor: 'pointer' }}>
                     Year {getSortIcon('year')}
                   </th>
-                  <th onClick={() => handleSort('language')} className="sortable">
+                  <th onClick={() => handleSort('language')} style={{ cursor: 'pointer' }}>
                     Language {getSortIcon('language')}
                   </th>
-                  <th onClick={() => handleSort('availableCopies')} className="sortable">
+                  <th onClick={() => handleSort('availableCopies')} style={{ cursor: 'pointer' }}>
                     Copies {getSortIcon('availableCopies')}
                   </th>
-                  <th onClick={() => handleSort('availability')} className="sortable">
+                  <th onClick={() => handleSort('availability')} style={{ cursor: 'pointer' }}>
                     Status {getSortIcon('availability')}
                   </th>
-                  <th onClick={() => handleSort('location')} className="sortable">
+                  <th onClick={() => handleSort('location')} style={{ cursor: 'pointer' }}>
                     Location {getSortIcon('location')}
                   </th>
-                  <th className="actions-column">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {currentBooks.map((book) => (
-                  <tr key={book.id} className="book-row">
-                    <td className="book-no">
-                      <span className="book-no-badge">{book.bookNo}</span>
+                  <tr key={book.id}>
+                    <td>
+                      <span className="admin-badge admin-badge-primary">{book.bookNo}</span>
                     </td>
-                    <td className="book-title">
-                      <div className="title-cell">
+                    <td>
+                      <div className="admin-flex admin-items-center admin-gap-md">
                         {book.image && (
                           <img 
                             src={book.image} 
                             alt={book.title}
-                            className="book-thumbnail"
+                            style={{ width: '40px', height: '50px', objectFit: 'cover', borderRadius: '6px' }}
                             onError={(e) => {
                               e.target.style.display = 'none';
                             }}
                           />
                         )}
                         <div>
-                          <div className="title-text">{book.title}</div>
+                          <div style={{ fontWeight: '600' }}>{book.title}</div>
                           {book.edition && (
-                            <div className="edition-text">({book.edition})</div>
+                            <div style={{ fontSize: '12px', color: 'var(--admin-gray-500)' }}>({book.edition})</div>
                           )}
                         </div>
                       </div>
                     </td>
                     <td>{book.author}</td>
                     <td>
-                      <span className="genre-tag">{book.genre}</span>
+                      <span className="admin-badge admin-badge-info">{book.genre}</span>
                     </td>
                     <td>{book.year}</td>
                     <td>{book.language}</td>
                     <td>
-                      <span className="copies-count">{book.availableCopies}</span>
+                      <span style={{ fontWeight: '600', color: 'var(--admin-primary)' }}>{book.availableCopies}</span>
                     </td>
                     <td>
-                      <span className={`status-badge ${book.availability ? 'available' : 'unavailable'}`}>
+                      <span className={`admin-badge ${book.availability ? 'admin-badge-success' : 'admin-badge-danger'}`}>
                         {book.availability ? 'Available' : 'Unavailable'}
                       </span>
                     </td>
                     <td>
-                      <span className="location-tag">{book.location}</span>
+                      <span className="admin-badge admin-badge-secondary">{book.location}</span>
                     </td>
-                    <td className="actions-cell">
-                      <button
-                        onClick={() => onEdit(book)}
-                        className="btn btn-small btn-secondary"
-                        title="Edit Book"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => onDelete(book.id)}
-                        className="btn btn-small btn-danger"
-                        title="Delete Book"
-                      >
-                        Delete
-                      </button>
+                    <td>
+                      <div className="admin-flex admin-gap-sm">
+                        <button
+                          onClick={() => onEdit(book)}
+                          className="admin-btn admin-btn-sm admin-btn-secondary"
+                          title="Edit Book"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => onDelete(book.id)}
+                          className="admin-btn admin-btn-sm admin-btn-danger"
+                          title="Delete Book"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -233,100 +233,25 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
             </table>
           </div>
 
-          {/* Mobile Card View */}
-          <div className="cards-container mobile-view">
-            {currentBooks.map((book) => (
-              <div key={book.id} className="book-card">
-                <div className="book-card-header">
-                  <span className="book-no-badge-mobile">{book.bookNo}</span>
-                  {book.image && (
-                    <img 
-                      src={book.image} 
-                      alt={book.title}
-                      className="book-card-image"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <div className="book-card-info">
-                    <h3 className="book-card-title">{book.title}</h3>
-                    {book.edition && (
-                      <p className="book-card-edition">({book.edition})</p>
-                    )}
-                    <p className="book-card-author">by {book.author}</p>
-                    <span className={`status-badge ${book.availability ? 'available' : 'unavailable'}`}>
-                      {book.availability ? 'Available' : 'Unavailable'}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="book-card-details">
-                  <div className="detail-item">
-                    <span className="detail-label">Genre:</span>
-                    <span className="genre-tag">{book.genre}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Year:</span>
-                    <span>{book.year}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Language:</span>
-                    <span>{book.language}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Copies:</span>
-                    <span className="copies-count">{book.availableCopies}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Location:</span>
-                    <span className="location-tag">{book.location}</span>
-                  </div>
-                  {book.description && (
-                    <div className="detail-item full-width">
-                      <span className="detail-label">Description:</span>
-                      <p className="book-description">{book.description}</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="book-card-actions">
-                  <button
-                    onClick={() => onEdit(book)}
-                    className="btn btn-small btn-secondary"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDelete(book.id)}
-                    className="btn btn-small btn-danger"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="pagination">
+            <div className="admin-flex admin-items-center admin-justify-between" style={{ marginTop: '30px' }}>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="btn btn-small btn-secondary"
+                className="admin-btn admin-btn-sm admin-btn-secondary"
               >
                 Previous
               </button>
               
-              <div className="page-numbers">
+              <div className="admin-flex admin-gap-sm">
                 {[...Array(totalPages)].map((_, index) => {
                   const page = index + 1;
                   return (
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`btn btn-small ${currentPage === page ? 'btn-primary' : 'btn-secondary'}`}
+                      className={`admin-btn admin-btn-sm ${currentPage === page ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
                     >
                       {page}
                     </button>
@@ -337,7 +262,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="btn btn-small btn-secondary"
+                className="admin-btn admin-btn-sm admin-btn-secondary"
               >
                 Next
               </button>

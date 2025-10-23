@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../api';
 import './Signup.css';
 
 const Signup = () => {
@@ -60,11 +60,11 @@ const Signup = () => {
     try {
       const { confirmPassword, ...userData } = formData;
       
-      const response = await axios.post('http://localhost:8081/api/users', userData);
+      const response = await api.createUser(userData);
 
-      if (response.data.success) {
+      if (response.success) {
         setSuccess('Account created successfully! Redirecting to login...');
-        console.log('User created:', response.data.data);
+        console.log('User created:', response.data);
         
         // Navigate to login after 2 seconds
         setTimeout(() => {

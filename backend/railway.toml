@@ -1,15 +1,7 @@
-# Railway Deployment Configuration
-version: "3"
+[build]
+builder = "nixpacks"
 
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - MONGODB_URI=${{MONGODB_URI}}
-      - PORT=${{PORT}}
-      - CORS_ORIGINS=${{CORS_ORIGINS}}
-    ports:
-      - "8080:8080"
+[deploy]
+startCommand = "java -Dspring.profiles.active=prod -jar target/library-0.0.1-SNAPSHOT.jar"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
