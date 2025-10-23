@@ -1,10 +1,71 @@
+/* Combined About + Contact Section */
+.about-contact-section {
+  position: relative;
+  padding: 80px 0;
+  background: #0f172a;
+  color: white;
+  overflow: hidden;
+}
+
+.about-contact-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.about-contact-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.25;
+}
+.about-contact-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(15,23,42,0.2), rgba(15,23,42,0.85));
+}
+
+.ac-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.ac-card {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.ac-title { color: #ffffff; margin: 0 0 12px 0; }
+
+.contact-panel .ac-contact-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 10px;
+}
+.ac-icon { width: 28px; height: 28px; display:flex; align-items:center; justify-content:center; }
+
+.about-panel p { color: #ffffff; -webkit-text-stroke: 0.5px rgba(0,0,0,0.5); }
+.ac-hours { margin-top: 16px; }
+
+@media (max-width: 1024px) {
+  .ac-grid { grid-template-columns: 1fr; }
+}
 /* Homepage Container */
 .homepage-container {
   min-height: 100vh;
   background: #f8fafc;
-  color: #1a202c;
+  color: #0f172a; /* darker text */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  padding-top: 130px;
+  padding-top: 110px; /* reduce header/hero gap */
 }
 
 /* Header Styles */
@@ -241,35 +302,24 @@
 }
 
 .hero-content h2 {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  font-weight: 800;
-  color: white;
-  text-shadow: 
-    2px 2px 0px rgba(0, 0, 0, 0.8),
-    -1px -1px 0px rgba(0, 0, 0, 0.8),
-    1px -1px 0px rgba(0, 0, 0, 0.8),
-    -1px 1px 0px rgba(0, 0, 0, 0.8),
-    0px 0px 10px rgba(0, 0, 0, 0.5);
+  font-size: 3.25rem;
+  margin-bottom: 1.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  -webkit-text-stroke: 2px #000000; /* black outline */
 }
 
 .hero-content .highlight {
-  color: #fbbf24;
+  color: #ffffff; /* white fill */
+  -webkit-text-stroke: 2px #2563eb; /* blue outline for SARASAVI */
 }
 
 .hero-content p {
-  font-size: 1.2rem;
-  margin-bottom: 3rem;
-  opacity: 0.95;
-  color: white;
-  text-shadow: 
-    1px 1px 0px rgba(0, 0, 0, 0.8),
-    -1px -1px 0px rgba(0, 0, 0, 0.8),
-    1px -1px 0px rgba(0, 0, 0, 0.8),
-    -1px 1px 0px rgba(0, 0, 0, 0.8),
-    0px 0px 8px rgba(0, 0, 0, 0.5);
+  font-size: 1.1rem;
+  margin-bottom: 2.25rem;
+  color: #ffffff;
   line-height: 1.6;
-  -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.2);
+  -webkit-text-stroke: 1px #000000; /* black outline */
 }
 
 .hero-stats {
@@ -288,17 +338,17 @@
   display: block;
   font-size: 2.5rem;
   font-weight: 800;
-  color: white;
-  text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.8);
+  color: #ffffff;
+  -webkit-text-stroke: 1.5px #000000;
   margin-bottom: 0.5rem;
 }
 
 .stat-label {
   display: block;
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  font-weight: 500;
+  color: #ffffff;
+  -webkit-text-stroke: 0.8px #000000;
+  font-weight: 600;
 }
 
 .stat h3 {
@@ -328,8 +378,8 @@
 
 .featured-books-section h2 {
   text-align: center;
-  font-size: 2.5rem;
-  color: #2c3e50;
+  font-size: 2.6rem;
+  color: #0f172a;
   margin-bottom: 3rem;
   font-weight: 600;
 }
@@ -799,7 +849,7 @@
 .about-section {
   position: relative;
   padding: 0;
-  background: #f8f9fa;
+  background: #0f172a; /* unify base color with contact */
   min-height: 80vh;
   display: flex;
   align-items: center;
@@ -819,7 +869,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.7;
+  opacity: 0.35; /* darker to improve text visibility */
 }
 
 .about-overlay {
@@ -828,7 +878,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(180deg, rgba(2,6,23,0.6) 0%, rgba(2,6,23,0.85) 100%);
   z-index: 2;
 }
 
@@ -870,17 +920,19 @@
 .about-text h2 {
   font-size: 2.5rem;
   font-weight: 800;
-  color: white;
+  color: #ffffff;
+  -webkit-text-stroke: 1px rgba(0,0,0,0.6);
   margin-bottom: 1.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: none;
 }
 
 .about-text p {
   font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #ffffff;
+  -webkit-text-stroke: 0.5px rgba(0,0,0,0.6);
   line-height: 1.7;
   margin-bottom: 2rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: none;
 }
 
 .library-hours {
@@ -948,8 +1000,8 @@
 
 /* Contact Section */
 .contact-section {
-  padding: 2.5rem 2rem;
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  padding: 3.5rem 2rem;
+  background: #0f172a; /* match about-section */
   color: white;
   position: relative;
   overflow: hidden;
@@ -963,7 +1015,7 @@
   right: 0;
   bottom: 0;
   background: url('/second.jpg') center/cover;
-  opacity: 0.1;
+  opacity: 0.12;
   z-index: 1;
 }
 
@@ -992,10 +1044,10 @@
 .contact-item {
   text-align: center;
   padding: 1.2rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.4);
   border-radius: 12px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s ease;
 }
 

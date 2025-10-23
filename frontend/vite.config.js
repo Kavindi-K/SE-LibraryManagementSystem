@@ -30,4 +30,6 @@ export default defineConfig({
       },
     },
   },
+  // Environment variables for production
+  envPrefix: 'VITE_',
 })

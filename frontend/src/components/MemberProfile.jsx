@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { api } from '../api';
 import './MemberProfile.css';
 
@@ -51,7 +50,7 @@ const MemberProfile = () => {
   const [showReservationModal, setShowReservationModal] = useState(false);
   const [selectedReservationDetails, setSelectedReservationDetails] = useState(null);
 
-  const API_BASE_URL = 'http://localhost:8081/api/books';
+  // Using api.js for production-ready API calls
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -65,12 +64,12 @@ const MemberProfile = () => {
 
   const loadMemberProfile = async (userId) => {
     try {
-      const memberResponse = await axios.get(`http://localhost:8081/api/members/user/${userId}`);
-      if (memberResponse.data.success) {
-        setMember(memberResponse.data.data);
-        const userResponse = await axios.get(`http://localhost:8081/api/users/${userId}`);
-        if (userResponse.data.success) {
-          const userData = userResponse.data.data;
+      const memberResponse = await api.getMemberByUserId(userId);
+      if (memberResponse.success) {
+        setMember(memberResponse.data);
+        const userResponse = await api.getUser(userId);
+        if (userResponse.success) {
+          const userData = userResponse.data;
           setProfileData({
             firstName: userData.firstName || '',
             lastName: userData.lastName || '',
@@ -97,8 +96,8 @@ const MemberProfile = () => {
     setSuccess('');
 
     try {
-      const response = await axios.put(`http://localhost:8081/api/users/${user.id}`, profileData);
-      if (response.data.success) {
+      const response = await api.updateUser(user.id, profileData);
+      if (response.success) {
         setSuccess('Profile updated successfully!');
         setEditMode(false);
         const updatedUser = { ...user, ...profileData };
@@ -145,16 +144,11 @@ const MemberProfile = () => {
   const fetchBooks = async () => {
     setLoading(true);
     try {
-      const response = await fetch(API_BASE_URL);
-      if (response.ok) {
-        const data = await response.json();
-        setBooks(data);
-        setFilteredBooks(data);
-        const uniqueGenres = [...new Set(data.map(book => book.genre))].sort();
-        setGenres(uniqueGenres);
-      } else {
-        setError('Failed to fetch books');
-      }
+      const data = await api.listBooks();
+      setBooks(data);
+      setFilteredBooks(data);
+      const uniqueGenres = [...new Set(data.map(book => book.genre))].sort();
+      setGenres(uniqueGenres);
     } catch (err) {
       setError('Error connecting to server');
     } finally {
@@ -279,11 +273,11 @@ const MemberProfile = () => {
       setLoading(true);
 
       // Get book details from backend
-      const bookResponse = await fetch(`${API_BASE_URL}/${borrowing.bookId}`);
       let bookData = null;
-
-      if (bookResponse.ok) {
-        bookData = await bookResponse.json();
+      try {
+        bookData = await api.getBook(borrowing.bookId);
+      } catch (error) {
+        console.error('Error fetching book details:', error);
       }
 
       // Calculate borrowing details
@@ -324,11 +318,11 @@ const MemberProfile = () => {
       setLoading(true);
 
       // Get book details from backend
-      const bookResponse = await fetch(`${API_BASE_URL}/${reservation.bookId}`);
       let bookData = null;
-
-      if (bookResponse.ok) {
-        bookData = await bookResponse.json();
+      try {
+        bookData = await api.getBook(reservation.bookId);
+      } catch (error) {
+        console.error('Error fetching book details:', error);
       }
 
       // Calculate reservation details
@@ -1058,26 +1052,17 @@ const MemberProfile = () => {
       await api.returnBorrowing(borrowing.id);
 
       // Get book details to update availability
-      const bookResponse = await fetch(`${API_BASE_URL}/${borrowing.bookId}`);
-      if (bookResponse.ok) {
-        const bookData = await bookResponse.json();
+      const bookData = await api.getBook(borrowing.bookId);
 
-        // Update book availability (increase available copies)
-        const updatedBookData = {
-          ...bookData,
-          availableCopies: (bookData.availableCopies || 0) + (borrowing.quantity || 1),
-          availability: true
-        };
+      // Update book availability (increase available copies)
+      const updatedBookData = {
+        ...bookData,
+        availableCopies: (bookData.availableCopies || 0) + (borrowing.quantity || 1),
+        availability: true
+      };
 
-        // Update book in backend
-        await fetch(`${API_BASE_URL}/${borrowing.bookId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedBookData),
-        });
-      }
+      // Update book in backend
+      await api.updateBook(borrowing.bookId, updatedBookData);
 
       // Refresh borrowings list
       if (member?.id || member?.memberId) {

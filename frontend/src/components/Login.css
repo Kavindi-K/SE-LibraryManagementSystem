@@ -88,18 +88,18 @@
 .main-title {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #1e40af;
+  color: #1e40af !important; /* strong blue, enforce override */
   margin: 0 0 5px 0;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
 }
 
 .subtitle {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #3b82f6; /* complementary blue */
   margin: 0;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
 }
 
 /* Form styles */
@@ -134,7 +134,7 @@
 .login-input {
   width: 100%;
   padding: 15px 15px 15px 50px;
-  border: 2px solid #e0e7ff;
+  border: 2px solid #ffffff;
   border-radius: 12px;
   font-size: 16px;
   color: #333;

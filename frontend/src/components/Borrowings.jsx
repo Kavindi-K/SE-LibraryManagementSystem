@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { addDays, toISODateInput } from '../utils'
-import './Borrowings.css'
+import './AdminTheme.css'
 import { api } from '../api'
 
 const STORAGE_KEY = 'borrowings'
@@ -123,22 +123,20 @@ export default function Borrowings() {
   }
 
   return (
-    <div className="section borrowings">
-      <form className="card form" onSubmit={editingId ? saveEdit : createBorrowing}>
-        <div className="form-header">
+    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
+      <div className="admin-form-container">
+        <div className="admin-form-header">
           <h2>Borrowings Management</h2>
-          <div className="header-center">
+          <div className="admin-flex admin-gap-md">
             <input
               type="text"
-              className="search-bar"
+              className="admin-search-input"
               placeholder="Search Book ID, Member ID, Borrow Date..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              style={{ width: '400px' }}
             />
-          </div>
-          <div className="toolbar">
-            <label>Status Filter</label>
-            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="admin-filter-select">
               <option value="ALL">All</option>
               <option value="ACTIVE">Active</option>
               <option value="RETURNED">Returned</option>
@@ -146,57 +144,61 @@ export default function Borrowings() {
           </div>
         </div>
 
-        <div className="grid">
-          <div>
-            <label>Member ID</label>
-            <input
-              name="memberId"
-              value={form.memberId}
-              onChange={handleChange}
-              placeholder="member ObjectId or code"
-              required
-            />
+        <form onSubmit={editingId ? saveEdit : createBorrowing}>
+          <div className="admin-form-grid">
+            <div className="admin-form-group">
+              <label>Member ID</label>
+              <input
+                name="memberId"
+                value={form.memberId}
+                onChange={handleChange}
+                placeholder="member ObjectId or code"
+                required
+                className="admin-form-input"
+              />
+            </div>
+            <div className="admin-form-group">
+              <label>Book ID</label>
+              <input
+                name="bookId"
+                value={form.bookId}
+                onChange={handleChange}
+                placeholder="book ObjectId or code"
+                required
+                className="admin-form-input"
+              />
+            </div>
+            <div className="admin-form-group">
+              <label>Borrow Date</label>
+              <input type="date" name="borrowDate" value={form.borrowDate} onChange={handleChange} required className="admin-form-input" />
+            </div>
+            <div className="admin-form-group">
+              <label>Due Date</label>
+              <input type="date" name="dueDate" value={form.dueDate} onChange={handleChange} required className="admin-form-input" />
+            </div>
+            <div className="admin-form-group">
+              <label>Return Date</label>
+              <input type="date" name="returnDate" value={form.returnDate} onChange={handleChange} className="admin-form-input" />
+            </div>
           </div>
-          <div>
-            <label>Book ID</label>
-            <input
-              name="bookId"
-              value={form.bookId}
-              onChange={handleChange}
-              placeholder="book ObjectId or code"
-              required
-            />
-          </div>
-          <div>
-            <label>Borrow Date</label>
-            <input type="date" name="borrowDate" value={form.borrowDate} onChange={handleChange} required />
-          </div>
-          <div>
-            <label>Due Date</label>
-            <input type="date" name="dueDate" value={form.dueDate} onChange={handleChange} required />
-          </div>
-          <div>
-            <label>Return Date</label>
-            <input type="date" name="returnDate" value={form.returnDate} onChange={handleChange} />
-          </div>
-        </div>
 
-        <div className="actions">
-          {editingId ? (
-            <>
-              <button type="submit">Save</button>
-              <button type="button" className="secondary" onClick={cancelEdit}>
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button type="submit">Create</button>
-          )}
-        </div>
-      </form>
+          <div className="admin-flex admin-gap-md" style={{ marginTop: '20px' }}>
+            {editingId ? (
+              <>
+                <button type="submit" className="admin-btn admin-btn-primary">Save</button>
+                <button type="button" className="admin-btn admin-btn-secondary" onClick={cancelEdit}>
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button type="submit" className="admin-btn admin-btn-primary">Create</button>
+            )}
+          </div>
+        </form>
+      </div>
 
-      <div className="card table">
-        <table>
+      <div className="admin-table-container">
+        <table className="admin-table">
           <thead>
             <tr>
               <th>#</th>
@@ -222,27 +224,31 @@ export default function Borrowings() {
                 <td>{toISODateInput(it.dueDate)}</td>
                 <td>{it.returnDate ? toISODateInput(it.returnDate) : '-'}</td>
                 <td>
-                  <span className={`badge ${it.status === 'ACTIVE' ? 'warning' : 'success'}`}>{it.status}</span>
+                  <span className={`admin-badge ${it.status === 'ACTIVE' ? 'admin-badge-warning' : 'admin-badge-success'}`}>
+                    {it.status}
+                  </span>
                 </td>
                 <td>Rs. {it.lateFee || 0}</td>
-                <td className="row-actions">
-                  <button className="small" onClick={() => startEdit(it.id)}>
-                    Edit
-                  </button>
-                  <button className="small secondary" onClick={() => remove(it.id)}>
-                    Delete
-                  </button>
-                  {it.status !== 'RETURNED' && (
-                    <button className="small success" onClick={() => markReturned(it.id)}>
-                      Return
+                <td>
+                  <div className="admin-flex admin-gap-sm">
+                    <button className="admin-btn admin-btn-sm admin-btn-info" onClick={() => startEdit(it.id)}>
+                      Edit
                     </button>
-                  )}
+                    <button className="admin-btn admin-btn-sm admin-btn-secondary" onClick={() => remove(it.id)}>
+                      Delete
+                    </button>
+                    {it.status !== 'RETURNED' && (
+                      <button className="admin-btn admin-btn-sm admin-btn-success" onClick={() => markReturned(it.id)}>
+                        Return
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
             {visibleItems.length === 0 && (
               <tr>
-                <td colSpan={10} className="empty">
+                <td colSpan={10} className="admin-text-center" style={{ padding: '40px', color: 'var(--admin-gray-500)', fontStyle: 'italic' }}>
                   No records
                 </td>
               </tr>

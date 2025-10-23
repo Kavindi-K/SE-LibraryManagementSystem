@@ -5,6 +5,8 @@ import "./LandingPage.css";
 function LandingPage() {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(null);
+  const [activeInfo, setActiveInfo] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +30,145 @@ function LandingPage() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const features = [
+    {
+      key: 'collection',
+      title: 'Comprehensive Collection',
+      description:
+        'Access 50,000+ books, journals, theses, and curated digital repositories across STEM, humanities, and business.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="4" width="6" height="16" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <rect x="10" y="4" width="6" height="16" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <path d="M17 6H19C20.1046 6 21 6.89543 21 8V18C21 19.1046 20.1046 20 19 20H17" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      more: {
+        headline: 'What’s inside',
+        bullets: [
+          'Subject guides for quick discovery',
+          'Librarian-curated reading lists',
+          'On-campus and remote access policies',
+          'Weekly arrivals and trending titles',
+        ],
+      },
+    },
+    {
+      key: 'tools',
+      title: 'Smart Learning Tools',
+      description:
+        'AI-powered search, personalized recommendations, citation helpers, and reading progress tracking.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M12 18V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M4.93 4.93L7.76 7.76" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M16.24 16.24L19.07 19.07" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      more: {
+        headline: 'How it helps',
+        bullets: [
+          'Semantic search over catalog and notes',
+          'Auto-generated citations (APA/MLA/IEEE)',
+          'Study reminders and spaced repetition',
+          'Reading analytics dashboard',
+        ],
+      },
+    },
+    {
+      key: 'security',
+      title: 'Secure & Private',
+      description:
+        'Enterprise-grade encryption, SSO support, audit logs, and privacy-first analytics to protect your data.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="10" width="18" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <path d="M7 10V7C7 4.79086 8.79086 3 11 3H13C15.2091 3 17 4.79086 17 7V10" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      more: {
+        headline: 'Security highlights',
+        bullets: [
+          'TLS 1.3 and at-rest encryption',
+          'Role-based access control (RBAC)',
+          'GDPR-ready data retention',
+          'Regular third‑party audits',
+        ],
+      },
+    },
+    {
+      key: 'multi',
+      title: 'Multi-Platform Access',
+      description:
+        'Seamless experience across desktop, mobile, and tablet with PWA offline reading support.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <rect x="8" y="16" width="10" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      more: {
+        headline: 'Access anywhere',
+        bullets: [
+          'Installable PWA on iOS/Android',
+          'Offline reading lists',
+          'Sync across devices',
+          'Low-bandwidth mode',
+        ],
+      },
+    },
+    {
+      key: 'support',
+      title: 'Academic Support',
+      description:
+        'Expert librarians, research consultations, and workshops on research methods and referencing.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 19C4 16.7909 5.79086 15 8 15H16C18.2091 15 20 16.7909 20 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="12" cy="9" r="4" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      more: {
+        headline: 'We can help with',
+        bullets: [
+          '1:1 research consultations',
+          'Systematic review strategies',
+          'Reference management (Zotero/Mendeley)',
+          'Academic writing clinics',
+        ],
+      },
+    },
+    {
+      key: 'global',
+      title: 'Global Resources',
+      description:
+        'International databases, inter-library loans, and open-access repositories at your fingertips.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+          <path d="M3 12H21" stroke="currentColor" strokeWidth="2"/>
+          <path d="M12 3C9 6.5 9 17.5 12 21C15 17.5 15 6.5 12 3Z" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      more: {
+        headline: 'Worldwide reach',
+        bullets: [
+          'Partner libraries and ILL services',
+          'Access to Scopus/ERIC/DOAJ (mock)',
+          'Global research collaboration tips',
+          'Time-zone friendly virtual help',
+        ],
+      },
+    },
+  ];
+
+  const openFeature = (feature) => setActiveFeature(feature);
+  const closeFeature = () => setActiveFeature(null);
+  const openInfo = (info) => setActiveInfo(info);
+  const closeInfo = () => setActiveInfo(null);
 
   return (
     <div className="landing-page">
@@ -116,54 +257,18 @@ function LandingPage() {
             <p className="section-subtitle">Experience the next generation of library services designed for modern learners</p>
           </div>
           <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">
-                <div className="icon-bg">📚</div>
+            {features.map((f) => (
+              <div key={f.key} className="feature-card">
+                <div className="feature-icon">
+                  <div className="icon-bg icon-modern">{f.icon}</div>
+                </div>
+                <h3>{f.title}</h3>
+                <p>{f.description}</p>
+                <button className="feature-link feature-link-btn" onClick={() => openFeature(f)}>
+                  Learn more →
+                </button>
               </div>
-              <h3>Comprehensive Collection</h3>
-              <p>Access 50,000+ books, journals, and digital resources across all academic disciplines and research areas</p>
-              <div className="feature-link">Learn more →</div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <div className="icon-bg">⚡</div>
-              </div>
-              <h3>Smart Learning Tools</h3>
-              <p>AI-powered search, personalized recommendations, and intelligent study assistance for enhanced learning</p>
-              <div className="feature-link">Learn more →</div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <div className="icon-bg">🔒</div>
-              </div>
-              <h3>Secure & Private</h3>
-              <p>Enterprise-grade security protecting your academic data and research with advanced encryption</p>
-              <div className="feature-link">Learn more →</div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <div className="icon-bg">📱</div>
-              </div>
-              <h3>Multi-Platform Access</h3>
-              <p>Seamless experience across desktop, mobile, and tablet with offline reading capabilities</p>
-              <div className="feature-link">Learn more →</div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <div className="icon-bg">🎓</div>
-              </div>
-              <h3>Academic Support</h3>
-              <p>Expert librarians, research assistance, and citation tools to support your academic journey</p>
-              <div className="feature-link">Learn more →</div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <div className="icon-bg">🌐</div>
-              </div>
-              <h3>Global Resources</h3>
-              <p>Connect to international databases, research papers, and academic collaborations worldwide</p>
-              <div className="feature-link">Learn more →</div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -222,7 +327,7 @@ function LandingPage() {
                 </div>
                 <div>
                   <h3>Phone Support</h3>
-                  <p>+94 11 754 4801</p>
+                  <p>+94 81 754 4801</p>
                   <span className="contact-sub">Mon-Fri: 8:00 AM - 6:00 PM</span>
                 </div>
               </div>
@@ -235,8 +340,8 @@ function LandingPage() {
                 </div>
                 <div>
                   <h3>Visit Our Campus</h3>
-                  <p>SARASAVI Learning Hub<br />New Kandy Road, Malabe</p>
-                  <span className="contact-sub">Colombo, Sri Lanka</span>
+                  <p>SARASAVI Learning Hub<br />Colombo road,Peradeniya</p>
+                  <span className="contact-sub">Kandy, Sri Lanka</span>
                 </div>
               </div>
             </div>
@@ -274,7 +379,7 @@ function LandingPage() {
           <div className="footer-content">
             <div className="footer-section main-section">
               <div className="footer-logo">
-                <img src="/sarasavi-logo.png" alt="SARASAVI Logo" className="footer-logo-image" />
+                <img src="/logo.png" alt="SARASAVI Logo" className="footer-logo-image" />
                 <div className="footer-logo-text">
                   <h3>SARASAVI</h3>
                   <p>Library & Learning Hub</p>
@@ -316,19 +421,19 @@ function LandingPage() {
             <div className="footer-section">
               <h4>Learning Resources</h4>
               <ul>
-                <li><a href="#">Digital Library</a></li>
-                <li><a href="#">Research Tools</a></li>
-                <li><a href="#">Study Rooms</a></li>
-                <li><a href="#">Academic Support</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Digital Library', bullets:['Browse 50k+ e-books and journals','Create reading lists','Download for offline (mock)','New arrivals every week']});}}>Digital Library</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Research Tools', bullets:['Citation generator (APA/MLA/IEEE)','Plagiarism awareness guide (mock)','Subject databases overview','How to request articles']});}}>Research Tools</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Study Rooms', bullets:['Individual and group rooms','Book up to 2 weeks ahead','Quiet and collaboration zones','AV equipment on request']});}}>Study Rooms</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Academic Support', bullets:['1:1 consultations with librarians','Workshops and clinics','Reference management help','Research design tips']});}}>Academic Support</a></li>
               </ul>
             </div>
             <div className="footer-section">
               <h4>Support</h4>
               <ul>
-                <li><a href="#">Help Center</a></li>
-                <li><a href="#">FAQ</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Help Center', bullets:['Account & login help','Borrowing & fines','Access problems troubleshooting','Contact channels']});}}>Help Center</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'FAQ', bullets:['How to get a member ID?','Can I renew my books online?','How do reservations work?','Do you support remote access?']});}}>FAQ</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Privacy Policy', bullets:['We respect your reading privacy (mock)','Only aggregated analytics','Your data is encrypted','Control your preferences']});}}>Privacy Policy</a></li>
+                <li><a href="#" onClick={(e)=>{e.preventDefault(); openInfo({title:'Terms of Service', bullets:['Fair use of resources','Respectful community behavior','Booking and cancellation rules','Copyright guidelines']});}}>Terms of Service</a></li>
               </ul>
             </div>
           </div>
@@ -338,6 +443,61 @@ function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {activeFeature && (
+        <div className="modal-overlay" onClick={closeFeature}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-icon">{activeFeature.icon}</div>
+              <div>
+                <h3 className="modal-title">{activeFeature.title}</h3>
+                <p className="modal-sub">{activeFeature.more.headline}</p>
+              </div>
+              <button className="modal-close" onClick={closeFeature}>×</button>
+            </div>
+            <div className="modal-body">
+              <ul className="modal-list">
+                {activeFeature.more.bullets.map((b, i) => (
+                  <li key={i}>
+                    <span className="check">✓</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={closeFeature}>Got it</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeInfo && (
+        <div className="modal-overlay" onClick={closeInfo}>
+          <div className="modal" onClick={(e)=>e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </div>
+              <div>
+                <h3 className="modal-title">{activeInfo.title}</h3>
+                <p className="modal-sub">Overview</p>
+              </div>
+              <button className="modal-close" onClick={closeInfo}>×</button>
+            </div>
+            <div className="modal-body">
+              <ul className="modal-list">
+                {activeInfo.bullets.map((b, i) => (
+                  <li key={i}><span className="check">•</span><span>{b}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={closeInfo}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

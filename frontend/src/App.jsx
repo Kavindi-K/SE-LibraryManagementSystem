@@ -13,7 +13,7 @@ import BookForm from './components/BookForm';
 import BookStats from './components/BookStats';
 import './App.css';
 
-const API_BASE_URL = 'http://localhost:8081/api/books';
+// Using api.js for production-ready API calls
 
 // Library Management Component (your original App logic)
 const LibraryManagement = () => {

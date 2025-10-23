@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from '../api';
 import MemberManagement from "./MemberManagement";
 import Reservations from "./Reservations";
 import Borrowings from "./Borrowings";
@@ -30,7 +31,7 @@ const AdminHome = () => {
   });
   const [nextBookNo, setNextBookNo] = useState('B10001');
 
-  const API_BASE_URL = 'http://localhost:8081/api/books';
+  // Using api.js for production-ready API calls
 
   const handleLogout = () => {
     // Clear user data
@@ -66,17 +67,11 @@ const AdminHome = () => {
   const fetchBooks = async () => {
     setLoading(true);
     try {
-      const response = await fetch(API_BASE_URL);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Fetched books:', data);
-        setBooks(data);
-        // Generate next book number after fetching
-        setNextBookNo(generateNextBookNo(data));
-      } else {
-        console.error('Failed to fetch books - Status:', response.status);
-        setError('Failed to fetch books');
-      }
+      const data = await api.listBooks();
+      console.log('Fetched books:', data);
+      setBooks(data);
+      // Generate next book number after fetching
+      setNextBookNo(generateNextBookNo(data));
     } catch (err) {
       console.error('Error fetching books:', err);
       setError('Error connecting to server');
@@ -87,11 +82,8 @@ const AdminHome = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/stats`);
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data);
-      }
+      const data = await api.getBookStats();
+      setStats(data);
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
@@ -106,24 +98,12 @@ const AdminHome = () => {
         bookNo: bookData.bookNo || nextBookNo
       };
 
-      const response = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookWithNo),
-      });
-
-      if (response.ok) {
-        setSuccess('Book added successfully!');
-        setShowForm(false);
-        console.log('Book added successfully, refreshing list...');
-        fetchBooks();
-        fetchStats();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to add book');
-      }
+      await api.createBook(bookWithNo);
+      setSuccess('Book added successfully!');
+      setShowForm(false);
+      console.log('Book added successfully, refreshing list...');
+      fetchBooks();
+      fetchStats();
     } catch (err) {
       console.error('Error adding book:', err);
       setError('Error adding book');
@@ -135,24 +115,12 @@ const AdminHome = () => {
   const updateBook = async (id, bookData) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookData),
-      });
-
-      if (response.ok) {
-        setSuccess('Book updated successfully!');
-        setEditingBook(null);
-        setShowForm(false);
-        fetchBooks();
-        fetchStats();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to update book');
-      }
+      await api.updateBook(id, bookData);
+      setSuccess('Book updated successfully!');
+      setEditingBook(null);
+      setShowForm(false);
+      fetchBooks();
+      fetchStats();
     } catch (err) {
       console.error('Error updating book:', err);
       setError('Error updating book');
@@ -165,17 +133,10 @@ const AdminHome = () => {
     if (window.confirm('Are you sure you want to delete this book?')) {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/${id}`, {
-          method: 'DELETE',
-        });
-
-        if (response.ok) {
-          setSuccess('Book deleted successfully!');
-          fetchBooks();
-          fetchStats();
-        } else {
-          setError('Failed to delete book');
-        }
+        await api.deleteBook(id);
+        setSuccess('Book deleted successfully!');
+        fetchBooks();
+        fetchStats();
       } catch (err) {
         console.error('Error deleting book:', err);
         setError('Error deleting book');
@@ -249,9 +210,6 @@ const AdminHome = () => {
             {/* Success/Error Messages */}
             {error && <div className="error-message">{error}</div>}
             {success && <div className="success-message">{success}</div>}
-
-            {/* Book Stats */}
-            <BookStats stats={stats} />
 
             {/* Add Book Button */}
             {!showForm && (

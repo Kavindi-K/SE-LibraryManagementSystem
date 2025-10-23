@@ -39,53 +39,7 @@ const BookStats = ({ stats }) => {
   ];
 
   return (
-    <div className="book-stats">
-      <div className="stats-header">
-        <h2>📊 Library Statistics</h2>
-        <p>Real-time overview of your library collection</p>
-      </div>
-      
-      <div className="stats-grid">
-        {statsData.map((stat, index) => (
-          <div 
-            key={index} 
-            className={`stat-card ${stat.color}`}
-            style={{ background: stat.gradient }}
-          >
-            <div className="stat-icon">{stat.icon}</div>
-            <div className="stat-content">
-              <div className="stat-value">{stat.value}</div>
-              <div className="stat-title">{stat.title}</div>
-              <div className="stat-subtitle">{stat.subtitle}</div>
-            </div>
-            <div className="stat-decoration">
-              <div className="decoration-circle"></div>
-              <div className="decoration-circle"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Progress Bars */}
-      <div className="progress-section">
-        <div className="progress-item">
-          <div className="progress-header">
-            <span className="progress-label">📚 Book Availability</span>
-            <span className="progress-value">{availabilityPercentage}%</span>
-          </div>
-          <div className="progress-bar">
-            <div 
-              className="progress-fill availability"
-              style={{ width: `${availabilityPercentage}%` }}
-            ></div>
-          </div>
-          <div className="progress-info">
-            <span>{availableBooks} available</span>
-            <span>{unavailableBooks} unavailable</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div className="book-stats"></div>
   );
 };
 

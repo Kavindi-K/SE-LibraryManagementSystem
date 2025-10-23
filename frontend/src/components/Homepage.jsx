@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../api';
 import SearchBar from './SearchBar';
 import GenreFilter from './GenreFilter';
 import BookGrid from './BookGrid';
@@ -40,8 +40,8 @@ const Homepage = () => {
     if (!userId) return;
     
     try {
-      const response = await axios.get(`http://localhost:8081/api/members/profile/${userId}`);
-      if (response.data.success) {
+      const response = await api.getMemberByUserId(userId);
+      if (response.success) {
         setIsExistingMember(true);
       }
     } catch (error) {
@@ -98,10 +98,10 @@ const Homepage = () => {
     try {
       setBooksLoading(true);
       setBooksError('');
-      const response = await axios.get('http://localhost:8081/api/books');
-      if (response.data && Array.isArray(response.data)) {
-        setBooks(response.data);
-        setFilteredBooks(response.data);
+      const response = await api.listBooks();
+      if (response && Array.isArray(response)) {
+        setBooks(response);
+        setFilteredBooks(response);
       } else {
         setBooksError('Failed to load books');
       }
@@ -168,24 +168,24 @@ const Homepage = () => {
         return;
       }
 
-      const verifyResponse = await axios.post('http://localhost:8081/api/users/login', {
+      const verifyResponse = await api.loginUser({
         username: user.username,
         password: memberFormData.password
       });
 
-      if (!verifyResponse.data.success) {
+      if (!verifyResponse.success) {
         setError('Password verification failed. Please enter your correct password.');
         setLoading(false);
         return;
       }
 
-      const memberResponse = await axios.post('http://localhost:8081/api/members/register', {
+      const memberResponse = await api.createMember({
         userId: user.id,
         email: memberFormData.email,
         membershipType: memberFormData.membershipType
       });
 
-      if (memberResponse.data.success) {
+      if (memberResponse.success) {
         setSuccess('Member registration successful! Check your email for your Member ID. You will need this ID to access your member profile in the future.');
         setMemberFormData({
           email: user.email || '',
@@ -231,15 +231,15 @@ const Homepage = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:8081/api/members/member-id/${memberIdLoginData.memberId}`);
+      const response = await api.getMemberByMemberId(memberIdLoginData.memberId);
 
-      if (response.data.success) {
-        localStorage.setItem('member', JSON.stringify(response.data.data));
+      if (response.success) {
+        localStorage.setItem('member', JSON.stringify(response.data));
         localStorage.setItem('isMemberAuthenticated', 'true');
         
         navigate('/member-profile');
       } else {
-        setError(response.data.message || 'Member ID not found');
+        setError(response.message || 'Member ID not found');
       }
     } catch (error) {
       console.error('Member login error:', error);
@@ -310,9 +310,6 @@ const Homepage = () => {
           <div className="hero-overlay"></div>
         </div>
         <div className="hero-content">
-          <div className="hero-badge">
-            <span>🌟 Welcome to the Future of Learning</span>
-          </div>
           <h2>Discover Knowledge at <span className="highlight">SARASAVI</span></h2>
           <p>Your gateway to academic excellence and lifelong learning. Explore our vast collection of books, 
              digital resources, and innovative learning tools designed to empower your educational journey.</p>
@@ -380,22 +377,30 @@ const Homepage = () => {
           <h2>Our Services</h2>
           <div className="services-grid">
             <div className="service-card">
-              <div className="service-icon">📚</div>
+              <div className="service-icon" aria-hidden>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="6" height="16" rx="2" stroke="currentColor" strokeWidth="2"/><rect x="10" y="4" width="6" height="16" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M17 6H19C20.1046 6 21 6.89543 21 8V18C21 19.1046 20.1046 20 19 20H17" stroke="currentColor" strokeWidth="2"/></svg>
+              </div>
               <h3>Book Lending</h3>
               <p>Borrow physical books for up to 14 days with renewal options</p>
             </div>
             <div className="service-card">
-              <div className="service-icon">💻</div>
+              <div className="service-icon" aria-hidden>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M8 20H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </div>
               <h3>Digital Resources</h3>
               <p>Access to e-books, research papers, and online databases</p>
             </div>
             <div className="service-card">
-              <div className="service-icon">🏫</div>
+              <div className="service-icon" aria-hidden>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 11L12 4L21 11V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V11Z" stroke="currentColor" strokeWidth="2"/><path d="M9 21V12H15V21" stroke="currentColor" strokeWidth="2"/></svg>
+              </div>
               <h3>Study Spaces</h3>
               <p>Quiet study areas, group rooms, and collaborative spaces</p>
             </div>
             <div className="service-card">
-              <div className="service-icon">🎓</div>
+              <div className="service-icon" aria-hidden>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7L12 4L21 7L12 10L3 7Z" stroke="currentColor" strokeWidth="2"/><path d="M5 14C5 12.8954 5.89543 12 7 12H17C18.1046 12 19 12.8954 19 14V18H5V14Z" stroke="currentColor" strokeWidth="2"/></svg>
+              </div>
               <h3>Research Support</h3>
               <p>Academic research assistance and citation guidance</p>
             </div>
@@ -403,71 +408,60 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* About Library Section */}
-      <section id="about" className="about-section">
-        <div className="about-background">
-          <img src="/second.jpg" alt="SARASAVI Library" className="about-bg-img" />
-          <div className="about-overlay"></div>
+      {/* About + Contact Combined */}
+      <section id="about" className="about-contact-section">
+        <div className="about-contact-bg">
+          <img src="/second.jpg" alt="Background" />
+          <div className="about-contact-overlay"></div>
         </div>
         <div className="container">
-          <div className="about-content-overlay">
-            <div className="about-text">
-              <div className="about-badge">
-                <span>About SARASAVI</span>
+          <div className="ac-grid">
+            {/* Left: Contact */}
+            <div className="ac-card contact-panel">
+              <h2 className="ac-title">Get in Touch</h2>
+              <div className="ac-contact-list">
+                <div className="ac-contact-item">
+                  <div className="ac-icon">📍</div>
+                  <div>
+                    <h4>Location</h4>
+                    <p>SARASAVI Learning Hub<br/>New Kandy Road, Malabe</p>
+                  </div>
+                </div>
+                <div className="ac-contact-item">
+                  <div className="ac-icon">📞</div>
+                  <div>
+                    <h4>Phone</h4>
+                    <p>+94 11 754 4801</p>
+                  </div>
+                </div>
+                <div className="ac-contact-item">
+                  <div className="ac-icon">✉️</div>
+                  <div>
+                    <h4>Email</h4>
+                    <p>info@sarasavi.lk</p>
+                  </div>
+                </div>
               </div>
-              <h2>Empowering Education Through Innovation</h2>
+            </div>
+
+            {/* Right: About */}
+            <div className="ac-card about-panel">
+              <div className="about-badge"><span>About SARASAVI</span></div>
+              <h2 className="ac-title">Empowering Education Through Innovation</h2>
               <p>
-                The SARASAVI Library & Learning Hub serves as the academic heart of our institution, 
-                providing comprehensive resources and services to support learning, teaching, 
-                and research activities. Our modern facility houses an extensive collection 
-                of books, journals, and digital resources across various disciplines.
+                The SARASAVI Library & Learning Hub serves as the academic heart of our institution, providing
+                comprehensive resources and services to support learning, teaching, and research. Our modern
+                facility houses an extensive collection of books, journals, and digital resources across disciplines.
               </p>
-              <div className="library-hours">
+              <div className="ac-hours">
                 <h3>Library Hours</h3>
                 <ul className="hours-list">
-                  <li className="hours-item">
-                    <span className="hours-day">Monday - Friday</span>
-                    <span className="hours-time">8:00 AM - 10:00 PM</span>
-                  </li>
-                  <li className="hours-item">
-                    <span className="hours-day">Saturday</span>
-                    <span className="hours-time">9:00 AM - 8:00 PM</span>
-                  </li>
-                  <li className="hours-item">
-                    <span className="hours-day">Sunday</span>
-                    <span className="hours-time">10:00 AM - 6:00 PM</span>
-                  </li>
-                  <li className="hours-item">
-                    <span className="hours-day">Holidays</span>
-                    <span className="hours-time">10:00 AM - 2:00 PM</span>
-                  </li>
+                  <li className="hours-item"><span className="hours-day">Monday - Friday</span><span className="hours-time">8:00 AM - 10:00 PM</span></li>
+                  <li className="hours-item"><span className="hours-day">Saturday</span><span className="hours-time">9:00 AM - 8:00 PM</span></li>
+                  <li className="hours-item"><span className="hours-day">Sunday</span><span className="hours-time">10:00 AM - 6:00 PM</span></li>
+                  <li className="hours-item"><span className="hours-day">Holidays</span><span className="hours-time">10:00 AM - 2:00 PM</span></li>
                 </ul>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="contact-section">
-        <div className="container">
-          <h2>Get in Touch</h2>
-          <div className="contact-info">
-            <div className="contact-item">
-              <h4>📍 Location</h4>
-              <p>SARASAVI Learning Hub<br/>New Kandy Road, Malabe</p>
-            </div>
-            <div className="contact-item">
-              <h4>📞 Phone</h4>
-              <p>+94 11 754 4801</p>
-            </div>
-            <div className="contact-item">
-              <h4>✉️ Email</h4>
-              <p>info@sarasavi.lk</p>
-            </div>
-            <div className="contact-item">
-              <h4>🕒 Hours</h4>
-              <p>Mon-Fri: 8AM-10PM<br/>Sat-Sun: 9AM-6PM</p>
             </div>
           </div>
         </div>

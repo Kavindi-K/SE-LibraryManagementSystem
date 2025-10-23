@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toISODateInput } from '../utils'
-import './Reservations.css'
+import './AdminTheme.css'
 import { api } from '../api'
 
 const STORAGE_KEY = 'reservations'
@@ -89,13 +89,12 @@ export default function Reservations() {
   }
 
   return (
-    <div className="section reservations">
-      <form className="card form" onSubmit={editingId ? saveEdit : createReservation}>
-        <div className="form-header">
+    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
+      <div className="admin-form-container">
+        <div className="admin-form-header">
           <h2>Reservations Management</h2>
-          <div className="toolbar">
-            <label>Status Filter</label>
-            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <div className="admin-flex admin-gap-md">
+            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="admin-filter-select">
               <option value="ALL">All</option>
               <option value="PENDING">Pending</option>
               <option value="RECEIVED">Received</option>
@@ -103,42 +102,46 @@ export default function Reservations() {
             </select>
           </div>
         </div>
-        <div className="grid">
-          <div>
-            <label>Member ID</label>
-            <input name="memberId" value={form.memberId} onChange={handleChange} placeholder="member ObjectId or code" required />
+        
+        <form onSubmit={editingId ? saveEdit : createReservation}>
+          <div className="admin-form-grid">
+            <div className="admin-form-group">
+              <label>Member ID</label>
+              <input name="memberId" value={form.memberId} onChange={handleChange} placeholder="member ObjectId or code" required className="admin-form-input" />
+            </div>
+            <div className="admin-form-group">
+              <label>Book ID</label>
+              <input name="bookId" value={form.bookId} onChange={handleChange} placeholder="book ObjectId or code" required className="admin-form-input" />
+            </div>
+            <div className="admin-form-group">
+              <label>Reservation Date</label>
+              <input type="date" name="reservationDate" value={form.reservationDate} onChange={handleChange} required className="admin-form-input" />
+            </div>
+            <div className="admin-form-group">
+              <label>Status</label>
+              <select name="status" value={form.status} onChange={handleChange} className="admin-form-select">
+                <option value="PENDING">PENDING</option>
+                <option value="RECEIVED">RECEIVED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label>Book ID</label>
-            <input name="bookId" value={form.bookId} onChange={handleChange} placeholder="book ObjectId or code" required />
+          
+          <div className="admin-flex admin-gap-md" style={{ marginTop: '20px' }}>
+            {editingId ? (
+              <>
+                <button type="submit" className="admin-btn admin-btn-primary">Save</button>
+                <button type="button" className="admin-btn admin-btn-secondary" onClick={cancelEdit}>Cancel</button>
+              </>
+            ) : (
+              <button type="submit" className="admin-btn admin-btn-primary">Create</button>
+            )}
           </div>
-          <div>
-            <label>Reservation Date</label>
-            <input type="date" name="reservationDate" value={form.reservationDate} onChange={handleChange} required />
-          </div>
-          <div>
-            <label>Status</label>
-            <select name="status" value={form.status} onChange={handleChange}>
-              <option value="PENDING">PENDING</option>
-              <option value="RECEIVED">RECEIVED</option>
-              <option value="CANCELLED">CANCELLED</option>
-            </select>
-          </div>
-        </div>
-        <div className="actions">
-          {editingId ? (
-            <>
-              <button type="submit">Save</button>
-              <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button>
-            </>
-          ) : (
-            <button type="submit">Create</button>
-          )}
-        </div>
-      </form>
+        </form>
+      </div>
 
-      <div className="card table">
-        <table>
+      <div className="admin-table-container">
+        <table className="admin-table">
           <thead>
             <tr>
               <th>#</th>
@@ -159,20 +162,24 @@ export default function Reservations() {
                 <td>{it.bookId}</td>
                 <td>{toISODateInput(it.reservationDate)}</td>
                 <td>
-                  <span className={`badge ${it.status === 'PENDING' ? 'warning' : it.status === 'RECEIVED' ? 'success' : 'secondary'}`}>{it.status}</span>
+                  <span className={`admin-badge ${it.status === 'PENDING' ? 'admin-badge-warning' : it.status === 'RECEIVED' ? 'admin-badge-success' : 'admin-badge-secondary'}`}>
+                    {it.status}
+                  </span>
                 </td>
-                <td className="row-actions">
-                  <button className="small" onClick={() => startEdit(it.id)}>Edit</button>
-                  <button className="small secondary" onClick={() => remove(it.id)}>Delete</button>
-                  {it.status !== 'RECEIVED' && (
-                    <button className="small success" onClick={() => markReceived(it.id)}>Mark Received</button>
-                  )}
+                <td>
+                  <div className="admin-flex admin-gap-sm">
+                    <button className="admin-btn admin-btn-sm admin-btn-info" onClick={() => startEdit(it.id)}>Edit</button>
+                    <button className="admin-btn admin-btn-sm admin-btn-secondary" onClick={() => remove(it.id)}>Delete</button>
+                    {it.status !== 'RECEIVED' && (
+                      <button className="admin-btn admin-btn-sm admin-btn-success" onClick={() => markReceived(it.id)}>Mark Received</button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
             {visibleItems.length === 0 && (
               <tr>
-                <td colSpan={7} className="empty">No records</td>
+                <td colSpan={7} className="admin-text-center" style={{ padding: '40px', color: 'var(--admin-gray-500)', fontStyle: 'italic' }}>No records</td>
               </tr>
             )}
           </tbody>
