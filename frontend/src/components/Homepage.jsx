@@ -181,6 +181,8 @@ const Homepage = () => {
 
       const memberResponse = await api.createMember({
         userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: memberFormData.email,
         membershipType: memberFormData.membershipType
       });
