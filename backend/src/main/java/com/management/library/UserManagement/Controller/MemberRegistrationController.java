@@ -30,7 +30,7 @@ public class MemberRegistrationController {
     @Autowired
     private EmailService emailService;
 
-    @Value("${app.name:NexaLibrary}")
+    @Value("${app.name:SARASAVI}")
     private String appName;
 
     @PostMapping("/register")

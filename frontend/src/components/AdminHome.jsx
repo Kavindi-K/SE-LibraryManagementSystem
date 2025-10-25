@@ -205,25 +205,25 @@ const AdminHome = () => {
       case 'books':
         return (
           <div className="books-management">
-            <h2>Books Management</h2>
+            <div className="admin-form-header">
+              <h2>Books Management</h2>
+              {!showForm && (
+                <div className="admin-flex admin-gap-md">
+                  <button
+                    className="admin-btn admin-btn-primary"
+                    onClick={() => setShowForm(true)}
+                    disabled={loading}
+                  >
+                    Add New Book
+                  </button>
+                  <span className="next-book-no">Next Book No: {nextBookNo}</span>
+                </div>
+              )}
+            </div>
 
             {/* Success/Error Messages */}
             {error && <div className="error-message">{error}</div>}
             {success && <div className="success-message">{success}</div>}
-
-            {/* Add Book Button */}
-            {!showForm && (
-              <div className="book-actions">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setShowForm(true)}
-                  disabled={loading}
-                >
-                  Add New Book
-                </button>
-                <span className="next-book-no">Next Book No: {nextBookNo}</span>
-              </div>
-            )}
 
             {/* Book Form */}
             {showForm && (
@@ -239,7 +239,6 @@ const AdminHome = () => {
             {/* Book List */}
             {!showForm && (
               <>
-                <div style={{ marginBottom: '20px' }}></div>
                 <BookList
                   books={books}
                   onEdit={handleEditBook}
@@ -270,14 +269,20 @@ const AdminHome = () => {
     <div className="admin-home">
       {/* Sidebar */}
       <nav className="admin-sidebar">
-        <h2 className="logo">Navigation</h2>
+        <div className="admin-brand">
+          <img src="/logo.png" alt="SARASAVI" className="admin-brand-logo" />
+          <div className="admin-brand-text">
+            <h3 className="admin-brand-title">SARASAVI</h3>
+            <p className="admin-brand-subtitle">LIBRARY & LEARNING HUB</p>
+          </div>
+        </div>
         <ul>
           <li>
             <button
               className={activeSection === 'dashboard' ? 'active' : ''}
               onClick={() => setActiveSection('dashboard')}
             >
-              📊 Dashboard
+               Dashboard
             </button>
           </li>
           <li>
@@ -285,7 +290,7 @@ const AdminHome = () => {
               className={activeSection === 'members' ? 'active' : ''}
               onClick={() => setActiveSection('members')}
             >
-              👥 Member Management
+               Member Management
             </button>
           </li>
           <li>
@@ -293,7 +298,7 @@ const AdminHome = () => {
               className={activeSection === 'books' ? 'active' : ''}
               onClick={() => setActiveSection('books')}
             >
-              � Books Management
+               Books Management
             </button>
           </li>
           <li>
@@ -301,7 +306,7 @@ const AdminHome = () => {
               className={activeSection === 'borrowing' ? 'active' : ''}
               onClick={() => setActiveSection('borrowing')}
             >
-              � Borrowing & Fines
+               Borrowing & Fines
             </button>
           </li>
           <li>
@@ -309,36 +314,20 @@ const AdminHome = () => {
               className={activeSection === 'reservations' ? 'active' : ''}
               onClick={() => setActiveSection('reservations')}
             >
-              � Reservations
+               Reservations
             </button>
           </li>
         </ul>
+        <div className="admin-sidebar-footer">
+          <button className="sidebar-logout" onClick={handleLogout}>
+            <img src="/logout.png" alt="Logout" className="sidebar-logout-icon" />
+            <span>Logout</span>
+          </button>
+        </div>
       </nav>
 
       {/* Main Content Area */}
       <div className="admin-content">
-        {/* Header Bar */}
-        <header className="admin-header">
-          <div className="admin-header-content">
-            <div className="admin-logo-section">
-              <img 
-                src="/logo.png" 
-                alt="SARASAVI Logo" 
-                className="admin-logo-image"
-              />
-              <div className="admin-logo-text">
-                <h1 className="admin-logo-title">SARASAVI</h1>
-                <p className="admin-logo-subtitle">LIBRARY & LEARNING HUB</p>
-              </div>
-            </div>
-            
-            <h2 className="admin-title">Admin Dashboard</h2>
-            
-            <button className="logout-btn" onClick={handleLogout}>
-              <img src="/logout.png" alt="Logout" className="logout-icon" />
-            </button>
-          </div>
-        </header>
 
         {/* Dashboard Content */}
         <main className="dashboard-overview">

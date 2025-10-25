@@ -169,7 +169,7 @@ export default function Reservations() {
                 <td>
                   <div className="admin-flex admin-gap-sm">
                     <button className="admin-btn admin-btn-sm admin-btn-info" onClick={() => startEdit(it.id)}>Edit</button>
-                    <button className="admin-btn admin-btn-sm admin-btn-secondary" onClick={() => remove(it.id)}>Delete</button>
+                    <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => remove(it.id)}>Delete</button>
                     {it.status !== 'RECEIVED' && (
                       <button className="admin-btn admin-btn-sm admin-btn-success" onClick={() => markReceived(it.id)}>Mark Received</button>
                     )}
