@@ -203,7 +203,7 @@ function LandingPage() {
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-badge">
-              <span>🌟 Welcome to the Future of Learning</span>
+              <span> Welcome to the Future of Learning</span>
             </div>
             <h1 className="hero-title">
               Discover Knowledge at <span className="highlight">SARASAVI</span>

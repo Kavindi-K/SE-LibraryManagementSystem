@@ -4,6 +4,7 @@ import com.management.library.MemberManagement.Dto.*;
 import com.management.library.MemberManagement.Entity.Member;
 import com.management.library.MemberManagement.Repository.MemberRepository;
 import com.management.library.UserManagement.Exception.*;
+import com.management.library.UserManagement.Service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ public class MemberService {
 
     private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     private final MemberRepository memberRepository;
+    private final EmailService emailService;
 
     // Constructor
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, EmailService emailService) {
         this.memberRepository = memberRepository;
+        this.emailService = emailService;
     }
 
     public MemberResponse createMember(CreateMemberRequest request) {
@@ -57,6 +60,23 @@ public class MemberService {
 
         Member savedMember = memberRepository.save(member);
         log.info("Member created successfully with ID: {}", savedMember.getMemberId());
+
+        // Fire-and-forget welcome email (do not fail the request if email sending fails)
+        try {
+            if (savedMember.getEmail() != null && !savedMember.getEmail().isBlank()) {
+                String fullName = String.format("%s %s", 
+                        savedMember.getFirstName() != null ? savedMember.getFirstName() : "", 
+                        savedMember.getLastName() != null ? savedMember.getLastName() : "").trim();
+                emailService.sendMemberWelcomeEmail(
+                        savedMember.getEmail(),
+                        fullName.isEmpty() ? savedMember.getMemberId() : fullName,
+                        savedMember.getMemberId(),
+                        savedMember.getMembershipType() != null ? savedMember.getMembershipType().name() : "BASIC"
+                );
+            }
+        } catch (Exception ex) {
+            log.warn("Member created but failed to send welcome email: {}", ex.getMessage());
+        }
 
         return MemberResponse.fromEntity(savedMember);
     }

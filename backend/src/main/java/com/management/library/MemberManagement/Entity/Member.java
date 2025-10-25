@@ -225,6 +225,10 @@ public class Member {
     }
 
     public enum MemberStatus {
-        ACTIVE, EXPIRED, SUSPENDED, INACTIVE
+        ACTIVE,
+        EXPIRED,
+        SUSPENDED,
+        INACTIVE,
+        PENDING
     }
 }

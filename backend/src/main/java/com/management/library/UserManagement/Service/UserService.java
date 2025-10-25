@@ -6,9 +6,6 @@ import com.management.library.UserManagement.Exception.*;
 import com.management.library.UserManagement.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +21,13 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String mailFromAddress;
+    private final EmailService emailService;
 
     // Manual constructor
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JavaMailSender mailSender) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
+        this.emailService = emailService;
     }
 
     public UserResponse createUser(CreateUserRequest request) {
@@ -275,12 +269,16 @@ public class UserService {
 
         // Send token via email
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(mailFromAddress);
-            message.setTo(user.getEmail());
-            message.setSubject("Library - Password Reset Token");
-            message.setText("Use this token to reset your password: " + token + " This token expires in 2 minutes.");
-            mailSender.send(message);
+            String subject = "SARASAVI Library - Password Reset Token";
+            String body = "Hello " + user.getFirstName() + ",\n\n" +
+                    "You have requested to reset your password.\n\n" +
+                    "Use this token to reset your password: " + token + "\n\n" +
+                    "This token expires in 2 minutes.\n\n" +
+                    "If you did not request this, please ignore this email.\n\n" +
+                    "Best regards,\n" +
+                    "SARASAVI Library Team";
+            
+            emailService.sendSimpleEmail(user.getEmail(), subject, body);
             log.info("Password reset token email sent to: {}", user.getEmail());
         } catch (Exception ex) {
             log.error("Failed to send reset email: {}", ex.getMessage());

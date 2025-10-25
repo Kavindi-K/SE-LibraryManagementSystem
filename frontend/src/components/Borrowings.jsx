@@ -234,7 +234,7 @@ export default function Borrowings() {
                     <button className="admin-btn admin-btn-sm admin-btn-info" onClick={() => startEdit(it.id)}>
                       Edit
                     </button>
-                    <button className="admin-btn admin-btn-sm admin-btn-secondary" onClick={() => remove(it.id)}>
+                    <button className="admin-btn admin-btn-sm admin-btn-danger" onClick={() => remove(it.id)}>
                       Delete
                     </button>
                     {it.status !== 'RETURNED' && (

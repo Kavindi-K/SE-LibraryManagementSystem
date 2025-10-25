@@ -35,6 +35,13 @@ const MemberManagement = () => {
     profilePictureUrl: ''
   });
 
+  // Simple phone validation (optional field)
+  const isValidPhone = (val) => {
+    if (!val) return true; // optional
+    const digits = String(val).replace(/\D/g, '');
+    return digits.length >= 10 && digits.length <= 15; // allow 10-15 digits
+  };
+
   // Fetch all members
   const fetchMembers = async () => {
     try {
@@ -85,6 +92,10 @@ const MemberManagement = () => {
   // Create member
   const handleCreateMember = async (e) => {
     e.preventDefault();
+    if (!isValidPhone(formData.phoneNumber)) {
+      alert('Please enter a valid phone number (10–15 digits).');
+      return;
+    }
     try {
       const response = await api.createMember(formData);
       
@@ -105,6 +116,10 @@ const MemberManagement = () => {
   // Update member
   const handleUpdateMember = async (e) => {
     e.preventDefault();
+    if (!isValidPhone(formData.phoneNumber)) {
+      alert('Please enter a valid phone number (10–15 digits).');
+      return;
+    }
     try {
       const response = await api.updateMember(selectedMember.id, formData);
       
@@ -251,7 +266,7 @@ const MemberManagement = () => {
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
       <div className="admin-form-header">
-        <h1>Member Management</h1>
+        <h2>Member Management</h2>
         <button 
           className="admin-btn admin-btn-primary"
           onClick={() => setShowCreateModal(true)}
@@ -448,6 +463,9 @@ const MemberManagement = () => {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
+                    inputMode="tel"
+                    pattern="^\+?[0-9 ()-]{7,20}$"
+                    title="Enter a valid phone number (10–15 digits; digits, spaces, dashes, parentheses allowed)"
                     className="admin-form-input"
                   />
                 </div>
@@ -464,10 +482,13 @@ const MemberManagement = () => {
                 <div className="admin-form-group">
                   <label>Emergency Contact</label>
                   <input
-                    type="text"
+                    type="tel"
                     name="emergencyContact"
                     value={formData.emergencyContact}
                     onChange={handleInputChange}
+                    inputMode="tel"
+                    pattern="^\+?[0-9 ()-]{7,20}$"
+                    title="Enter a valid contact number (10–15 digits; digits, spaces, dashes, parentheses allowed)"
                     className="admin-form-input"
                   />
                 </div>
@@ -575,6 +596,9 @@ const MemberManagement = () => {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
+                    inputMode="tel"
+                    pattern="^\+?[0-9 ()-]{7,20}$"
+                    title="Enter a valid phone number (10–15 digits; digits, spaces, dashes, parentheses allowed)"
                     className="admin-form-input"
                   />
                 </div>
@@ -591,10 +615,13 @@ const MemberManagement = () => {
                 <div className="admin-form-group">
                   <label>Emergency Contact</label>
                   <input
-                    type="text"
+                    type="tel"
                     name="emergencyContact"
                     value={formData.emergencyContact}
                     onChange={handleInputChange}
+                    inputMode="tel"
+                    pattern="^\+?[0-9 ()-]{7,20}$"
+                    title="Enter a valid contact number (10–15 digits; digits, spaces, dashes, parentheses allowed)"
                     className="admin-form-input"
                   />
                 </div>

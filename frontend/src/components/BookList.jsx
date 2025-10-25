@@ -68,10 +68,7 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
     setCurrentPage(page);
   };
 
-  const getSortIcon = (field) => {
-    if (sortField !== field) return '↕️';
-    return sortDirection === 'asc' ? '⬆️' : '⬇️';
-  };
+  const getSortIcon = () => '';
 
   if (loading && books.length === 0) {
     return (
@@ -137,31 +134,31 @@ const BookList = ({ books, onEdit, onDelete, loading }) => {
               <thead>
                 <tr>
                   <th onClick={() => handleSort('bookNo')} style={{ cursor: 'pointer' }}>
-                    Book No {getSortIcon('bookNo')}
+                    Book No
                   </th>
                   <th onClick={() => handleSort('title')} style={{ cursor: 'pointer' }}>
-                    Title {getSortIcon('title')}
+                    Title
                   </th>
                   <th onClick={() => handleSort('author')} style={{ cursor: 'pointer' }}>
-                    Author {getSortIcon('author')}
+                    Author
                   </th>
                   <th onClick={() => handleSort('genre')} style={{ cursor: 'pointer' }}>
-                    Genre {getSortIcon('genre')}
+                    Genre
                   </th>
                   <th onClick={() => handleSort('year')} style={{ cursor: 'pointer' }}>
-                    Year {getSortIcon('year')}
+                    Year
                   </th>
                   <th onClick={() => handleSort('language')} style={{ cursor: 'pointer' }}>
-                    Language {getSortIcon('language')}
+                    Language
                   </th>
                   <th onClick={() => handleSort('availableCopies')} style={{ cursor: 'pointer' }}>
-                    Copies {getSortIcon('availableCopies')}
+                    Copies
                   </th>
                   <th onClick={() => handleSort('availability')} style={{ cursor: 'pointer' }}>
-                    Status {getSortIcon('availability')}
+                    Status
                   </th>
                   <th onClick={() => handleSort('location')} style={{ cursor: 'pointer' }}>
-                    Location {getSortIcon('location')}
+                    Location
                   </th>
                   <th>Actions</th>
                 </tr>

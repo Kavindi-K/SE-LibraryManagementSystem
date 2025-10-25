@@ -2,13 +2,22 @@ package com.management.library.UserManagement.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class EmailService {
@@ -17,24 +26,45 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
+    private String smtpFromEmail;
+
+    @Value("${app.mail.provider:smtp}")
+    private String mailProvider;
+
+    @Value("${app.mail.from:}")
     private String fromEmail;
+
+    @Value("${app.mail.fromName:SARASAVI}")
+    private String fromName;
+
+    @Value("${sendgrid.apiKey:}")
+    private String sendgridApiKey;
 
     public void sendMemberWelcomeEmail(String toEmail, String memberName, String memberId, String membershipType) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(toEmail);
-            helper.setSubject("Welcome to NexaLibrary University Library - Your Membership Details");
-
+            String subject = "Welcome to SARASAVI Library - Your Membership Details";
             String htmlContent = createMemberWelcomeEmailTemplate(memberName, memberId, membershipType);
-            helper.setText(htmlContent, true);
 
-            mailSender.send(message);
-            System.out.println("Member welcome email sent successfully to: " + toEmail);
+            if ("sendgrid".equalsIgnoreCase(mailProvider)) {
+                sendViaSendGrid(toEmail, subject, htmlContent, null);
+            } else {
+                // Default to SMTP
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+                helper.setFrom(smtpFromEmail);
+                helper.setTo(toEmail);
+                helper.setSubject(subject);
+                helper.setText(htmlContent, true);
+
+                mailSender.send(message);
+                System.out.println("Member welcome email sent successfully to: " + toEmail);
+            }
 
         } catch (MessagingException e) {
+            System.err.println("Failed to send member welcome email: " + e.getMessage());
+            throw new RuntimeException("Failed to send welcome email", e);
+        } catch (Exception e) {
             System.err.println("Failed to send member welcome email: " + e.getMessage());
             throw new RuntimeException("Failed to send welcome email", e);
         }
@@ -42,18 +72,70 @@ public class EmailService {
 
     public void sendSimpleEmail(String toEmail, String subject, String body) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject(subject);
-            message.setText(body);
+            if ("sendgrid".equalsIgnoreCase(mailProvider)) {
+                // For simple text emails, wrap in minimal HTML for consistency
+                String htmlBody = "<div style='font-family: Arial, sans-serif;'><p>" + body.replace("\n", "<br>") + "</p></div>";
+                sendViaSendGrid(toEmail, subject, htmlBody, body);
+            } else {
+                // Use SMTP
+                MimeMessage message = mailSender.createMimeMessage();
+                message.setFrom(new InternetAddress(smtpFromEmail));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+                message.setSubject(subject);
+                message.setText(body);
 
-            mailSender.send(message);
-            System.out.println("Simple email sent successfully to: " + toEmail);
+                mailSender.send(message);
+                System.out.println("Simple email sent successfully to: " + toEmail);
+            }
 
         } catch (Exception e) {
             System.err.println("Failed to send simple email: " + e.getMessage());
             throw new RuntimeException("Failed to send email", e);
+        }
+    }
+
+    private void sendViaSendGrid(String toEmail, String subject, String htmlContent, String textContent) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + sendgridApiKey);
+
+            // SendGrid API format
+            Map<String, Object> personalization = new HashMap<>();
+            personalization.put("to", new Object[]{Map.of("email", toEmail)});
+            
+            Map<String, Object> fromMap = new HashMap<>();
+            fromMap.put("email", fromEmail);
+            fromMap.put("name", fromName);
+
+            Map<String, Object> content = new HashMap<>();
+            content.put("type", "text/html");
+            content.put("value", htmlContent);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("personalizations", new Object[]{personalization});
+            body.put("from", fromMap);
+            body.put("subject", subject);
+            body.put("content", new Object[]{content});
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                "https://api.sendgrid.com/v3/mail/send",
+                request,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Email sent successfully via SendGrid to: " + toEmail);
+            } else {
+                System.err.println("SendGrid API returned non-2xx status: " + response.getStatusCode());
+                throw new RuntimeException("Failed to send email via SendGrid");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to send email via SendGrid: " + e.getMessage());
+            throw new RuntimeException("Failed to send email via SendGrid", e);
         }
     }
 
@@ -84,13 +166,13 @@ public class EmailService {
         html.append("<body>");
         
         html.append("<div class='header'>");
-        html.append("<h1>🎉 Welcome to NexaLibrary University Library!</h1>");
+        html.append("<h1>🎉 Welcome to SARASAVI Library!</h1>");
         html.append("<p>Your membership has been successfully activated</p>");
         html.append("</div>");
         
         html.append("<div class='content'>");
         html.append("<h2>Dear ").append(memberName).append(",</h2>");
-        html.append("<p>Congratulations! You are now an official member of the NexaLibrary University Library. We're excited to have you join our community of learners and knowledge seekers.</p>");
+        html.append("<p>Congratulations! You are now an official member of the SARASAVI Library. We're excited to have you join our community of learners and knowledge seekers.</p>");
         
         html.append("<div class='member-id'>");
         html.append("<strong>Your Member ID: ").append(memberId).append("</strong>");
@@ -151,9 +233,9 @@ public class EmailService {
         
         html.append("<div class='membership-details'>");
         html.append("<h3>Library Information</h3>");
-        html.append("<p><strong>Location:</strong> NexaLibrary Campus, New Kandy Road, Malabe, Sri Lanka</p>");
+        html.append("<p><strong>Location:</strong> SARASAVI Campus, New Kandy Road, Malabe, Sri Lanka</p>");
         html.append("<p><strong>Phone:</strong> +94 11 754 4801</p>");
-        html.append("<p><strong>Email:</strong> library@nexalibrary.lk</p>");
+        html.append("<p><strong>Email:</strong> library@sarasavi.lk</p>");
         html.append("<p><strong>Hours:</strong></p>");
         html.append("<ul>");
         html.append("<li>Monday - Friday: 8:00 AM - 10:00 PM</li>");
@@ -164,9 +246,9 @@ public class EmailService {
         html.append("</div>");
         
         html.append("<div class='footer'>");
-        html.append("<p>Thank you for choosing NexaLibrary University Library!</p>");
+        html.append("<p>Thank you for choosing SARASAVI Library!</p>");
         html.append("<p>If you have any questions, please don't hesitate to contact us.</p>");
-        html.append("<p>&copy; 2025 NexaLibrary University Library. All rights reserved.</p>");
+        html.append("<p>&copy; 2025 SARASAVI Library. All rights reserved.</p>");
         html.append("</div>");
         
         html.append("</body>");
