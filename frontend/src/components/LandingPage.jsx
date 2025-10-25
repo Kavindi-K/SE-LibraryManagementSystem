@@ -327,7 +327,7 @@ function LandingPage() {
                 </div>
                 <div>
                   <h3>Phone Support</h3>
-                  <p>+94 81 754 4801</p>
+                  <p>+94 81 754 4601</p>
                   <span className="contact-sub">Mon-Fri: 8:00 AM - 6:00 PM</span>
                 </div>
               </div>
@@ -339,7 +339,7 @@ function LandingPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3>Visit Our Campus</h3>
+                  <h3>Visit Our Library</h3>
                   <p>SARASAVI Learning Hub<br />Colombo road,Peradeniya</p>
                   <span className="contact-sub">Kandy, Sri Lanka</span>
                 </div>
